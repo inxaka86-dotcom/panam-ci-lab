@@ -1,0 +1,52 @@
+name: Wave 1 public synthetic contracts
+
+on:
+  pull_request:
+    paths:
+      - 'wave1/**'
+      - 'checks/publication_gate.py'
+      - '.github/workflows/wave1-public-contracts.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'wave1/**'
+      - 'checks/publication_gate.py'
+      - '.github/workflows/wave1-public-contracts.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-wave1-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Compile public Python
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            checks/publication_gate.py \
+            wave1/task_state.py \
+            wave1/ocr_benchmark.py \
+            wave1/ranking.py \
+            wave1/test_task_state.py \
+            wave1/test_ocr_benchmark.py \
+            wave1/test_ranking.py
+
+      - name: Run public synthetic contracts
+        run: python3 -m unittest discover -s wave1 -p 'test_*.py' -v
