@@ -4,15 +4,16 @@ Wave 2 tests a generic, publication-safe feedback loop for learning reusable dra
 
 ## Contract under test
 
-Synthetic source/draft -> synthetic approved reference -> deterministic textual revision pair -> manual change classification -> reusable-rule candidate -> conservative rule acceptance.
+Synthetic source/draft -> synthetic approved reference -> deterministic textual revision pair -> manual change classification -> reviewed-pair qualification -> reusable-rule candidate -> conservative rule acceptance.
 
 The experiment intentionally separates:
 
 1. evidence that text changed;
 2. human-reviewed classification of why it changed;
-3. whether a repeated editorial pattern is safe to reuse.
+3. qualification that the reviewed pair still matches the same approved reference and review receipt;
+4. whether a repeated editorial pattern is safe to reuse.
 
-A textual diff never classifies itself.
+A textual diff never classifies itself, and an evidence pair is not reusable merely because its ID was supplied by a caller.
 
 ## Safety policy
 
@@ -21,7 +22,8 @@ A reusable rule may be accepted only when:
 - it is manually verified;
 - it belongs to an allowed style/structure category;
 - it is supported by at least three distinct qualified synthetic revision pairs;
-- all evidence pairs are explicitly qualified;
+- every evidence pair is fully reviewed and still bound to the exact approved reference metadata;
+- duplicate evidence-pair IDs are rejected;
 - contradiction count is integer zero;
 - rule identity and before/after patterns are non-empty;
 - before and after patterns differ.
