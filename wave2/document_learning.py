@@ -16,6 +16,7 @@ LEARNABLE_CATEGORIES = {
 }
 
 BLOCKED_CATEGORIES = {"factual_legal_substantive"}
+ALL_REVIEW_CATEGORIES = LEARNABLE_CATEGORIES | BLOCKED_CATEGORIES
 MIN_DISTINCT_REFERENCE_EVIDENCE = 3
 
 
@@ -124,7 +125,7 @@ def build_revision_pair(
 
 def classify_change(pair: dict, change_index: int, *, category: str, manual_verified: bool) -> dict:
     """Return a reviewed copy of a revision pair with one change classified."""
-    if category not in LEARNABLE_CATEGORIES | BLOCKED_CATEGORIES:
+    if category not in ALL_REVIEW_CATEGORIES:
         raise ValueError("unknown change category")
     if manual_verified is not True:
         raise ValueError("manual verification is required")
@@ -135,9 +136,68 @@ def classify_change(pair: dict, change_index: int, *, category: str, manual_veri
     result = deepcopy(pair)
     result["changes"][change_index]["classification"] = category
     result["changes"][change_index]["manual_verified"] = True
-    if all(change.get("classification") != "UNCLASSIFIED_REQUIRES_REVIEW" for change in result["changes"]):
+    if result["changes"] and all(
+        change.get("classification") in ALL_REVIEW_CATEGORIES
+        and change.get("manual_verified") is True
+        for change in result["changes"]
+    ):
         result["learning_state"] = "REVIEWED"
     return result
+
+
+def qualify_revision_pair(pair: dict, approved_references: dict[str, dict]) -> dict:
+    """Validate a reviewed pair against the exact approved synthetic reference."""
+    if not isinstance(pair, dict):
+        raise ValueError("revision pair must be an object")
+    pair_id = pair.get("pair_id")
+    if not isinstance(pair_id, str) or not pair_id.strip():
+        raise ValueError("revision pair is missing pair_id")
+    if pair.get("learning_state") != "REVIEWED":
+        raise ValueError("revision pair is not fully reviewed")
+
+    final = pair.get("final")
+    if not isinstance(final, dict):
+        raise ValueError("revision pair final metadata is missing")
+    reference_id = final.get("reference_id")
+    reference = approved_references.get(reference_id)
+    if reference is None:
+        raise ValueError("revision pair reference is not in the approved reference set")
+    reference = validate_reference(reference)
+
+    expected = {
+        "content_sha256": reference["content_sha256"],
+        "review_receipt_sha256": reference["review_receipt_sha256"],
+        "status": reference["status"],
+    }
+    for field, value in expected.items():
+        if final.get(field) != value:
+            raise ValueError(f"revision pair reference provenance mismatch: {field}")
+
+    draft = pair.get("draft")
+    if not isinstance(draft, dict) or not _is_sha256(draft.get("content_sha256")):
+        raise ValueError("revision pair draft content_sha256 is invalid")
+
+    changes = pair.get("changes")
+    if not isinstance(changes, list) or not changes:
+        raise ValueError("revision pair has no reviewed changes")
+    for change in changes:
+        if change.get("classification") not in ALL_REVIEW_CATEGORIES:
+            raise ValueError("revision pair contains an unclassified change")
+        if change.get("manual_verified") is not True:
+            raise ValueError("revision pair contains an unverified change")
+    return pair
+
+
+def qualified_pair_ids(pairs: Iterable[dict], approved_references: dict[str, dict]) -> set[str]:
+    """Return IDs only after every pair passes reviewed-reference qualification."""
+    ids: set[str] = set()
+    for pair in pairs:
+        qualified = qualify_revision_pair(pair, approved_references)
+        pair_id = qualified["pair_id"]
+        if pair_id in ids:
+            raise ValueError(f"duplicate revision pair id: {pair_id}")
+        ids.add(pair_id)
+    return ids
 
 
 def can_accept_rule(candidate: dict, qualified_pair_ids: Iterable[str]) -> tuple[bool, list[str]]:
@@ -198,5 +258,15 @@ def accept_rule(candidate: dict, qualified_pair_ids: Iterable[str]) -> dict:
         "manual_verification_required": True,
         "zero_contradictions_required": True,
         "blocked_categories": sorted(BLOCKED_CATEGORIES),
+        "reviewed_pair_qualification_required": True,
     }
     return result
+
+
+def accept_rule_from_pairs(
+    candidate: dict,
+    revision_pairs: Iterable[dict],
+    approved_references: dict[str, dict],
+) -> dict:
+    """Preferred fail-closed path from reviewed pair objects."""
+    return accept_rule(candidate, qualified_pair_ids(revision_pairs, approved_references))
