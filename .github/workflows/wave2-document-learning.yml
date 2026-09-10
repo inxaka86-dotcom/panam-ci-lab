@@ -1,0 +1,51 @@
+name: Wave 2 synthetic document learning
+
+on:
+  pull_request:
+    paths:
+      - 'wave2/**'
+      - 'WAVE2.md'
+      - 'checks/publication_gate.py'
+      - '.github/workflows/wave2-document-learning.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'wave2/**'
+      - 'WAVE2.md'
+      - 'checks/publication_gate.py'
+      - '.github/workflows/wave2-document-learning.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-wave2-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-document-learning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Compile Wave 2 Python
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            checks/publication_gate.py \
+            wave2/__init__.py \
+            wave2/document_learning.py \
+            wave2/test_document_learning.py
+
+      - name: Run Wave 2 synthetic tests
+        run: python3 -m unittest discover -s wave2 -p 'test_*.py' -v
