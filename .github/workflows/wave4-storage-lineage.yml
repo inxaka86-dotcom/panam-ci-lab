@@ -1,0 +1,45 @@
+name: Wave 4 synthetic storage lineage
+
+on:
+  pull_request:
+    paths:
+      - 'wave4/**'
+      - 'WAVE4_STORAGE_LINEAGE.md'
+      - 'checks/publication_gate.py'
+      - '.github/workflows/wave4-storage-lineage.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-wave4-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-storage-lineage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Compile Wave 2, Wave 3 and Wave 4 Python
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            wave2/document_learning.py \
+            wave3/intake.py \
+            wave4/__init__.py \
+            wave4/storage_lineage.py \
+            wave4/test_storage_lineage.py
+
+      - name: Run Wave 4 synthetic tests
+        run: python3 -m unittest discover -s wave4 -p 'test_*.py' -v
