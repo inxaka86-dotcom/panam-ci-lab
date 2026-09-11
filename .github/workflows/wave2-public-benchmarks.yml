@@ -1,0 +1,33 @@
+name: Wave 2 public synthetic benchmarks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wave2-public-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-benchmarks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Compile Wave 2 Python
+        run: python3 -m py_compile wave2/*.py
+
+      - name: Run Wave 2 synthetic benchmarks
+        run: python3 -m unittest discover -s wave2 -p 'test_*.py' -v
