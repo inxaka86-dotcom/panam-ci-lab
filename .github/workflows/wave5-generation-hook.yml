@@ -1,0 +1,53 @@
+name: Wave 5 synthetic generation hook
+
+on:
+  pull_request:
+    paths:
+      - 'wave5/**'
+      - 'WAVE5_GENERATION_HOOK.md'
+      - 'checks/publication_gate.py'
+      - '.github/workflows/wave5-generation-hook.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'wave5/**'
+      - 'WAVE5_GENERATION_HOOK.md'
+      - 'checks/publication_gate.py'
+      - '.github/workflows/wave5-generation-hook.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wave5-generation-hook-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-generation-hook:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Compile Wave 2 through Wave 5 Python
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            wave2/document_learning.py \
+            wave3/intake.py \
+            wave4/storage_lineage.py \
+            wave5/__init__.py \
+            wave5/generation_hook.py \
+            wave5/test_generation_hook.py
+
+      - name: Run Wave 5 synthetic tests
+        run: python3 -m unittest discover -s wave5 -p 'test_*.py' -v
