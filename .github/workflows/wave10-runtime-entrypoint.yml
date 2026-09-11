@@ -1,0 +1,40 @@
+name: Wave 10 synthetic runtime entrypoint
+
+on:
+  pull_request:
+    paths:
+      - 'wave8/**'
+      - 'wave9/**'
+      - 'wave10/**'
+      - 'WAVE10_RUNTIME_ENTRYPOINT.md'
+      - 'checks/publication_gate.py'
+      - '.github/workflows/wave10-runtime-entrypoint.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-runtime-entrypoint:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Syntax check Wave 8 through Wave 10 JavaScript
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check wave8/runtime_adapter.js
+          node --check wave9/protocol_runtime_worker.js
+          node --check wave10/runtime_entrypoint.js
+          node --check wave10/runtime_entrypoint.test.js
+
+      - name: Run Wave 10 synthetic tests
+        run: node --test wave10/runtime_entrypoint.test.js
