@@ -55,7 +55,7 @@ class Wave11ProtocolPipelineTests(unittest.TestCase):
             mode,
         ])
 
-    def run(self, client, **overrides):
+    def execute_pipeline(self, client, **overrides):
         args = dict(self.base)
         args.update(overrides)
         transcript = args.pop("transcript_text")
@@ -66,7 +66,7 @@ class Wave11ProtocolPipelineTests(unittest.TestCase):
         )
 
     def test_full_cross_language_pipeline_commits_through_wave4_lineage(self):
-        result = self.run(self.client("A", "ok"))
+        result = self.execute_pipeline(self.client("A", "ok"))
         self.assertEqual(result["status"], PIPELINE_COMMITTED)
         self.assertEqual(result["commit_result"]["status"], "COMMITTED")
         self.assertEqual(len(result["state"]["draft_registry"]["drafts"]), 1)
@@ -86,7 +86,7 @@ class Wave11ProtocolPipelineTests(unittest.TestCase):
     def test_background_watcher_rejected_before_any_subprocess(self):
         nonexistent = Path(self.temp.name) / "does-not-exist.js"
         with self.assertRaisesRegex(ValueError, "trigger mode is not authorized"):
-            self.run(
+            self.execute_pipeline(
                 self.client(fixture=nonexistent),
                 trigger_mode="background_watcher",
             )
@@ -95,7 +95,7 @@ class Wave11ProtocolPipelineTests(unittest.TestCase):
 
     def test_storage_failure_leaves_durable_generation_checkpoint(self):
         with self.assertRaisesRegex(RuntimeError, "exit code 1"):
-            self.run(self.client("A", "fail"))
+            self.execute_pipeline(self.client("A", "fail"))
 
         state = self.state_store.load()
         entry = state["pipeline_registry"]["operations"][0]
@@ -108,40 +108,40 @@ class Wave11ProtocolPipelineTests(unittest.TestCase):
 
     def test_retry_same_draft_after_storage_failure_commits(self):
         with self.assertRaises(RuntimeError):
-            self.run(self.client("A", "fail"))
+            self.execute_pipeline(self.client("A", "fail"))
 
-        result = self.run(self.client("A", "ok"))
+        result = self.execute_pipeline(self.client("A", "ok"))
         self.assertEqual(result["status"], PIPELINE_COMMITTED)
         external = json.loads(self.external_store_path.read_text(encoding="utf-8"))
         self.assertEqual(len(external["records"]), 1)
 
     def test_retry_changed_draft_requires_review_and_never_stores(self):
         with self.assertRaises(RuntimeError):
-            self.run(self.client("A", "fail"))
+            self.execute_pipeline(self.client("A", "fail"))
 
-        result = self.run(self.client("B", "ok"))
+        result = self.execute_pipeline(self.client("B", "ok"))
         self.assertEqual(result["status"], GENERATION_CONFLICT_REQUIRES_REVIEW)
         self.assertFalse(self.external_store_path.exists())
         entry = result["state"]["pipeline_registry"]["operations"][0]
         self.assertNotEqual(entry["text_sha256"], entry["replayed_text_sha256"])
 
     def test_already_committed_replay_does_not_launch_runtime(self):
-        first = self.run(self.client("A", "ok"))
+        first = self.execute_pipeline(self.client("A", "ok"))
         self.assertEqual(first["status"], PIPELINE_COMMITTED)
 
         nonexistent = Path(self.temp.name) / "does-not-exist.js"
-        replay = self.run(self.client(fixture=nonexistent))
+        replay = self.execute_pipeline(self.client(fixture=nonexistent))
         self.assertEqual(replay["status"], ALREADY_PIPELINE_COMMITTED)
         external = json.loads(self.external_store_path.read_text(encoding="utf-8"))
         self.assertEqual(len(external["records"]), 1)
 
     def test_pipeline_identity_change_is_rejected_before_runtime(self):
         with self.assertRaises(RuntimeError):
-            self.run(self.client("A", "fail"))
+            self.execute_pipeline(self.client("A", "fail"))
 
         nonexistent = Path(self.temp.name) / "does-not-exist.js"
         with self.assertRaisesRegex(ValueError, "different request"):
-            self.run(
+            self.execute_pipeline(
                 self.client(fixture=nonexistent),
                 transcript_text="Changed transcript identity",
             )
