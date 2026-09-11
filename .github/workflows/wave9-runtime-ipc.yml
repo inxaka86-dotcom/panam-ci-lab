@@ -1,0 +1,48 @@
+name: Wave 9 synthetic runtime IPC
+
+on:
+  pull_request:
+    paths:
+      - 'wave9/**'
+      - 'wave8/**'
+      - 'WAVE9_RUNTIME_IPC.md'
+      - 'checks/publication_gate.py'
+      - '.github/workflows/wave9-runtime-ipc.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'wave9/**'
+      - 'WAVE9_RUNTIME_IPC.md'
+      - '.github/workflows/wave9-runtime-ipc.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wave9-runtime-ipc-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-runtime-ipc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Syntax and compile checks
+        run: |
+          node --check wave8/runtime_adapter.js
+          node --check wave9/protocol_runtime_worker.js
+          node --check wave9/runtime_fixture.js
+          python3 -m py_compile wave9/runtime_ipc.py wave9/test_runtime_ipc.py
+
+      - name: Run Wave 9 cross-language tests
+        run: python3 -m unittest discover -s wave9 -p 'test_*.py' -v
