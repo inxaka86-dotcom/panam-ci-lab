@@ -1,0 +1,54 @@
+name: Wave 6 synthetic protocol commit
+
+on:
+  pull_request:
+    paths:
+      - 'wave6/**'
+      - 'WAVE6_PROTOCOL_COMMIT.md'
+      - 'checks/publication_gate.py'
+      - '.github/workflows/wave6-protocol-commit.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'wave6/**'
+      - 'WAVE6_PROTOCOL_COMMIT.md'
+      - 'checks/publication_gate.py'
+      - '.github/workflows/wave6-protocol-commit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wave6-protocol-commit-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-protocol-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Compile Wave 2 through Wave 6 Python
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            wave2/document_learning.py \
+            wave3/intake.py \
+            wave4/storage_lineage.py \
+            wave5/generation_hook.py \
+            wave6/__init__.py \
+            wave6/protocol_commit.py \
+            wave6/test_protocol_commit.py
+
+      - name: Run Wave 6 synthetic tests
+        run: python3 -m unittest discover -s wave6 -p 'test_*.py' -v
