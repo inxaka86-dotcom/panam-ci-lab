@@ -1,0 +1,54 @@
+name: Wave 3 synthetic intake
+
+on:
+  pull_request:
+    paths:
+      - 'wave2/**'
+      - 'wave3/**'
+      - 'WAVE3_INTAKE.md'
+      - 'checks/publication_gate.py'
+      - '.github/workflows/wave3-intake.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'wave2/**'
+      - 'wave3/**'
+      - 'WAVE3_INTAKE.md'
+      - 'checks/publication_gate.py'
+      - '.github/workflows/wave3-intake.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-wave3-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-intake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Compile Wave 2 and Wave 3 Python
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            checks/publication_gate.py \
+            wave2/document_learning.py \
+            wave3/__init__.py \
+            wave3/intake.py \
+            wave3/test_intake.py
+
+      - name: Run Wave 3 synthetic tests
+        run: python3 -m unittest discover -s wave3 -p 'test_*.py' -v
