@@ -1,0 +1,57 @@
+name: Wave 11 synthetic protocol pipeline
+
+on:
+  pull_request:
+    paths:
+      - 'wave2/**'
+      - 'wave3/**'
+      - 'wave4/**'
+      - 'wave5/**'
+      - 'wave6/**'
+      - 'wave7/**'
+      - 'wave8/**'
+      - 'wave9/**'
+      - 'wave10/**'
+      - 'wave11/**'
+      - 'WAVE11_PROTOCOL_PIPELINE.md'
+      - 'checks/publication_gate.py'
+      - '.github/workflows/wave11-protocol-pipeline.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-protocol-pipeline:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Compile and syntax check Wave 2 through Wave 11
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            wave2/document_learning.py \
+            wave3/intake.py \
+            wave4/storage_lineage.py \
+            wave5/generation_hook.py \
+            wave6/protocol_commit.py \
+            wave7/protocol_generation.py \
+            wave9/runtime_ipc.py \
+            wave11/protocol_pipeline.py \
+            wave11/test_protocol_pipeline.py
+          node --check wave8/runtime_adapter.js
+          node --check wave9/protocol_runtime_worker.js
+          node --check wave10/runtime_entrypoint.js
+          node --check wave11/runtime_fixture.js
+
+      - name: Run Wave 11 cross-language pipeline tests
+        run: python3 -m unittest discover -s wave11 -p 'test_*.py' -v
