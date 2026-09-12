@@ -1,0 +1,79 @@
+name: Public visual sidecar synthetic qualification
+
+on:
+  pull_request:
+    paths:
+      - 'visual-sidecar/**'
+      - 'VISUAL_SIDECAR.md'
+      - '.github/workflows/visual-sidecar-public.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'visual-sidecar/**'
+      - 'VISUAL_SIDECAR.md'
+      - '.github/workflows/visual-sidecar-public.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: visual-sidecar-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-quick-qualification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Python syntax
+        run: python3 -m py_compile visual-sidecar/verify_quick_renderer.py
+
+      - name: Acquire exact-pinned public Quick renderer
+        shell: bash
+        run: |
+          set -euo pipefail
+          commit='7163c3e10660912e0b89e1af465db9f387282b88'
+          base="https://raw.githubusercontent.com/nicobailon/visual-explainer/${commit}"
+          mkdir -p "$RUNNER_TEMP/visual-sidecar/quick"
+          curl --fail --location --silent --show-error --proto '=https' --tlsv1.2 \
+            "${base}/plugins/visual-explainer/quick/render.mjs" \
+            -o "$RUNNER_TEMP/visual-sidecar/quick/render.mjs"
+          curl --fail --location --silent --show-error --proto '=https' --tlsv1.2 \
+            "${base}/plugins/visual-explainer/quick/base.css" \
+            -o "$RUNNER_TEMP/visual-sidecar/quick/base.css"
+          curl --fail --location --silent --show-error --proto '=https' --tlsv1.2 \
+            "${base}/plugins/visual-explainer/quick/schema.json" \
+            -o "$RUNNER_TEMP/visual-sidecar/quick/schema.json"
+
+      - name: Verify exact upstream Git blobs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object "$RUNNER_TEMP/visual-sidecar/quick/render.mjs")" = '0f1368973dcee7afd8369d752f290aad44e2c5bb'
+          test "$(git hash-object "$RUNNER_TEMP/visual-sidecar/quick/base.css")" = 'f10bf91dad83fa33f529a6a7487f89078086fefc'
+          test "$(git hash-object "$RUNNER_TEMP/visual-sidecar/quick/schema.json")" = '783874c57f6d03a9b32f88e3e931f93762c456fd'
+
+      - name: Verify renderer static capability boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          renderer="$RUNNER_TEMP/visual-sidecar/quick/render.mjs"
+          if grep -Eiq "node:(http|https|net|tls|child_process)|fetch[[:space:]]*\(|XMLHttpRequest|WebSocket" "$renderer"; then
+            echo 'unexpected network/process capability in pinned renderer' >&2
+            exit 1
+          fi
+
+      - name: Run public-only synthetic qualification
+        run: >-
+          python3 visual-sidecar/verify_quick_renderer.py
+          "$RUNNER_TEMP/visual-sidecar/quick/render.mjs"
+          visual-sidecar/synthetic-spec.json
