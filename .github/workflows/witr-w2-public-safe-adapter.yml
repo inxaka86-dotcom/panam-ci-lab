@@ -1,0 +1,36 @@
+name: witr W2 public safe adapter
+
+on:
+  pull_request:
+    paths:
+      - "witr_w2/**"
+      - "WITR_W2_PUBLIC_SAFE_ADAPTER.md"
+      - ".github/workflows/witr-w2-public-safe-adapter.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: witr-w2-public-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  witr-w2-public:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Compile W2 public safe adapter
+        run: python3 -m py_compile witr_w2/safe_adapter.py witr_w2/test_safe_adapter.py
+
+      - name: Run adversarial and exact-upstream W2 suite
+        run: python3 -m unittest -v witr_w2.test_safe_adapter
