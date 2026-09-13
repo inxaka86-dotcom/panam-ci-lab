@@ -1,0 +1,70 @@
+name: CLI-Anything LibreOffice static qualification
+
+on:
+  pull_request:
+    paths:
+      - 'cli_anything/**'
+      - 'CLI_ANYTHING_LIBREOFFICE_STATIC_V1.md'
+      - '.github/workflows/cli-anything-libreoffice-static.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'cli_anything/**'
+      - 'CLI_ANYTHING_LIBREOFFICE_STATIC_V1.md'
+      - '.github/workflows/cli-anything-libreoffice-static.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cli-anything-libreoffice-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-qualification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Python syntax
+        run: python3 -m py_compile cli_anything/static_qualifier.py
+
+      - name: Acquire exact-pinned public upstream files
+        shell: bash
+        run: |
+          set -euo pipefail
+          commit='810c18b0d1ab9b234bc996c9fd999318523a3ef0'
+          base="https://raw.githubusercontent.com/HKUDS/CLI-Anything/${commit}"
+          root="${RUNNER_TEMP}/cli-anything-upstream"
+          mkdir -p "$root"
+          curl --fail --location --silent --show-error --proto '=https' --tlsv1.2 "${base}/LICENSE" -o "$root/LICENSE"
+          curl --fail --location --silent --show-error --proto '=https' --tlsv1.2 "${base}/SECURITY.md" -o "$root/SECURITY.md"
+          curl --fail --location --silent --show-error --proto '=https' --tlsv1.2 "${base}/cli-anything-plugin/HARNESS.md" -o "$root/HARNESS.md"
+          curl --fail --location --silent --show-error --proto '=https' --tlsv1.2 "${base}/skills/cli-anything-libreoffice/SKILL.md" -o "$root/SKILL.md"
+          curl --fail --location --silent --show-error --proto '=https' --tlsv1.2 "${base}/libreoffice/agent-harness/cli_anything/libreoffice/utils/lo_backend.py" -o "$root/lo_backend.py"
+          curl --fail --location --silent --show-error --proto '=https' --tlsv1.2 "${base}/libreoffice/agent-harness/cli_anything/libreoffice/core/export.py" -o "$root/export.py"
+          curl --fail --location --silent --show-error --proto '=https' --tlsv1.2 "${base}/libreoffice/agent-harness/cli_anything/libreoffice/core/importer.py" -o "$root/importer.py"
+
+      - name: Verify exact upstream Git blobs
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="${RUNNER_TEMP}/cli-anything-upstream"
+          test "$(git hash-object "$root/LICENSE")" = 'ee86799f79a1dd41bd82923f4dbf40cfb336684d'
+          test "$(git hash-object "$root/SECURITY.md")" = '5135f80daa19d48325b9c6f0f27204930664f40b'
+          test "$(git hash-object "$root/HARNESS.md")" = '4fd881137c280cf33fcbf9342b91629524906136'
+          test "$(git hash-object "$root/SKILL.md")" = '1d53915e9a548a8dfda0bea26b2b23aa794e9242'
+          test "$(git hash-object "$root/lo_backend.py")" = '1ed698faf1de1b8c60c7891038154a6dc7b6f5c4'
+          test "$(git hash-object "$root/export.py")" = 'c04bc4452e0144d9dbeeae61ec65ab42aa95f95a'
+          test "$(git hash-object "$root/importer.py")" = '5ef15f2287df31cea28754c79b0af5fc9769afa8'
+
+      - name: Run public static qualification
+        run: python3 cli_anything/static_qualifier.py "${RUNNER_TEMP}/cli-anything-upstream"
