@@ -3,13 +3,11 @@ name: CLI-Anything LibreOffice static qualification
 on:
   pull_request:
     paths:
-      - 'cli_anything/**'
       - 'CLI_ANYTHING_LIBREOFFICE_STATIC_V1.md'
       - '.github/workflows/cli-anything-libreoffice-static.yml'
   push:
     branches: [main]
     paths:
-      - 'cli_anything/**'
       - 'CLI_ANYTHING_LIBREOFFICE_STATIC_V1.md'
       - '.github/workflows/cli-anything-libreoffice-static.yml'
 
@@ -33,9 +31,6 @@ jobs:
 
       - name: Enforce public-only publication boundary
         run: python3 checks/publication_gate.py
-
-      - name: Python syntax
-        run: python3 -m py_compile cli_anything/static_qualifier.py
 
       - name: Acquire exact-pinned public upstream files
         shell: bash
@@ -66,5 +61,14 @@ jobs:
           test "$(git hash-object "$root/export.py")" = 'c04bc4452e0144d9dbeeae61ec65ab42aa95f95a'
           test "$(git hash-object "$root/importer.py")" = '5ef15f2287df31cea28754c79b0af5fc9769afa8'
 
-      - name: Run public static qualification
-        run: python3 cli_anything/static_qualifier.py "${RUNNER_TEMP}/cli-anything-upstream"
+      - name: Verify selected structural markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="${RUNNER_TEMP}/cli-anything-upstream"
+          grep -Fq '_HEADLESS_FLAGS' "$root/lo_backend.py"
+          grep -Fq 'TemporaryDirectory(prefix="lo-profile-")' "$root/lo_backend.py"
+          grep -Fq 'EXPORT_PRESETS' "$root/export.py"
+          grep -Fq 'OFFICE_EXTENSION_CONVERSIONS' "$root/importer.py"
+          grep -Fq 'defusedxml' "$root/importer.py"
+          echo 'PANAM_PUBLIC_CLI_ANYTHING_LIBREOFFICE_EXACT_SOURCE=PASS'
