@@ -1,0 +1,77 @@
+name: Wave 3 Context Live Loopback
+
+on:
+  pull_request:
+    paths:
+      - 'wave3/context-live-loopback/**'
+      - '.github/workflows/wave3-context-live-loopback.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wave3-context-loopback-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  authenticated-loopback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Set up Node 24
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '24'
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Run authenticated loopback MCP and live-console proofs
+        shell: bash
+        env:
+          npm_config_registry: https://registry.npmjs.org/
+          npm_config_audit: 'false'
+          npm_config_fund: 'false'
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/context-live-loopback"
+          mkdir -p "$work"
+          cp wave3/context-live-loopback/loopback_auth_probe.mjs "$work/probe.mjs"
+          cp wave3/context-live-loopback/live_console_probe.mjs "$work/console_probe.mjs"
+          cd "$work"
+          npm init -y >/dev/null
+          npm install --ignore-scripts --no-audit --no-fund --save-exact \
+            @modelcontextprotocol/server@2.0.0 \
+            @modelcontextprotocol/client@2.0.0 \
+            @modelcontextprotocol/node@2.0.0 \
+            @modelcontextprotocol/express@2.0.0 \
+            zod@4.2.0
+
+          node probe.mjs | tee proof.log
+          grep -qx 'PUBLIC_CONTEXT_LOOPBACK_BIND=127.0.0.1' proof.log
+          grep -qx 'PUBLIC_CONTEXT_LOOPBACK_AUTH=401_401_403_PASS' proof.log
+          grep -qx 'PUBLIC_CONTEXT_LOOPBACK_MCP_2026=PASS' proof.log
+          grep -qx 'PUBLIC_CONTEXT_LOOPBACK_READ_ONLY=PASS' proof.log
+
+          node console_probe.mjs | tee console-proof.log
+          grep -qx 'PUBLIC_CONTEXT_LIVE_CONSOLE_BIND=127.0.0.1' console-proof.log
+          grep -qx 'PUBLIC_CONTEXT_LIVE_CONSOLE_AUTH=401_401_403_PASS' console-proof.log
+          grep -qx 'PUBLIC_CONTEXT_LIVE_CONSOLE_SOURCE=MCP_ONLY' console-proof.log
+          grep -qx 'PUBLIC_CONTEXT_LIVE_CONSOLE_MCP_2026=PASS' console-proof.log
+          grep -qx 'PUBLIC_CONTEXT_LIVE_CONSOLE_CACHE=NO_STORE' console-proof.log
+          grep -qx 'PUBLIC_CONTEXT_LIVE_CONSOLE_INERT=PASS' console-proof.log
+          grep -qx 'PUBLIC_CONTEXT_LIVE_CONSOLE_GET_ONLY=PASS' console-proof.log
+
+      - name: Prove public checkout remained clean
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain)"
+          echo 'PUBLIC_CONTEXT_LOOPBACK_CHECKOUT_CLEAN=YES'
