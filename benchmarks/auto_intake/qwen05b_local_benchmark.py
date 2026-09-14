@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Public-safe local model benchmark for PANAM Auto Intake.
+"""Public-safe local-model benchmark for PANAM Auto Intake.
 
-The benchmark performs deterministic finite-choice conditional likelihood scoring.
-It never generates arbitrary labels and never touches private PANAM data.
+Uses deterministic single-token multiple-choice scoring over a fixed class set.
+No free-form category generation and no private PANAM data.
 """
 from __future__ import annotations
 
@@ -17,13 +17,13 @@ from typing import Any
 
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from transformers.cache_utils import DynamicCache
 
 MODEL_ID = "Qwen/Qwen2.5-0.5B-Instruct"
 MODEL_REVISION = "ec7ddfa904d4d447eedd0b7f126df16957734abb"
 MODEL_LICENSE = "Apache-2.0"
 SNAPSHOT_SCHEMA = "panam.auto-intake-candidate-snapshot.v2"
 REPORT_SCHEMA = "panam.auto-intake-local-model-report.v1"
+METHOD = "single_token_multiple_choice_log_probability"
 
 CLASSES = [
     ("Исковое заявление", "Судебные документы", "Арбитраж"),
@@ -40,6 +40,7 @@ CLASSES = [
     ("Дополнительное соглашение", "Договорная работа", None),
     ("Неопределено", "Требует классификации", None),
 ]
+LABELS = list("ABCDEFGHIJKLM")
 
 
 def canonical_bytes(value: Any) -> bytes:
@@ -47,51 +48,27 @@ def canonical_bytes(value: Any) -> bytes:
 
 
 def class_text(item: tuple[str, str, str | None]) -> str:
-    document_type, category, subcategory = item
-    payload: dict[str, Any] = {"document_type": document_type, "category": category}
+    doc, category, subcategory = item
+    payload: dict[str, Any] = {"document_type": doc, "category": category}
     if subcategory is not None:
         payload["subcategory"] = subcategory
     return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
 
 
 def build_prompt(case: dict[str, Any]) -> str:
-    allowed = "\n".join(f"{i + 1}. {class_text(item)}" for i, item in enumerate(CLASSES))
+    allowed = "\n".join(f"{label}: {class_text(item)}" for label, item in zip(LABELS, CLASSES))
     return (
-        "Классифицируй синтетический юридический документ. Выбери РОВНО один вариант из списка. "
-        "Не создавай новые категории. Это исследовательский тест, не юридическое решение.\n\n"
+        "Классифицируй синтетический юридический документ. Выбери РОВНО одну метку A–M из списка ниже. "
+        "Не создавай новый класс и не объясняй ответ.\n\n"
         f"Имя файла: {case['original_filename']}\n"
         f"Структурированные факты: {json.dumps(case['structured_facts'], ensure_ascii=False, sort_keys=True)}\n"
         f"Синтетическая смысловая подсказка: {case['semantic_hint']}\n\n"
-        f"Допустимые варианты:\n{allowed}\n\n"
-        "Ответ должен точно совпасть с JSON одного допустимого варианта:"
+        f"Классы:\n{allowed}\n\n"
+        "Ответ: только одна латинская буква A–M.\nОтвет:"
     )
 
 
-def average_log_likelihood(model, tokenizer, answer_text: str, prompt_output) -> float:
-    answer = tokenizer(answer_text, add_special_tokens=False, return_tensors="pt")["input_ids"]
-    if answer.shape[1] < 1:
-        raise RuntimeError("empty answer tokenization")
-    first_target = answer[0, 0]
-    first_log_probs = torch.log_softmax(prompt_output.logits[0, -1].float(), dim=-1)
-    total = float(first_log_probs[first_target])
-    count = 1
-    if answer.shape[1] > 1:
-        # transformers 4.45 may return a legacy tuple from the initial prompt,
-        # while Qwen2 continuation expects Cache.get_seq_length(). Convert a
-        # fresh copy for every finite-choice candidate so one candidate cannot
-        # mutate cache state observed by another candidate.
-        cache = DynamicCache.from_legacy_cache(prompt_output.past_key_values)
-        continuation = answer[:, :-1]
-        out = model(input_ids=continuation, past_key_values=cache, use_cache=False)
-        log_probs = torch.log_softmax(out.logits[0].float(), dim=-1)
-        targets = answer[0, 1:]
-        token_scores = log_probs[torch.arange(targets.shape[0]), targets]
-        total += float(token_scores.sum())
-        count += int(targets.shape[0])
-    return total / count
-
-
-def softmax(values: list[float]) -> list[float]:
+def softmax_logits(values: list[float]) -> list[float]:
     peak = max(values)
     exps = [math.exp(v - peak) for v in values]
     total = sum(exps)
@@ -105,11 +82,6 @@ def exact_class(selected: tuple[str, str, str | None], gold: dict[str, Any]) -> 
 
 def candidate_for(case: dict[str, Any], selected: tuple[str, str, str | None], confidence: float) -> dict[str, Any]:
     doc, cat, sub = selected
-    evidence = [
-        f"fixture:auto-intake:{case['id']}:filename",
-        f"fixture:auto-intake:{case['id']}:facts",
-        f"fixture:auto-intake:{case['id']}:semantic",
-    ]
     candidate: dict[str, Any] = {
         "schema": "panam.intake-classification-candidate.v1",
         "source_ref": case["source_ref"],
@@ -118,8 +90,12 @@ def candidate_for(case: dict[str, Any], selected: tuple[str, str, str | None], c
         "document_type": doc,
         "category": cat,
         "confidence": round(float(confidence), 8),
-        "rationale": "Synthetic local-model finite-choice likelihood benchmark; human review remains required.",
-        "evidence_refs": evidence,
+        "rationale": "Synthetic local-model fixed-class multiple-choice benchmark; human review remains required.",
+        "evidence_refs": [
+            f"fixture:auto-intake:{case['id']}:filename",
+            f"fixture:auto-intake:{case['id']}:facts",
+            f"fixture:auto-intake:{case['id']}:semantic",
+        ],
     }
     if sub is not None:
         candidate["subcategory"] = sub
@@ -158,6 +134,15 @@ def main() -> int:
     model.eval()
     load_seconds = time.perf_counter() - load_started
 
+    label_token_ids: list[int] = []
+    for label in LABELS:
+        ids = tokenizer(label, add_special_tokens=False)["input_ids"]
+        if len(ids) != 1:
+            raise SystemExit(f"label {label} is not a single tokenizer token: {ids}")
+        label_token_ids.append(ids[0])
+    if len(set(label_token_ids)) != len(label_token_ids):
+        raise SystemExit("label token ids are not unique")
+
     candidate_rows: list[dict[str, Any]] = []
     result_rows: list[dict[str, Any]] = []
     inference_started = time.perf_counter()
@@ -165,7 +150,7 @@ def main() -> int:
     with torch.no_grad():
         for case in cases:
             messages = [
-                {"role": "system", "content": "Ты классификатор синтетических юридических документов. Выполняй только конечный выбор."},
+                {"role": "system", "content": "Ты классификатор синтетических юридических документов. Верни только метку допустимого класса."},
                 {"role": "user", "content": build_prompt(case)},
             ]
             prompt_ids = tokenizer.apply_chat_template(
@@ -174,13 +159,10 @@ def main() -> int:
                 tokenize=True,
                 return_tensors="pt",
             )
-            prompt_output = model(input_ids=prompt_ids, use_cache=True)
-            scores = [
-                average_log_likelihood(model, tokenizer, class_text(item), prompt_output)
-                for item in CLASSES
-            ]
-            probs = softmax(scores)
-            selected_index = max(range(len(CLASSES)), key=lambda i: scores[i])
+            logits = model(input_ids=prompt_ids, use_cache=False).logits[0, -1].float()
+            class_logits = [float(logits[token_id]) for token_id in label_token_ids]
+            probs = softmax_logits(class_logits)
+            selected_index = max(range(len(CLASSES)), key=lambda i: class_logits[i])
             selected = CLASSES[selected_index]
             confidence = probs[selected_index]
             candidate = candidate_for(case, selected, confidence)
@@ -191,8 +173,10 @@ def main() -> int:
             cat_hit = selected[1] == gold.get("category")
             exact_hit = exact_class(selected, gold)
             matter_hit = candidate.get("related_matter_candidate") == gold.get("related_matter_candidate")
+            order = sorted(range(len(CLASSES)), key=lambda j: class_logits[j], reverse=True)
             result_rows.append({
                 "case_id": case["id"],
+                "selected_label": LABELS[selected_index],
                 "selected_class_index": selected_index,
                 "selected": {"document_type": selected[0], "category": selected[1], "subcategory": selected[2]},
                 "confidence": round(float(confidence), 8),
@@ -201,11 +185,10 @@ def main() -> int:
                 "classification_exact": exact_hit,
                 "matter_link_exact": matter_hit,
                 "top3": [
-                    {"class_index": i, "probability": round(float(probs[i]), 8)}
-                    for i in sorted(range(len(CLASSES)), key=lambda j: scores[j], reverse=True)[:3]
+                    {"label": LABELS[i], "class_index": i, "probability": round(float(probs[i]), 8)}
+                    for i in order[:3]
                 ],
             })
-            del prompt_output
 
     inference_seconds = time.perf_counter() - inference_started
     count = len(cases)
@@ -217,12 +200,7 @@ def main() -> int:
     high_conf_wrong = [r for r in wrong if r["confidence"] >= 0.85]
     review_captured = [r for r in wrong if r["confidence"] < 0.85]
 
-    snapshot = {
-        "schema": SNAPSHOT_SCHEMA,
-        "synthetic": True,
-        "lane": "local_model",
-        "candidates": candidate_rows,
-    }
+    snapshot = {"schema": SNAPSHOT_SCHEMA, "synthetic": True, "lane": "local_model", "candidates": candidate_rows}
     args.snapshot.parent.mkdir(parents=True, exist_ok=True)
     args.snapshot.write_text(json.dumps(snapshot, ensure_ascii=False, sort_keys=True, indent=2), encoding="utf-8")
 
@@ -237,8 +215,9 @@ def main() -> int:
         "automatic_winner_selected": False,
         "production_switch_authorized": False,
         "model": {"id": MODEL_ID, "revision": MODEL_REVISION, "license": MODEL_LICENSE},
-        "method": "finite_choice_mean_conditional_log_likelihood",
+        "method": METHOD,
         "class_count": len(CLASSES),
+        "label_token_ids": dict(zip(LABELS, label_token_ids)),
         "suite_sha256": hashlib.sha256(canonical_bytes(suite)).hexdigest(),
         "snapshot_sha256": hashlib.sha256(canonical_bytes(snapshot)).hexdigest(),
         "metrics": {
@@ -262,6 +241,7 @@ def main() -> int:
     args.report.write_text(json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2), encoding="utf-8")
 
     print("PANAM_AUTO_INTAKE_LOCAL_MODEL_V1=PASS")
+    print("METHOD=" + METHOD)
     print("SUITE_SHA256=" + report["suite_sha256"])
     print("SNAPSHOT_SHA256=" + report["snapshot_sha256"])
     print("METRICS=" + json.dumps(report["metrics"], sort_keys=True))
