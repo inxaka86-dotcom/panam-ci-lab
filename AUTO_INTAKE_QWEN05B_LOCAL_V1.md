@@ -15,7 +15,7 @@ This is evidence for a possible **Level-1 escalation lane** only. It does not re
 - licence: Apache-2.0
 - family size: approximately 0.5B parameters
 
-The selected upstream model card describes multilingual support including Russian and improved structured-output/JSON instruction following. PANAM still measures its actual behavior rather than adopting those claims by assumption.
+The selected upstream model card describes multilingual support including Russian and improved structured-output/JSON instruction following. PANAM measures actual behavior rather than adopting those claims by assumption.
 
 ## Public-safe suite
 
@@ -38,25 +38,28 @@ The local-model lane receives the semantic hint. This measures whether a small o
 
 ## Deterministic finite-choice method
 
-The benchmark does not ask the model to freely generate a category.
+The benchmark never allows free-form category generation. It presents exactly 13 fixed classification bundles, labelled `A` through `M`, and asks the model to return exactly one label.
 
-For each case it presents exactly 13 allowed classification bundles and computes the mean conditional log likelihood of each exact allowed JSON answer. The highest-scoring allowed bundle is selected.
+Each label must tokenize to exactly one unique token under the pinned tokenizer. One forward pass per case obtains the next-token logits; only the 13 label-token logits are compared. The highest-scoring label selects the corresponding fixed classification bundle.
 
-Benefits:
+This **single-token multiple-choice** design avoids comparing the surface language probability of long JSON class names. A prior experimental run that scored full JSON continuations was retained in Actions history and rejected as a classification-quality measure because it showed a strong answer-surface prior (nearly every case preferred the same `Судебный акт` string). That failed method is evidence about benchmark design, not evidence that the model understood the cases.
+
+Benefits of the accepted method:
 
 - no sampling;
-- no free-form new categories;
+- no arbitrary new category;
+- equal one-token answer surface for every class;
 - deterministic finite output space;
-- directly reproducible scores for a pinned model/runtime;
-- easier comparison with the rule baseline.
+- reproducible scores for a pinned model/runtime;
+- substantially lower CPU cost than scoring full answer sequences.
 
-Confidence is a softmax over the 13 normalized likelihood scores. It is benchmark confidence only and never action authority.
+Confidence is a softmax over only the 13 allowed label logits. It is benchmark confidence, never action authority.
 
 ## Isolation
 
 Network is available only while installing research dependencies and downloading the exact model revision.
 
-Actual inference then runs:
+Actual inference runs:
 
 - on a disposable GitHub-hosted public runner;
 - under a separate Linux network namespace;
@@ -77,7 +80,7 @@ Top-level research versions are pinned:
 
 The model revision is exact and the workflow prints SHA-256 values for selected downloaded model/tokenizer files.
 
-However, transitive Python wheels and model files are not pre-approved by a complete hash lockfile. Therefore the evidence explicitly remains:
+However, transitive Python wheels and model files are not pre-approved by a complete hash lockfile. Therefore:
 
 `SUPPLY_CHAIN_LOCKED=false`.
 
@@ -88,7 +91,7 @@ A successful benchmark is functional/research evidence, not production dependenc
 The workflow creates only two synthetic evidence files:
 
 - `snapshot.json` — `panam.auto-intake-candidate-snapshot.v2`, lane `local_model`, containing one V1-compatible candidate per benchmark case;
-- `report.json` — model/revision, method, suite/snapshot hashes, per-case scores, aggregate accuracy, latency and max RSS.
+- `report.json` — model/revision, method, label token IDs, suite/snapshot hashes, per-case scores, aggregate accuracy, latency and max RSS.
 
 Only these two synthetic files are uploaded as a short-retention GitHub Actions artifact.
 
@@ -119,6 +122,6 @@ The public benchmark cannot move or rename files, write Memory, change Task/Job 
 
 ## Decision gate
 
-After a runner-backed result, PANAM should compare the exact synthetic snapshot with the existing deterministic rule baseline. A model win would justify, at most, designing a **bounded escalation policy for ambiguous/low-confidence cases**.
+After a runner-backed result, PANAM compares the exact synthetic snapshot with the existing deterministic rule baseline. A model win would justify, at most, designing a **bounded escalation policy for ambiguous/low-confidence cases**.
 
-It would not justify replacing Level 0, processing real documents, or activating a production classifier automatically.
+A model loss is equally useful: the candidate can be rejected without adding runtime complexity. Neither outcome authorizes processing real documents or activating a production classifier automatically.
