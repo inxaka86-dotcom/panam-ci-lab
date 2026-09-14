@@ -1,0 +1,148 @@
+name: CLI-Anything LibreOffice executable pilot v2
+
+on:
+  pull_request:
+    paths:
+      - 'CLI_ANYTHING_LIBREOFFICE_EXEC_V2.md'
+      - 'checks/cli_anything_libreoffice_exec_verify.py'
+      - '.github/workflows/cli-anything-libreoffice-exec.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'CLI_ANYTHING_LIBREOFFICE_EXEC_V2.md'
+      - 'checks/cli_anything_libreoffice_exec_verify.py'
+      - '.github/workflows/cli-anything-libreoffice-exec.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cli-anything-libreoffice-exec-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-executable-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout public CI lab
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Acquire exact-pinned upstream repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          commit='810c18b0d1ab9b234bc996c9fd999318523a3ef0'
+          upstream="${RUNNER_TEMP}/cli-anything"
+          git init -q "$upstream"
+          git -C "$upstream" remote add origin https://github.com/HKUDS/CLI-Anything.git
+          git -C "$upstream" fetch --depth=1 --no-tags origin "$commit"
+          git -C "$upstream" checkout -q --detach FETCH_HEAD
+          test "$(git -C "$upstream" rev-parse HEAD)" = "$commit"
+          test "$(git -C "$upstream" hash-object libreoffice/agent-harness/setup.py)" = 'bcbe3d24cf7c1b7dca5ab6058362d093c1b7f8e7'
+          echo "UPSTREAM_EXACT_COMMIT=$commit"
+
+      - name: Install disposable public-runner dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends libreoffice-writer >/dev/null
+          python3 -m venv "${RUNNER_TEMP}/venv"
+          "${RUNNER_TEMP}/venv/bin/python" -m pip install --disable-pip-version-check --quiet \
+            'click==8.1.8' 'prompt-toolkit==3.0.52' 'defusedxml==0.7.1'
+          soffice --version
+          "${RUNNER_TEMP}/venv/bin/python" - <<'PY'
+          import click, defusedxml, prompt_toolkit
+          print('CLICK_VERSION=' + click.__version__)
+          print('PROMPT_TOOLKIT_VERSION=' + prompt_toolkit.__version__)
+          print('DEFUSEDXML_IMPORT=PASS')
+          PY
+          echo 'SUPPLY_CHAIN_LOCKED=false'
+          echo 'NOTE=Disposable public research runner only; apt/pip transitive artifacts are not cryptographically prelocked.'
+
+      - name: Prepare synthetic sandbox and fixed invocation script
+        shell: bash
+        run: |
+          set -euo pipefail
+          sandbox="${RUNNER_TEMP}/panam-cli-anything-sandbox"
+          mkdir -p "$sandbox"/{home,tmp,xdg-config,xdg-cache,xdg-runtime}
+          chmod 700 "$sandbox/xdg-runtime"
+          cat > "${RUNNER_TEMP}/run-cli-anything-pilot.sh" <<'SH'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          test "$(id -u)" -ne 0
+          test -n "${PANAM_SANDBOX:-}"
+          test -n "${PANAM_HARNESS:-}"
+          test -n "${PANAM_PYTHON:-}"
+          python3 - <<'PY'
+          import socket
+          try:
+              socket.create_connection(('1.1.1.1', 53), timeout=0.5)
+          except OSError:
+              print('EXECUTION_NETWORK=BLOCKED')
+          else:
+              raise SystemExit('network unexpectedly reachable inside execution namespace')
+          PY
+          cd "$PANAM_HARNESS"
+          cli=("$PANAM_PYTHON" -m cli_anything.libreoffice.libreoffice_cli)
+          "${cli[@]}" --json document new --type writer --name 'PANAM synthetic executable pilot' -o "$PANAM_SANDBOX/project.json"
+          "${cli[@]}" --json --project "$PANAM_SANDBOX/project.json" writer add-heading --text 'PANAM_SYNTHETIC_EXEC_PILOT_V2' --level 1
+          "${cli[@]}" --json --project "$PANAM_SANDBOX/project.json" writer add-paragraph --text 'Synthetic PANAM Writer boundary test. No real document content.'
+          "${cli[@]}" --json --project "$PANAM_SANDBOX/project.json" writer add-list --items 'Synthetic item A' --items 'Synthetic item B' --style bullet
+          "${cli[@]}" --json --project "$PANAM_SANDBOX/project.json" writer add-table --rows 2 --cols 2
+          "${cli[@]}" --json --project "$PANAM_SANDBOX/project.json" writer list
+          "${cli[@]}" --json --project "$PANAM_SANDBOX/project.json" export render "$PANAM_SANDBOX/pilot.odt" --preset odt
+          "${cli[@]}" --json --project "$PANAM_SANDBOX/project.json" export render "$PANAM_SANDBOX/pilot.pdf" --preset pdf
+          "${cli[@]}" --json --project "$PANAM_SANDBOX/project.json" export render "$PANAM_SANDBOX/pilot.docx" --preset docx
+          SH
+          chmod 700 "${RUNNER_TEMP}/run-cli-anything-pilot.sh"
+
+      - name: Execute fixed Writer pilot without network
+        shell: bash
+        run: |
+          set -euo pipefail
+          uid="$(id -u)"
+          gid="$(id -g)"
+          sandbox="${RUNNER_TEMP}/panam-cli-anything-sandbox"
+          harness="${RUNNER_TEMP}/cli-anything/libreoffice/agent-harness"
+          python="${RUNNER_TEMP}/venv/bin/python"
+          sudo unshare --net --fork \
+            setpriv --reuid="$uid" --regid="$gid" --clear-groups \
+            env \
+              PANAM_SANDBOX="$sandbox" \
+              PANAM_HARNESS="$harness" \
+              PANAM_PYTHON="$python" \
+              PYTHONPATH="$harness" \
+              HOME="$sandbox/home" \
+              TMPDIR="$sandbox/tmp" \
+              XDG_CONFIG_HOME="$sandbox/xdg-config" \
+              XDG_CACHE_HOME="$sandbox/xdg-cache" \
+              XDG_RUNTIME_DIR="$sandbox/xdg-runtime" \
+              PATH="${RUNNER_TEMP}/venv/bin:/usr/bin:/bin" \
+              SAL_USE_VCLPLUGIN=svp \
+              bash "${RUNNER_TEMP}/run-cli-anything-pilot.sh"
+
+      - name: Verify bounded synthetic outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 checks/cli_anything_libreoffice_exec_verify.py "${RUNNER_TEMP}/panam-cli-anything-sandbox"
+
+      - name: Report authority boundary
+        run: |
+          echo 'AUTHORITY=public_research_evidence_only'
+          echo 'REAL_DATA_USED=false'
+          echo 'PRODUCTION_ACCESS=false'
+          echo 'PRIVATE_REPOSITORY_ACCESS=false'
+          echo 'OVERWRITE_USED=false'
+          echo 'IMPORT_USED=false'
+          echo 'REPL_USED=false'
+          echo 'EXECUTION_NETWORK=false'
+          echo 'PRODUCTION_SWITCH_AUTHORIZED=false'
