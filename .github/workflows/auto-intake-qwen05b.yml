@@ -1,0 +1,187 @@
+name: Auto Intake Qwen 0.5B local benchmark
+
+on:
+  pull_request:
+    paths:
+      - 'benchmarks/auto_intake/**'
+      - 'AUTO_INTAKE_QWEN05B_LOCAL_V1.md'
+      - '.github/workflows/auto-intake-qwen05b.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: auto-intake-qwen05b-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-local-model-benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout public CI lab
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Install exact top-level research dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "${RUNNER_TEMP}/qwen-venv"
+          py="${RUNNER_TEMP}/qwen-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --quiet --upgrade 'pip==24.2'
+          "$py" -m pip install --disable-pip-version-check --quiet \
+            --index-url https://download.pytorch.org/whl/cpu \
+            'torch==2.4.1'
+          "$py" -m pip install --disable-pip-version-check --quiet \
+            'transformers==4.45.2' \
+            'huggingface_hub==0.25.2' \
+            'safetensors==0.4.5'
+          "$py" - <<'PY'
+          import torch, transformers, huggingface_hub, safetensors
+          print('TORCH_VERSION=' + torch.__version__)
+          print('TRANSFORMERS_VERSION=' + transformers.__version__)
+          print('HF_HUB_VERSION=' + huggingface_hub.__version__)
+          print('SAFETENSORS_VERSION=' + safetensors.__version__)
+          PY
+          echo 'SUPPLY_CHAIN_LOCKED=false'
+          echo 'NOTE=Top-level versions and model revision are pinned; transitive wheel/model artifacts are not prelocked by hash.'
+
+      - name: Acquire exact model revision while network is available
+        shell: bash
+        env:
+          HF_HUB_DISABLE_TELEMETRY: '1'
+        run: |
+          set -euo pipefail
+          py="${RUNNER_TEMP}/qwen-venv/bin/python"
+          model_dir="${RUNNER_TEMP}/qwen-model"
+          "$py" - <<'PY'
+          import os
+          from huggingface_hub import HfApi, snapshot_download
+          model_id = 'Qwen/Qwen2.5-0.5B-Instruct'
+          revision = 'ec7ddfa904d4d447eedd0b7f126df16957734abb'
+          info = HfApi().model_info(model_id, revision=revision)
+          if info.sha != revision:
+              raise SystemExit(f'revision mismatch: {info.sha}')
+          target = os.path.join(os.environ['RUNNER_TEMP'], 'qwen-model')
+          snapshot_download(
+              repo_id=model_id,
+              revision=revision,
+              local_dir=target,
+              local_dir_use_symlinks=False,
+              ignore_patterns=['*.md'],
+          )
+          print('MODEL_EXACT_REVISION=' + info.sha)
+          PY
+          test -s "$model_dir/model.safetensors"
+          test -s "$model_dir/config.json"
+          test -s "$model_dir/tokenizer.json"
+          sha256sum "$model_dir/model.safetensors" "$model_dir/config.json" "$model_dir/tokenizer.json"
+
+      - name: Prepare isolated output directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="${RUNNER_TEMP}/auto-intake-qwen05b-output"
+          mkdir -p "$out"
+          chmod 700 "$out"
+
+      - name: Execute deterministic inference without network
+        shell: bash
+        run: |
+          set -euo pipefail
+          uid="$(id -u)"
+          gid="$(id -g)"
+          py="${RUNNER_TEMP}/qwen-venv/bin/python"
+          model_dir="${RUNNER_TEMP}/qwen-model"
+          out="${RUNNER_TEMP}/auto-intake-qwen05b-output"
+          suite="${GITHUB_WORKSPACE}/benchmarks/auto_intake/intake_bakeoff_suite.v2.json"
+          script="${GITHUB_WORKSPACE}/benchmarks/auto_intake/qwen05b_local_benchmark.py"
+          sudo unshare --net --fork \
+            setpriv --reuid="$uid" --regid="$gid" --clear-groups \
+            env \
+              HOME="${RUNNER_TEMP}" \
+              HF_HOME="${RUNNER_TEMP}/hf-offline" \
+              HF_HUB_OFFLINE=1 \
+              TRANSFORMERS_OFFLINE=1 \
+              HF_HUB_DISABLE_TELEMETRY=1 \
+              TOKENIZERS_PARALLELISM=false \
+              OMP_NUM_THREADS=4 \
+              MKL_NUM_THREADS=4 \
+              "$py" - <<PY
+          import socket, subprocess, sys
+          try:
+              socket.create_connection(('1.1.1.1', 53), timeout=0.5)
+          except OSError:
+              print('INFERENCE_NETWORK=BLOCKED')
+          else:
+              raise SystemExit('network unexpectedly reachable inside inference namespace')
+          cmd = [
+              r'$py', r'$script',
+              '--suite', r'$suite',
+              '--model-dir', r'$model_dir',
+              '--snapshot', r'$out/snapshot.json',
+              '--report', r'$out/report.json',
+          ]
+          raise SystemExit(subprocess.call(cmd))
+          PY
+
+      - name: Verify synthetic result boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="${RUNNER_TEMP}/auto-intake-qwen05b-output"
+          python3 - "$out/snapshot.json" "$out/report.json" <<'PY'
+          import json, pathlib, sys
+          snapshot = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding='utf-8'))
+          report = json.loads(pathlib.Path(sys.argv[2]).read_text(encoding='utf-8'))
+          assert snapshot['schema'] == 'panam.auto-intake-candidate-snapshot.v2'
+          assert snapshot['synthetic'] is True
+          assert snapshot['lane'] == 'local_model'
+          assert len(snapshot['candidates']) == 12
+          assert report['schema'] == 'panam.auto-intake-local-model-report.v1'
+          assert report['authority'] == 'public_research_evidence_only'
+          assert report['synthetic_only'] is True
+          assert report['real_data_used'] is False
+          assert report['private_repository_access'] is False
+          assert report['network_during_inference'] is False
+          assert report['automatic_winner_selected'] is False
+          assert report['production_switch_authorized'] is False
+          assert report['model']['revision'] == 'ec7ddfa904d4d447eedd0b7f126df16957734abb'
+          for row in snapshot['candidates']:
+              candidate = row['candidate']
+              assert candidate['schema'] == 'panam.intake-classification-candidate.v1'
+              assert 0.0 <= candidate['confidence'] <= 1.0
+              assert 'raw_content' not in candidate
+              assert 'source_path' not in candidate
+          print('PUBLIC_AUTO_INTAKE_QWEN05B_RESULT=PASS')
+          print('METRICS=' + json.dumps(report['metrics'], sort_keys=True))
+          print('RUNTIME=' + json.dumps(report['runtime'], sort_keys=True))
+          print('SUITE_SHA256=' + report['suite_sha256'])
+          print('SNAPSHOT_SHA256=' + report['snapshot_sha256'])
+          PY
+
+      - name: Upload synthetic evidence only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4 exact commit
+        with:
+          name: auto-intake-qwen05b-synthetic-evidence
+          path: |
+            ${{ runner.temp }}/auto-intake-qwen05b-output/snapshot.json
+            ${{ runner.temp }}/auto-intake-qwen05b-output/report.json
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Report authority boundary
+        run: |
+          echo 'AUTHORITY=public_research_evidence_only'
+          echo 'REAL_DATA_USED=false'
+          echo 'PRIVATE_REPOSITORY_ACCESS=false'
+          echo 'INFERENCE_NETWORK=false'
+          echo 'MODEL_REVISION=ec7ddfa904d4d447eedd0b7f126df16957734abb'
+          echo 'AUTOMATIC_WINNER_SELECTED=false'
+          echo 'PRODUCTION_SWITCH_AUTHORIZED=false'
