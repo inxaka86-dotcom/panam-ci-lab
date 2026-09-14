@@ -1,0 +1,103 @@
+{
+  "schema": "panam.auto-intake-bakeoff-suite.v2",
+  "synthetic": true,
+  "taxonomy": "synthetic_legal_intake_v1",
+  "cases": [
+    {
+      "id": "claim_arbitration",
+      "source_ref": "fixture:auto-intake:01",
+      "source_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "original_filename": "Исковое заявление A00-00000-2099.pdf",
+      "structured_facts": {"case_number": "A00-00000-2099"},
+      "gold": {"document_type": "Исковое заявление", "category": "Судебные документы", "subcategory": "Арбитраж", "related_matter_candidate": "matter:case:A00-00000-2099"}
+    },
+    {
+      "id": "court_ruling",
+      "source_ref": "fixture:auto-intake:02",
+      "source_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "original_filename": "Определение суда A00-00000-2099.pdf",
+      "structured_facts": {"case_number": "A00-00000-2099"},
+      "gold": {"document_type": "Судебный акт", "category": "Судебные документы", "subcategory": "Определение", "related_matter_candidate": "matter:case:A00-00000-2099"}
+    },
+    {
+      "id": "trademark_license",
+      "source_ref": "fixture:auto-intake:03",
+      "source_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "original_filename": "Лицензионный договор ТЗ ALFA.pdf",
+      "structured_facts": {"trademark_marker": true},
+      "gold": {"document_type": "Лицензионный договор", "category": "Интеллектуальная собственность", "subcategory": "Товарные знаки"}
+    },
+    {
+      "id": "service_contract",
+      "source_ref": "fixture:auto-intake:04",
+      "source_sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+      "original_filename": "Договор оказания услуг 12.pdf",
+      "structured_facts": {"contract_number": "12"},
+      "gold": {"document_type": "Договор", "category": "Договорная работа"}
+    },
+    {
+      "id": "acceptance_act",
+      "source_ref": "fixture:auto-intake:05",
+      "source_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+      "original_filename": "Акт сдачи-приемки 12.pdf",
+      "structured_facts": {"contract_number": "12"},
+      "gold": {"document_type": "Акт", "category": "Договорная работа", "subcategory": "Исполнение договора"}
+    },
+    {
+      "id": "power_of_attorney",
+      "source_ref": "fixture:auto-intake:06",
+      "source_sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+      "original_filename": "Доверенность представителю.pdf",
+      "structured_facts": {},
+      "gold": {"document_type": "Доверенность", "category": "Полномочия"}
+    },
+    {
+      "id": "invoice",
+      "source_ref": "fixture:auto-intake:07",
+      "source_sha256": "7777777777777777777777777777777777777777777777777777777777777777",
+      "original_filename": "Счет 145.pdf",
+      "structured_facts": {"amount_count": 1},
+      "gold": {"document_type": "Счет", "category": "Финансы"}
+    },
+    {
+      "id": "meeting_minutes",
+      "source_ref": "fixture:auto-intake:08",
+      "source_sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+      "original_filename": "Протокол совещания 01-01-2099.docx",
+      "structured_facts": {"date_count": 1},
+      "gold": {"document_type": "Протокол", "category": "Совещания"}
+    },
+    {
+      "id": "official_letter",
+      "source_ref": "fixture:auto-intake:09",
+      "source_sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+      "original_filename": "Письмо федерального органа.pdf",
+      "structured_facts": {"organization_count": 1},
+      "gold": {"document_type": "Письмо", "category": "Корреспонденция"}
+    },
+    {
+      "id": "administrative_order",
+      "source_ref": "fixture:auto-intake:10",
+      "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "original_filename": "Приказ SYN-2099.pdf",
+      "structured_facts": {"legal_reference_count": 2},
+      "gold": {"document_type": "Распорядительный документ", "category": "Нормативная работа"}
+    },
+    {
+      "id": "ambiguous_case_scan",
+      "source_ref": "fixture:auto-intake:11",
+      "source_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "original_filename": "scan_001.pdf",
+      "structured_facts": {"case_number": "A00-00000-2099", "date_count": 2},
+      "gold": {"document_type": "Ходатайство", "category": "Судебные документы", "subcategory": "Арбитраж", "related_matter_candidate": "matter:case:A00-00000-2099"}
+    },
+    {
+      "id": "ambiguous_contract_scan",
+      "source_ref": "fixture:auto-intake:12",
+      "source_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "original_filename": "document.pdf",
+      "structured_facts": {"contract_number": "SYN-18-2099", "party_count": 2, "amount_count": 1},
+      "gold": {"document_type": "Дополнительное соглашение", "category": "Договорная работа"}
+    }
+  ]
+}
