@@ -17,6 +17,7 @@ from typing import Any
 
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers.cache_utils import DynamicCache
 
 MODEL_ID = "Qwen/Qwen2.5-0.5B-Instruct"
 MODEL_REVISION = "ec7ddfa904d4d447eedd0b7f126df16957734abb"
@@ -66,7 +67,7 @@ def build_prompt(case: dict[str, Any]) -> str:
     )
 
 
-def average_log_likelihood(model, tokenizer, prompt_ids: torch.Tensor, answer_text: str, prompt_output) -> float:
+def average_log_likelihood(model, tokenizer, answer_text: str, prompt_output) -> float:
     answer = tokenizer(answer_text, add_special_tokens=False, return_tensors="pt")["input_ids"]
     if answer.shape[1] < 1:
         raise RuntimeError("empty answer tokenization")
@@ -75,8 +76,13 @@ def average_log_likelihood(model, tokenizer, prompt_ids: torch.Tensor, answer_te
     total = float(first_log_probs[first_target])
     count = 1
     if answer.shape[1] > 1:
+        # transformers 4.45 may return a legacy tuple from the initial prompt,
+        # while Qwen2 continuation expects Cache.get_seq_length(). Convert a
+        # fresh copy for every finite-choice candidate so one candidate cannot
+        # mutate cache state observed by another candidate.
+        cache = DynamicCache.from_legacy_cache(prompt_output.past_key_values)
         continuation = answer[:, :-1]
-        out = model(input_ids=continuation, past_key_values=prompt_output.past_key_values, use_cache=False)
+        out = model(input_ids=continuation, past_key_values=cache, use_cache=False)
         log_probs = torch.log_softmax(out.logits[0].float(), dim=-1)
         targets = answer[0, 1:]
         token_scores = log_probs[torch.arange(targets.shape[0]), targets]
@@ -170,7 +176,7 @@ def main() -> int:
             )
             prompt_output = model(input_ids=prompt_ids, use_cache=True)
             scores = [
-                average_log_likelihood(model, tokenizer, prompt_ids, class_text(item), prompt_output)
+                average_log_likelihood(model, tokenizer, class_text(item), prompt_output)
                 for item in CLASSES
             ]
             probs = softmax(scores)
