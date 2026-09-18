@@ -1,0 +1,84 @@
+name: Wave 3 OpenResearch isolated pilot
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wave3-openresearch-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  openresearch-isolated:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      ORX_UPSTREAM_SHA: 69768ff1b0537a4656e69f550fc444ac35b945d2
+      ORX_NO_UPDATE_CHECK: "1"
+      NO_UPDATE_NOTIFIER: "1"
+      CARGO_TERM_COLOR: always
+    steps:
+      - name: Checkout public CI lab
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Verify public runner toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          git --version
+          rustc --version
+          cargo --version
+
+      - name: Fetch exact OpenResearch source
+        shell: bash
+        run: |
+          set -euo pipefail
+          src="${RUNNER_TEMP}/openresearch-src"
+          rm -rf "${src}"
+          git init "${src}"
+          git -C "${src}" remote add origin https://github.com/alphaXiv/OpenResearch.git
+          git -C "${src}" fetch --depth=1 origin "${ORX_UPSTREAM_SHA}"
+          git -C "${src}" checkout --detach FETCH_HEAD
+          test "$(git -C "${src}" rev-parse HEAD)" = "${ORX_UPSTREAM_SHA}"
+          git -C "${src}" remote remove origin
+          echo "ORX_SRC=${src}" >> "${GITHUB_ENV}"
+
+      - name: Build pinned OpenResearch source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --locked --bin orx --manifest-path "${ORX_SRC}/Cargo.toml"
+
+      - name: Run isolated CLI smoke
+        shell: bash
+        env:
+          ORX_DATA_DIR: ${{ runner.temp }}/orx-data
+          XDG_CONFIG_HOME: ${{ runner.temp }}/orx-config
+        run: |
+          set -euo pipefail
+          mkdir -p "${ORX_DATA_DIR}" "${XDG_CONFIG_HOME}"
+          python3 wave3/openresearch_smoke.py             "${ORX_SRC}"             "${ORX_SRC}/target/debug/orx"             "${ORX_UPSTREAM_SHA}"
+
+      - name: Verify experiment and delegation invariants
+        shell: bash
+        working-directory: ${{ runner.temp }}/openresearch-src
+        env:
+          RUST_TEST_THREADS: "1"
+        run: |
+          set -euo pipefail
+          cargo test --locked experiment_branch_collision_never_rewrites_existing_work -- --nocapture
+          cargo test --locked retry_after_failure_is_a_new_row_not_a_resurrection -- --nocapture
+          cargo test --locked run_ownership_is_immutable_across_upserts -- --nocapture
+          cargo test --locked experiment_ownership_is_immutable_across_updates -- --nocapture
+          cargo test --locked a_spawned_session_may_not_spawn_its_own -- --nocapture
+          cargo test --locked one_session_may_only_run_so_many_helpers_at_once -- --nocapture
