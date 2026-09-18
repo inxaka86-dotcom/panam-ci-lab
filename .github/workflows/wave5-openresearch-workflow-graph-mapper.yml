@@ -1,0 +1,37 @@
+name: Wave 5 OpenResearch Workflow Graph mapper
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wave5-openresearch-graph-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  graph-mapper-selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout public CI lab
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Compile mapper
+        run: python3 -m py_compile wave5/openresearch_workflow_graph_mapper_v1.py wave5/openresearch_workflow_graph_mapper_v1_selftest.py
+
+      - name: Run graph mapper self-test
+        working-directory: wave5
+        run: python3 openresearch_workflow_graph_mapper_v1_selftest.py
+
+      - name: Record tested file digests
+        run: sha256sum wave5/openresearch_workflow_graph_mapper_v1.py wave5/openresearch_workflow_graph_mapper_v1_selftest.py
