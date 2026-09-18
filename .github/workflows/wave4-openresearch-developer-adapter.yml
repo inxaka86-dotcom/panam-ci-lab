@@ -1,0 +1,40 @@
+name: Wave 4 OpenResearch developer adapter
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wave4-openresearch-adapter-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  adapter-selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout public CI lab
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Compile adapter
+        run: python3 -m py_compile wave4/openresearch_projection_v1.py wave4/openresearch_projection_v1_selftest.py
+
+      - name: Run adapter self-test
+        working-directory: wave4
+        run: python3 openresearch_projection_v1_selftest.py
+
+      - name: Record tested file digests
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum             wave4/openresearch_projection_v1.py             wave4/openresearch_export_v1.schema.json             wave4/openresearch_projection_v1.schema.json             wave4/openresearch_projection_v1_selftest.py
