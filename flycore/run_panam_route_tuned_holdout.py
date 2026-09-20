@@ -269,7 +269,7 @@ def main() -> int:
     }
 
     output = {
-        "schema": "panam.public.flycore.panan_route_tuned_holdout.v1",
+        "schema": "panam.public.flycore.panam_route_tuned_holdout.v1",
         "scope": "SYMMETRIC_TUNED_SYNTHETIC_PANAM_ROUTE_HOLDOUT_NOT_PRODUCTION",
         "dataset": "MaleCNS v1.0",
         "selected_nodes": int(selected.size),
