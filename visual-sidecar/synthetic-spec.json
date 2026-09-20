@@ -1,0 +1,40 @@
+{
+  "title": "Public visual renderer synthetic test <script>alert(1)</script>",
+  "subtitle": "Public-only synthetic presentation",
+  "summary": "This fixture contains no private source, production data or operational identifiers.",
+  "sections": [
+    {
+      "title": "Overview",
+      "summary": "Synthetic status overview.",
+      "tone": "positive",
+      "cards": [
+        {"title": "Status", "body": "SUCCESS", "tone": "positive"},
+        {"title": "Commit", "body": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "tone": "neutral"},
+        {"title": "Long hash", "body": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "tone": "neutral"}
+      ]
+    },
+    {
+      "title": "Metrics",
+      "tone": "info",
+      "table": {
+        "caption": "Synthetic metrics",
+        "columns": ["Metric", "Value"],
+        "rows": [["checks_passed", "12"], ["checks_failed", "0"]]
+      }
+    },
+    {
+      "title": "Findings",
+      "tone": "warning",
+      "cards": [
+        {"title": "Synthetic finding", "body": "reviewed", "meta": ["severity: low", "evidence_ref: synthetic:1"], "tone": "accent"}
+      ]
+    },
+    {
+      "title": "Provenance",
+      "tone": "neutral",
+      "evidence": [
+        {"label": "Authority", "value": "presentation_only", "source": "public synthetic fixture"}
+      ]
+    }
+  ]
+}
