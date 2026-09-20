@@ -95,3 +95,20 @@ jobs:
           python3 flycore/run_scale_replication.py \
             --graph "${RUNNER_TEMP}/connectome-weights-male-cns-v1.0-minconf-0.5.feather" \
             --annotations "${RUNNER_TEMP}/body-annotations-male-cns-v1.0-minconf-0.5.feather"
+
+      - name: Download official public MaleCNS neurotransmitter predictions
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://storage.googleapis.com/flyem-male-cns/v1.0/connectome-data/flat-connectome/body-neurotransmitters-male-cns-v1.0.feather'
+          out="${RUNNER_TEMP}/body-neurotransmitters-male-cns-v1.0.feather"
+          curl --fail --location --retry 3 --retry-all-errors --silent --show-error --output "${out}" "${url}"
+          test -s "${out}"
+          ls -lh "${out}"
+
+      - name: Inspect exact public neurotransmitter artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 flycore/inspect_malecns_neurotransmitters.py \
+            "${RUNNER_TEMP}/body-neurotransmitters-male-cns-v1.0.feather"
