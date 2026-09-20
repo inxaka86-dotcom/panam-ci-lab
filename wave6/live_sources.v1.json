@@ -4,19 +4,19 @@
   "upstream_sha": "ebb0e9b4deb0bf8fa8983e6324276a51f091ab43",
   "sources": [
     {
-      "id": "rospatent-news",
+      "id": "minjust-events",
       "kind": "html",
-      "url": "https://rospatent.gov.ru/ru/news/09-09-2026-malyy-i-sredniy-biznes-sohranyaet-vysokuyu-zayavitelskuyu-aktivnost-v-2026-godu"
+      "url": "https://minjust.gov.ru/ru/events/list/"
     },
     {
-      "id": "official-legal-publication",
+      "id": "consultant-weekly-lawyer-news",
       "kind": "html",
-      "url": "https://publication.pravo.gov.ru/document/0001202609030001?index=1&pageSize=100"
+      "url": "https://www.consultant.ru/legalnews/32543/"
     },
     {
-      "id": "digital-government-public",
+      "id": "consultant-procurement-hotdocs",
       "kind": "html",
-      "url": "https://sc.digital.gov.ru/home"
+      "url": "https://www.consultant.ru/law/hotdocs/t3196/"
     },
     {
       "id": "consultant-lawyer-rss",
@@ -48,5 +48,6 @@
     "daemon_or_streaming": false
   },
   "production_authority": false,
-  "private_data": false
+  "private_data": false,
+  "iteration_note": "v2 replaces three transport-incompatible HTML sources after safe PARTIAL run; TLS verification remains strict and no insecure fallback is permitted"
 }
