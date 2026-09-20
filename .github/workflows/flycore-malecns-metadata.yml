@@ -71,3 +71,11 @@ jobs:
           python3 flycore/run_real_subgraph_canary.py \
             --graph "${RUNNER_TEMP}/connectome-weights-male-cns-v1.0-minconf-0.5.feather" \
             --annotations "${RUNNER_TEMP}/body-annotations-male-cns-v1.0-minconf-0.5.feather"
+
+      - name: Run delayed-memory child benchmark
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 flycore/run_delayed_memory_benchmark.py \
+            --graph "${RUNNER_TEMP}/connectome-weights-male-cns-v1.0-minconf-0.5.feather" \
+            --annotations "${RUNNER_TEMP}/body-annotations-male-cns-v1.0-minconf-0.5.feather"
