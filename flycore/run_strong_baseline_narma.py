@@ -46,31 +46,46 @@ GRU_PATIENCE = 8
 GRU_BATCH = 128
 
 
-def generate_narma(order: int, seed: int, eval_steps: int):
+def _generate_narma_once(order: int, data_seed: int, eval_steps: int):
     total = WASHOUT + TRAIN_STEPS + eval_steps + 1
-    rng = np.random.default_rng(seed)
+    rng = np.random.default_rng(data_seed)
     input_max = 0.5 if order == 10 else 0.2
     u = rng.uniform(0.0, input_max, size=total).astype(np.float64)
     y = np.zeros(total + 1, dtype=np.float64)
 
-    # Generalized NARMA-m formulation used for NARMA10 and higher-order variants:
-    # y[t+1] = 0.3*y[t] + 0.05*y[t]*sum(y[t-i], i=0..m-1)
-    #          + 1.5*u[t-m+1]*u[t] + 0.1
-    for t in range(total):
-        lo = max(0, t - order + 1)
-        hist_sum = float(np.sum(y[lo:t + 1]))
-        delayed_u = u[t - order + 1] if t - order + 1 >= 0 else 0.0
-        y[t + 1] = (
-            0.3 * y[t]
-            + 0.05 * y[t] * hist_sum
-            + 1.5 * delayed_u * u[t]
-            + 0.1
-        )
-
+    with np.errstate(over="ignore", invalid="ignore"):
+        for t in range(total):
+            lo = max(0, t - order + 1)
+            hist_sum = float(np.sum(y[lo:t + 1]))
+            delayed_u = u[t - order + 1] if t - order + 1 >= 0 else 0.0
+            y[t + 1] = (
+                0.3 * y[t]
+                + 0.05 * y[t] * hist_sum
+                + 1.5 * delayed_u * u[t]
+                + 0.1
+            )
     return u, y[1:total + 1]
 
 
+def generate_narma(order: int, seed: int, eval_steps: int, *, return_data_seed=False):
+    for offset in range(100):
+        data_seed = seed + offset
+        u, target = _generate_narma_once(order, data_seed, eval_steps)
+        stable = (
+            np.all(np.isfinite(target))
+            and np.all(np.isfinite(u))
+            and float(np.max(np.abs(target))) <= 10.0
+        )
+        if stable:
+            if return_data_seed:
+                return u, target, data_seed
+            return u, target
+    raise RuntimeError(f"no_stable_narma_dataset_within_100_seeds:{seed}")
+
+
 def nmse(target: np.ndarray, pred: np.ndarray) -> float:
+    if not np.all(np.isfinite(target)) or not np.all(np.isfinite(pred)):
+        raise RuntimeError("nonfinite_nmse_input")
     var = float(np.var(target))
     if var <= 0:
         raise RuntimeError("zero_target_variance")
@@ -607,6 +622,21 @@ def main() -> int:
         "validation_seeds": list(VALIDATION_SEEDS),
         "test_seeds": list(TEST_SEEDS),
         "validation_test_seed_overlap": [],
+        "data_seed_resolution": {
+            "validation": {
+                str(seed): generate_narma(
+                    args.order, seed, VALIDATION_STEPS, return_data_seed=True
+                )[2]
+                for seed in VALIDATION_SEEDS
+            },
+            "test": {
+                str(seed): generate_narma(
+                    args.order, seed, TEST_STEPS, return_data_seed=True
+                )[2]
+                for seed in TEST_SEEDS
+            },
+            "stability_criterion": "all finite and max_abs_target <= 10",
+        },
         "contract": {
             "washout": WASHOUT,
             "train_steps": TRAIN_STEPS,
@@ -658,7 +688,7 @@ def main() -> int:
         ],
     }
 
-    print(json.dumps(output, sort_keys=True))
+    print(json.dumps(output, sort_keys=True, allow_nan=False))
     print(f"PANAM_PUBLIC_FLYCORE_STRONG_BASELINE_NARMA{args.order}=PASS")
     return 0
 
