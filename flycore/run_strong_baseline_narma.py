@@ -49,7 +49,8 @@ GRU_BATCH = 128
 def generate_narma(order: int, seed: int, eval_steps: int):
     total = WASHOUT + TRAIN_STEPS + eval_steps + 1
     rng = np.random.default_rng(seed)
-    u = rng.uniform(0.0, 0.5, size=total).astype(np.float64)
+    input_max = 0.5 if order == 10 else 0.2
+    u = rng.uniform(0.0, input_max, size=total).astype(np.float64)
     y = np.zeros(total + 1, dtype=np.float64)
 
     # Generalized NARMA-m formulation used for NARMA10 and higher-order variants:
@@ -66,7 +67,7 @@ def generate_narma(order: int, seed: int, eval_steps: int):
             + 0.1
         )
 
-    return u[:-1], y[1:]
+    return u, y[1:total + 1]
 
 
 def nmse(target: np.ndarray, pred: np.ndarray) -> float:
@@ -175,14 +176,16 @@ def evaluate_reservoir(
     eval_start = train_end
     eval_end = train_end + eval_steps
 
+    fit_start = time.perf_counter()
     readout = ridge_fit(states, target, train_start, train_end)
+    readout_seconds = time.perf_counter() - fit_start
     pred = ridge_predict(readout, states, eval_start, eval_end)
     score = nmse(target[eval_start:eval_end], pred)
 
     return {
         "nmse": score,
         "state_update_microseconds_per_step": float(elapsed / u.size * 1e6),
-        "train_readout_seconds": None,
+        "train_readout_seconds": float(readout_seconds),
         "recurrent_nonzeros": int(W.nnz),
         "model_bytes": sparse_model_bytes(W, win, readout),
     }
@@ -586,7 +589,10 @@ def main() -> int:
         "task": {
             "name": f"NARMA{args.order}",
             "order": args.order,
-            "input_distribution": "iid Uniform[0,0.5]",
+            "input_distribution": (
+                "iid Uniform[0,0.5]" if args.order == 10
+                else "iid Uniform[0,0.2]"
+            ),
             "metric": "NMSE lower is better",
             "generator": "generalized NARMA-m recurrence",
         },
