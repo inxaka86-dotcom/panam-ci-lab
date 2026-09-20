@@ -26,11 +26,14 @@ from __future__ import annotations
 import argparse
 import copy
 import json
+import sys
 import time
+from pathlib import Path
 
 import numpy as np
 import scipy.sparse as sp
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "flycore"))
 import run_strong_baseline_narma as strong
 
 NODE_COUNT = 192
