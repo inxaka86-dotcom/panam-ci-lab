@@ -73,3 +73,12 @@ jobs:
             --graph "${RUNNER_TEMP}/connectome-weights-male-cns-v1.0-minconf-0.5.feather" \
             --annotations "${RUNNER_TEMP}/body-annotations-male-cns-v1.0-minconf-0.5.feather" \
             --neurotransmitters "${RUNNER_TEMP}/body-neurotransmitters-male-cns-v1.0.feather"
+
+      - name: Run held-out signed operating-point experiment
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 flycore/run_signed_operating_point_holdout.py \
+            --graph "${RUNNER_TEMP}/connectome-weights-male-cns-v1.0-minconf-0.5.feather" \
+            --annotations "${RUNNER_TEMP}/body-annotations-male-cns-v1.0-minconf-0.5.feather" \
+            --neurotransmitters "${RUNNER_TEMP}/body-neurotransmitters-male-cns-v1.0.feather"
