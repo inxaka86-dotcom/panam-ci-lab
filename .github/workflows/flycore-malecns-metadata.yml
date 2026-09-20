@@ -112,3 +112,12 @@ jobs:
           set -euo pipefail
           python3 flycore/inspect_malecns_neurotransmitters.py \
             "${RUNNER_TEMP}/body-neurotransmitters-male-cns-v1.0.feather"
+
+      - name: Run conservative ACh-GABA signed benchmark
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 flycore/run_conservative_signed_nt.py \
+            --graph "${RUNNER_TEMP}/connectome-weights-male-cns-v1.0-minconf-0.5.feather" \
+            --annotations "${RUNNER_TEMP}/body-annotations-male-cns-v1.0-minconf-0.5.feather" \
+            --neurotransmitters "${RUNNER_TEMP}/body-neurotransmitters-male-cns-v1.0.feather"
