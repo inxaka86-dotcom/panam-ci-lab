@@ -1,0 +1,78 @@
+name: Wave 5 Open News offline benchmark
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wave5-open-news-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  open-news-offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      OPEN_NEWS_UPSTREAM_SHA: ebb0e9b4deb0bf8fa8983e6324276a51f091ab43
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout public CI lab
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Verify Python
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 --version
+          python3 - <<'PY'
+          import sys
+          assert sys.version_info >= (3, 10), sys.version
+          PY
+
+      - name: Fetch exact Open News source
+        shell: bash
+        run: |
+          set -euo pipefail
+          src="${RUNNER_TEMP}/open-news-src"
+          rm -rf "${src}"
+          git init "${src}"
+          git -C "${src}" remote add origin https://github.com/alphap365/open-news.git
+          git -C "${src}" fetch --depth=1 origin "${OPEN_NEWS_UPSTREAM_SHA}"
+          git -C "${src}" checkout --detach FETCH_HEAD
+          test "$(git -C "${src}" rev-parse HEAD)" = "${OPEN_NEWS_UPSTREAM_SHA}"
+          printf 'UPSTREAM_PYPROJECT_SHA256='
+          sha256sum "${src}/pyproject.toml" | awk '{print $1}'
+          printf 'UPSTREAM_UV_LOCK_SHA256='
+          sha256sum "${src}/uv.lock" | awk '{print $1}'
+          git -C "${src}" remote remove origin
+          echo "OPEN_NEWS_SRC=${src}" >> "${GITHUB_ENV}"
+
+      - name: Install public candidate dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --no-input "${OPEN_NEWS_SRC}"
+          python3 -m pip freeze | LC_ALL=C sort | tee "${RUNNER_TEMP}/open-news-pip-freeze.txt"
+          printf 'DEPENDENCY_FREEZE_SHA256='
+          sha256sum "${RUNNER_TEMP}/open-news-pip-freeze.txt" | awk '{print $1}'
+
+      - name: Run measured offline benchmark
+        shell: bash
+        env:
+          OPEN_NEWS_BENCHMARK_OUTPUT: ${{ runner.temp }}/wave5-open-news-result.json
+        run: |
+          set -euo pipefail
+          python3 wave5/open_news_offline_benchmark.py "${OPEN_NEWS_SRC}" "${OPEN_NEWS_UPSTREAM_SHA}"
+          echo "----- machine-readable result -----"
+          cat "${OPEN_NEWS_BENCHMARK_OUTPUT}"
