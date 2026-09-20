@@ -1,0 +1,113 @@
+name: Wave 6 Open News guarded live-public canary
+
+on:
+  pull_request:
+    paths:
+      - 'WAVE6.md'
+      - 'wave6/**'
+      - '.github/workflows/wave6-open-news-live-public-canary.yml'
+      - 'checks/publication_gate.py'
+  push:
+    branches: [main]
+    paths:
+      - 'WAVE6.md'
+      - 'wave6/**'
+      - '.github/workflows/wave6-open-news-live-public-canary.yml'
+      - 'checks/publication_gate.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wave6-open-news-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  guarded-live-public:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      OPEN_NEWS_UPSTREAM_SHA: ebb0e9b4deb0bf8fa8983e6324276a51f091ab43
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout public CI lab
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Verify toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 --version
+          curl --version
+          python3 - <<'PY'
+          import sys
+          assert sys.version_info >= (3, 10), sys.version
+          PY
+
+      - name: Run deterministic destination-guard self-test
+        shell: bash
+        working-directory: wave6
+        run: |
+          set -euo pipefail
+          python3 destination_guard_v1_selftest.py
+
+      - name: Fetch exact Open News source
+        shell: bash
+        run: |
+          set -euo pipefail
+          src="${RUNNER_TEMP}/open-news-src"
+          rm -rf "${src}"
+          git init "${src}"
+          git -C "${src}" remote add origin https://github.com/alphap365/open-news.git
+          git -C "${src}" fetch --depth=1 origin "${OPEN_NEWS_UPSTREAM_SHA}"
+          git -C "${src}" checkout --detach FETCH_HEAD
+          test "$(git -C "${src}" rev-parse HEAD)" = "${OPEN_NEWS_UPSTREAM_SHA}"
+          git -C "${src}" remote remove origin
+          echo "OPEN_NEWS_SRC=${src}" >> "${GITHUB_ENV}"
+
+      - name: Install dependency set constrained by upstream lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          constraints="${RUNNER_TEMP}/open-news-constraints.txt"
+          python3 - "${OPEN_NEWS_SRC}/uv.lock" "${constraints}" <<'PY'
+          import sys
+          import tomllib
+          from collections import defaultdict
+          from pathlib import Path
+
+          data = tomllib.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          versions = defaultdict(set)
+          for package in data.get("package", []):
+              name = package.get("name")
+              version = package.get("version")
+              if name and version and name != "open-news-api":
+                  versions[name].add(version)
+          ambiguous = {k: sorted(v) for k, v in versions.items() if len(v) != 1}
+          if ambiguous:
+              raise SystemExit(f"ambiguous lock versions: {ambiguous}")
+          lines = [f"{name}=={next(iter(vals))}" for name, vals in sorted(versions.items())]
+          Path(sys.argv[2]).write_text("\n".join(lines) + "\n", encoding="utf-8")
+          print(f"LOCK_CONSTRAINT_COUNT={len(lines)}")
+          PY
+          python3 -m pip install --no-input -c "${constraints}" "${OPEN_NEWS_SRC}"
+          python3 -m pip freeze | LC_ALL=C sort > "${RUNNER_TEMP}/wave6-freeze.txt"
+          printf 'DEPENDENCY_FREEZE_SHA256='
+          sha256sum "${RUNNER_TEMP}/wave6-freeze.txt" | awk '{print $1}'
+
+      - name: Execute owner-authorized guarded live-public canary
+        shell: bash
+        env:
+          OPEN_NEWS_LIVE_RESULT: ${{ runner.temp }}/wave6-open-news-result.json
+        run: |
+          set -euo pipefail
+          python3 wave6/open_news_live_public_canary.py "${OPEN_NEWS_SRC}" wave6/live_sources.v1.json
+          echo "----- machine-readable result -----"
+          cat "${OPEN_NEWS_LIVE_RESULT}"
