@@ -58,11 +58,38 @@ jobs:
           git -C "${src}" remote remove origin
           echo "OPEN_NEWS_SRC=${src}" >> "${GITHUB_ENV}"
 
-      - name: Install public candidate dependencies
+      - name: Install dependency set constrained by upstream lock
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m pip install --no-input "${OPEN_NEWS_SRC}"
+          constraints="${RUNNER_TEMP}/open-news-constraints.txt"
+          python3 - "${OPEN_NEWS_SRC}/uv.lock" "${constraints}" <<'PY'
+          import sys
+          import tomllib
+          from collections import defaultdict
+          from pathlib import Path
+
+          lock_path = Path(sys.argv[1])
+          out_path = Path(sys.argv[2])
+          data = tomllib.loads(lock_path.read_text(encoding="utf-8"))
+
+          versions = defaultdict(set)
+          for package in data.get("package", []):
+              name = package.get("name")
+              version = package.get("version")
+              if not name or not version or name == "open-news-api":
+                  continue
+              versions[name].add(version)
+
+          ambiguous = {name: sorted(vals) for name, vals in versions.items() if len(vals) != 1}
+          if ambiguous:
+              raise SystemExit(f"ambiguous package versions in uv.lock: {ambiguous}")
+
+          lines = [f"{name}=={next(iter(vals))}" for name, vals in sorted(versions.items())]
+          out_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+          print(f"LOCK_CONSTRAINT_COUNT={len(lines)}")
+          PY
+          python3 -m pip install --no-input -c "${constraints}" "${OPEN_NEWS_SRC}"
           python3 -m pip freeze | LC_ALL=C sort | tee "${RUNNER_TEMP}/open-news-pip-freeze.txt"
           printf 'DEPENDENCY_FREEZE_SHA256='
           sha256sum "${RUNNER_TEMP}/open-news-pip-freeze.txt" | awk '{print $1}'
