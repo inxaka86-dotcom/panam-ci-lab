@@ -56,21 +56,40 @@ def generate_narma(order: int, seed: int, eval_steps: int):
     # Generalized NARMA-m formulation used for NARMA10 and higher-order variants:
     # y[t+1] = 0.3*y[t] + 0.05*y[t]*sum(y[t-i], i=0..m-1)
     #          + 1.5*u[t-m+1]*u[t] + 0.1
-    for t in range(total):
-        lo = max(0, t - order + 1)
-        hist_sum = float(np.sum(y[lo:t + 1]))
-        delayed_u = u[t - order + 1] if t - order + 1 >= 0 else 0.0
-        y[t + 1] = (
-            0.3 * y[t]
-            + 0.05 * y[t] * hist_sum
-            + 1.5 * delayed_u * u[t]
-            + 0.1
-        )
+    with np.errstate(over="ignore", invalid="ignore"):
+        for t in range(total):
+            lo = max(0, t - order + 1)
+            hist_sum = float(np.sum(y[lo:t + 1]))
+            delayed_u = u[t - order + 1] if t - order + 1 >= 0 else 0.0
+            y[t + 1] = (
+                0.3 * y[t]
+                + 0.05 * y[t] * hist_sum
+                + 1.5 * delayed_u * u[t]
+                + 0.1
+            )
 
     return u, y[1:total + 1]
 
 
+def resolve_narma_data(order: int, requested_seed: int, eval_steps: int):
+    """Resolve only the data seed; model randomness stays on requested_seed."""
+    for offset in range(100):
+        data_seed = requested_seed + offset
+        u, target = generate_narma(order, data_seed, eval_steps)
+        if (
+            np.all(np.isfinite(target))
+            and target.size > 0
+            and float(np.max(np.abs(target))) <= 10.0
+        ):
+            return u, target, data_seed
+    raise RuntimeError(f"no_stable_narma_data_seed:{requested_seed}")
+
+
 def nmse(target: np.ndarray, pred: np.ndarray) -> float:
+    if not np.all(np.isfinite(target)):
+        raise RuntimeError("nonfinite_target")
+    if not np.all(np.isfinite(pred)):
+        raise RuntimeError("nonfinite_prediction")
     var = float(np.var(target))
     if var <= 0:
         raise RuntimeError("zero_target_variance")
@@ -158,7 +177,7 @@ def evaluate_reservoir(
     leak: float,
     input_scale: float,
 ):
-    u, target = generate_narma(order, seed, eval_steps)
+    u, target, data_seed = resolve_narma_data(order, seed, eval_steps)
     rng = np.random.default_rng(seed + 17_003)
     win_base = rng.normal(0.0, 1.0, size=NODE_COUNT)
     win = win_base * input_scale
@@ -184,6 +203,8 @@ def evaluate_reservoir(
 
     return {
         "nmse": score,
+        "requested_seed": int(seed),
+        "data_seed": int(data_seed),
         "state_update_microseconds_per_step": float(elapsed / u.size * 1e6),
         "train_readout_seconds": float(readout_seconds),
         "recurrent_nonzeros": int(W.nnz),
@@ -312,7 +333,7 @@ def make_windows(u, target, start, end):
 def train_gru_validation(order: int, seed: int, hidden: int, lr: float):
     torch = _torch()
     torch.manual_seed(seed + 77_003)
-    u, target = generate_narma(order, seed, VALIDATION_STEPS)
+    u, target, data_seed = resolve_narma_data(order, seed, VALIDATION_STEPS)
 
     train_start = WASHOUT
     train_end = WASHOUT + TRAIN_STEPS
@@ -376,6 +397,8 @@ def train_gru_validation(order: int, seed: int, hidden: int, lr: float):
     elapsed = time.perf_counter() - train_start_time
     return {
         "validation_nmse": float(best_nmse),
+        "requested_seed": int(seed),
+        "data_seed": int(data_seed),
         "best_epoch": int(best_epoch),
         "epochs_ran": int(epoch),
         "train_seconds": float(elapsed),
@@ -422,7 +445,7 @@ def tune_gru(order: int):
 def train_test_gru(order: int, seed: int, hidden: int, lr: float, epochs: int):
     torch = _torch()
     torch.manual_seed(seed + 97_003)
-    u, target = generate_narma(order, seed, TEST_STEPS)
+    u, target, data_seed = resolve_narma_data(order, seed, TEST_STEPS)
 
     train_start = WASHOUT
     train_end = WASHOUT + TRAIN_STEPS
@@ -476,6 +499,8 @@ def train_test_gru(order: int, seed: int, hidden: int, lr: float, epochs: int):
 
     return {
         "seed": seed,
+        "requested_seed": int(seed),
+        "data_seed": int(data_seed),
         "nmse": nmse(Yte.astype(np.float64), pred.astype(np.float64)),
         "train_seconds": float(train_seconds),
         "inference_microseconds_per_window": float(
@@ -560,6 +585,17 @@ def main() -> int:
         base.NODE_COUNT = old
     pre, post, weights = base.extract_subgraph(args.graph, selected)
 
+    dataset_seed_resolution = {
+        "validation": {
+            str(seed): int(resolve_narma_data(args.order, seed, VALIDATION_STEPS)[2])
+            for seed in VALIDATION_SEEDS
+        },
+        "test": {
+            str(seed): int(resolve_narma_data(args.order, seed, TEST_STEPS)[2])
+            for seed in TEST_SEEDS
+        },
+    }
+
     r3_cfg, r3_grid = tune_reservoir("R3", pre, post, weights, args.order)
     esn_cfg, esn_grid = tune_reservoir(
         "SPARSE_ESN", pre, post, weights, args.order
@@ -607,6 +643,12 @@ def main() -> int:
         "validation_seeds": list(VALIDATION_SEEDS),
         "test_seeds": list(TEST_SEEDS),
         "validation_test_seed_overlap": [],
+        "dataset_validity_policy": {
+            "requested_seed_controls_model_randomness": True,
+            "data_seed_resolution": "increment data-generation seed only until target is finite and max_abs_target <= 10",
+            "max_attempts": 100,
+            "resolved_data_seeds": dataset_seed_resolution,
+        },
         "contract": {
             "washout": WASHOUT,
             "train_steps": TRAIN_STEPS,
@@ -658,7 +700,7 @@ def main() -> int:
         ],
     }
 
-    print(json.dumps(output, sort_keys=True))
+    print(json.dumps(output, sort_keys=True, allow_nan=False))
     print(f"PANAM_PUBLIC_FLYCORE_STRONG_BASELINE_NARMA{args.order}=PASS")
     return 0
 
