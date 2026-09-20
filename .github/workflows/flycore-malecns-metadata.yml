@@ -40,8 +40,26 @@ jobs:
           test -s "${out}"
           ls -lh "${out}"
 
-      - name: Inspect exact public artifact
+      - name: Inspect exact public graph artifact
         shell: bash
         run: |
           set -euo pipefail
-          python3 flycore/inspect_malecns_metadata.py             "${RUNNER_TEMP}/connectome-weights-male-cns-v1.0-minconf-0.5.feather"
+          python3 flycore/inspect_malecns_metadata.py \
+            "${RUNNER_TEMP}/connectome-weights-male-cns-v1.0-minconf-0.5.feather"
+
+      - name: Download official public MaleCNS annotations
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://storage.googleapis.com/flyem-male-cns/v1.0/connectome-data/flat-connectome/body-annotations-male-cns-v1.0-minconf-0.5.feather'
+          out="${RUNNER_TEMP}/body-annotations-male-cns-v1.0-minconf-0.5.feather"
+          curl --fail --location --retry 3 --retry-all-errors --silent --show-error --output "${out}" "${url}"
+          test -s "${out}"
+          ls -lh "${out}"
+
+      - name: Inspect exact public annotation artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 flycore/inspect_malecns_annotations.py \
+            "${RUNNER_TEMP}/body-annotations-male-cns-v1.0-minconf-0.5.feather"
