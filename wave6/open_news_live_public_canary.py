@@ -188,10 +188,10 @@ def main() -> int:
             "address_pinning": "curl_resolve_validated_ip",
             "tls_hostname_verification": True,
             "automatic_redirects": False,
-            "ambient_proxy": false,
-            "credentials_used": false,
-            "private_data_used": false,
-            "production_authority": false,
+            "ambient_proxy": False,
+            "credentials_used": False,
+            "private_data_used": False,
+            "production_authority": False,
         },
     }
 
