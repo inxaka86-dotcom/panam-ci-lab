@@ -1,0 +1,63 @@
+{
+  "schema": "public.production-activation-contract.v1",
+  "mode": "design_only",
+  "activation": {
+    "enabled": false,
+    "owner_approval_required": true,
+    "owner_approval_present": false,
+    "ci_can_satisfy_owner_approval": false
+  },
+  "network": {
+    "application_bind": "127.0.0.1",
+    "external_exposure": "approved_tls_reverse_proxy_only",
+    "https_required": true,
+    "minimum_tls": "TLSv1.3"
+  },
+  "oauth": {
+    "protected_resource_metadata_required": true,
+    "protected_resource_metadata_path": "/.well-known/oauth-protected-resource",
+    "resource_identifier": "https://context.example.invalid/mcp",
+    "issuer_validation_required": true,
+    "resource_indicator_required": true,
+    "audience_restricted_tokens_required": true,
+    "allowed_scopes": ["mcp:read"],
+    "bearer_transport": ["authorization_header"],
+    "query_token_allowed": false,
+    "cookie_token_allowed": false,
+    "maximum_token_ttl_seconds": 300,
+    "revocation_plan_required": true,
+    "key_rotation_plan_required": true
+  },
+  "http": {
+    "cache_control": "no-store",
+    "etag_allowed": false,
+    "cookies_allowed": false,
+    "hsts_required": true,
+    "deny_by_default_csp_required": true
+  },
+  "logging": {
+    "authorization_header_allowed": false,
+    "request_body_allowed": false,
+    "response_body_allowed": false,
+    "plaintext_context_allowed": false,
+    "metadata_only": true
+  },
+  "authority": {
+    "read_only": true,
+    "mutation_allowed": false,
+    "owner_only_satisfied_by_ci": false,
+    "control_plane_bypass": false
+  },
+  "data": {
+    "direct_memory_access": false,
+    "direct_database_access": false,
+    "direct_keyring_access": false,
+    "source": "reviewed_context_projection_only",
+    "durable_console_snapshot": false
+  },
+  "incident": {
+    "kill_switch_required": true,
+    "token_revocation_required": true,
+    "audit_event_required": true
+  }
+}
