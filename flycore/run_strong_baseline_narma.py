@@ -36,7 +36,7 @@ R3_LEAKS = (0.15, 0.30, 0.50)
 ESN_GAINS = R3_GAINS
 ESN_LEAKS = R3_LEAKS
 ESN_INPUT_SCALES = (0.30, 0.55, 0.80)
-R3_INPUT_SCALE = 0.55
+R3_INPUT_SCALES = ESN_INPUT_SCALES
 RIDGE = 1e-6
 GRU_HIDDEN = (32, 64)
 GRU_LR = (0.001, 0.003)
@@ -194,9 +194,10 @@ def evaluate_reservoir(
 def tune_reservoir(model, pre, post, weights, order):
     if model == "R3":
         configs = [
-            {"gain": g, "leak": l, "input_scale": R3_INPUT_SCALE}
+            {"gain": g, "leak": l, "input_scale": s}
             for g in R3_GAINS
             for l in R3_LEAKS
+            for s in R3_INPUT_SCALES
         ]
     else:
         configs = [
@@ -321,7 +322,8 @@ def train_gru_validation(order: int, seed: int, hidden: int, lr: float):
     Xtr, Ytr = make_windows(u, target, train_start, train_end)
     Xva, Yva = make_windows(u, target, val_start, val_end)
 
-    x_mean, x_scale = 0.25, 0.25
+    input_max = 0.5 if order == 10 else 0.2
+    x_mean, x_scale = input_max / 2.0, input_max / 2.0
     y_mean = float(np.mean(Ytr))
     y_std = float(np.std(Ytr))
     if y_std <= 0:
@@ -432,8 +434,10 @@ def train_test_gru(order: int, seed: int, hidden: int, lr: float, epochs: int):
 
     y_mean = float(np.mean(Ytr))
     y_std = float(np.std(Ytr))
-    Xtr = ((Xtr - 0.25) / 0.25)[:, :, None]
-    Xte = ((Xte - 0.25) / 0.25)[:, :, None]
+    input_max = 0.5 if order == 10 else 0.2
+    x_mean, x_scale = input_max / 2.0, input_max / 2.0
+    Xtr = ((Xtr - x_mean) / x_scale)[:, :, None]
+    Xte = ((Xte - x_mean) / x_scale)[:, :, None]
     Ytrn = (Ytr - y_mean) / y_std
 
     tx = torch.from_numpy(Xtr)
