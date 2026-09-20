@@ -282,7 +282,7 @@ def main() -> int:
             "post_pattern_delays": list(POST_DELAYS),
             "train_per_class": TRAIN_PER_CLASS,
             "test_per_class": TEST_PER_CLASS,
-            "private_or_real_panam_events": false,
+            "private_or_real_panam_events": False,
         },
         "reservoir_contract": {
             "nodes": NODE_COUNT,
@@ -296,8 +296,8 @@ def main() -> int:
             "unweighted_degree": run_rule(args.graph, urank, "unweighted incident connection-row degree"),
         },
         "runtime_note": "timings are GitHub-hosted CI observations from the same dense NumPy implementation and are not portable production benchmarks",
-        "private_panam_data_used": false,
-        "production_readiness_claimed": false,
+        "private_panam_data_used": False,
+        "production_readiness_claimed": False,
         "promotion_decision": "NOT_MADE",
         "limitations": [
             "synthetic task designed to resemble generic operational event streams only",
