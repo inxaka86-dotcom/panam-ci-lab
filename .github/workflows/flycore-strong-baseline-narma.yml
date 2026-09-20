@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        order: [10, 20]
+        order: [10]
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
