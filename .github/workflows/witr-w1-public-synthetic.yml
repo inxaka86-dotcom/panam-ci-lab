@@ -1,0 +1,36 @@
+name: witr W1 public synthetic
+
+on:
+  pull_request:
+    paths:
+      - 'witr_w1/**'
+      - 'WITR_W1_PUBLIC_SYNTHETIC.md'
+      - '.github/workflows/witr-w1-public-synthetic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: witr-w1-public-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  witr-w1-public:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Compile public W1 probe
+        run: python3 -m py_compile witr_w1/test_public_witr.py
+
+      - name: Run exact-pinned public witr W1 probe
+        run: python3 witr_w1/test_public_witr.py
