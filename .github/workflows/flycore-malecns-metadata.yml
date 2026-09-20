@@ -87,3 +87,11 @@ jobs:
           python3 flycore/run_delay_sweep_robustness.py \
             --graph "${RUNNER_TEMP}/connectome-weights-male-cns-v1.0-minconf-0.5.feather" \
             --annotations "${RUNNER_TEMP}/body-annotations-male-cns-v1.0-minconf-0.5.feather"
+
+      - name: Run 192-neuron scale replication
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 flycore/run_scale_replication.py \
+            --graph "${RUNNER_TEMP}/connectome-weights-male-cns-v1.0-minconf-0.5.feather" \
+            --annotations "${RUNNER_TEMP}/body-annotations-male-cns-v1.0-minconf-0.5.feather"
