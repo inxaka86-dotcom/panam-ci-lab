@@ -1,6 +1,7 @@
 name: Wave 7 SONAR guarded live-public canary
 
 on:
+  workflow_dispatch:
   pull_request:
     paths:
       - 'WAVE7.md'
