@@ -1,0 +1,176 @@
+name: Wave 7 SONAR guarded live-public canary
+
+on:
+  pull_request:
+    paths:
+      - 'WAVE7.md'
+      - '.github/workflows/wave7-sonar-live-public-canary.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wave7-sonar-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  guarded-live-public:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SONAR_UPSTREAM_SHA: aa1df9171a823fa5c40e1eaf88c4d66da033983e
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout public CI lab
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Fetch exact SONAR source
+        shell: bash
+        run: |
+          set -euo pipefail
+          src="${RUNNER_TEMP}/sonar-src"
+          rm -rf "${src}"
+          git init "${src}"
+          git -C "${src}" remote add origin https://github.com/RunetMonitor/SONAR.git
+          git -C "${src}" fetch --depth=1 origin "${SONAR_UPSTREAM_SHA}"
+          git -C "${src}" checkout --detach FETCH_HEAD
+          test "$(git -C "${src}" rev-parse HEAD)" = "${SONAR_UPSTREAM_SHA}"
+          git -C "${src}" remote remove origin
+          echo "SONAR_SRC=${src}" >> "${GITHUB_ENV}"
+
+      - name: Configure bounded public canary
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${SONAR_SRC}/app/url_check_lists_canary"
+          cat > "${SONAR_SRC}/app/url_check_lists_canary/list_public_canary.txt" <<'EOF'
+          example.com
+          expired.badssl.com
+          neverssl.com
+          nonexistent-sonar-canary.invalid
+          EOF
+          cat > "${SONAR_SRC}/app/dns_servers_canary.txt" <<'EOF'
+          cloudflare,1.1.1.1,global,Cloudflare
+          google,8.8.8.8,global,Google
+          EOF
+          cat > "${SONAR_SRC}/app/config.local.py" <<'PY'
+          URL_CHECK_LISTS_DIR = "app/url_check_lists_canary"
+          RESULTS_DIR = "results_canary"
+          CHECK_LIMIT_N = 4
+          DNS_TIMEOUT = 3
+          HTTP_TIMEOUT = 5
+          MAX_WORKERS = 2
+          DNS_PROBE_ENABLED = True
+          DNS_PROBE_SERVERS_FILE = "app/dns_servers_canary.txt"
+          DNS_PROBE_TIMEOUT = 1.0
+          DNS_PROBE_ATTEMPTS = 1
+          DNS_PROBE_QPS_GLOBAL = 2.0
+          DNS_PROBE_QPS_RUSSIAN = 2.0
+          DNS_PROBE_MAX_INFLIGHT = 8
+          DNS_PROBE_MAX_INFLIGHT_PER_SERVER = 4
+          DNS_PROBE_BREAKER_FAILURES = 2
+          DNS_PROBE_MAX_SECONDS = 20.0
+          VERSION_CHECK_URLS = []
+          PY
+
+      - name: Execute real SONAR scan without upload or location lookup
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - "${SONAR_SRC}" <<'PY'
+          import builtins
+          import importlib.util
+          import os
+          import sys
+
+          src = sys.argv[1]
+          sys.path.insert(0, src)
+          spec = importlib.util.spec_from_file_location("sonar_run_canary", os.path.join(src, "run.py"))
+          module = importlib.util.module_from_spec(spec)
+          assert spec.loader is not None
+          spec.loader.exec_module(module)
+
+          module.detect_location = lambda timeout=5: ("", "", "")
+          module._fetch_latest_version = lambda *args, **kwargs: ""
+          def _upload_forbidden(*args, **kwargs):
+              raise RuntimeError("SONAR upload path is forbidden in Wave 7")
+          module._run_send_results = _upload_forbidden
+          builtins.input = lambda prompt="": ""
+          module.main()
+          PY
+
+      - name: Sanitize and validate SONAR CSV
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - "${SONAR_SRC}" "${RUNNER_TEMP}/wave7-sonar.csv" <<'PY'
+          import csv
+          import glob
+          import hashlib
+          import json
+          import os
+          import sys
+
+          src, out = sys.argv[1], sys.argv[2]
+          matches = sorted(glob.glob(os.path.join(src, "results_canary", "check_results_*.csv")))
+          if len(matches) != 1:
+              raise SystemExit(f"expected exactly one SONAR CSV, got {len(matches)}")
+          source = matches[0]
+          with open(source, newline="", encoding="utf-8") as fh:
+              reader = csv.DictReader(fh)
+              rows = list(reader)
+              fieldnames = list(reader.fieldnames or [])
+          if len(rows) != 4:
+              raise SystemExit(f"expected four SONAR rows, got {len(rows)}")
+          required = {
+              "domain", "dns_resolved_ips", "dns_rcode", "tcp_connect_time_ms",
+              "ssl_valid", "http_status", "protocol", "content_hash", "accessible",
+              "dns_resolved_ips_ipv6", "dns_rcode_ipv6", "tcp_connect_time_ms_ipv6",
+              "ssl_valid_ipv6", "http_status_ipv6", "protocol_ipv6",
+              "content_hash_ipv6", "accessible_ipv6",
+              "check_location", "check_provider", "sonar_id",
+          }
+          missing = sorted(required - set(fieldnames))
+          if missing:
+              raise SystemExit("SONAR CSV contract missing: " + ",".join(missing))
+          for row in rows:
+              row["check_location"] = ""
+              row["check_provider"] = ""
+              row["sonar_id"] = ""
+          with open(out, "w", newline="", encoding="utf-8") as fh:
+              writer = csv.DictWriter(fh, fieldnames=fieldnames)
+              writer.writeheader()
+              writer.writerows(rows)
+          raw = open(out, "rb").read()
+          meta = {
+              "schema": "panam-ci-lab.wave7.sonar-live-public.v1",
+              "upstream_commit": os.environ["SONAR_UPSTREAM_SHA"],
+              "row_count": len(rows),
+              "csv_sha256": hashlib.sha256(raw).hexdigest(),
+              "location_blank": all(not r["check_location"] for r in rows),
+              "provider_blank": all(not r["check_provider"] for r in rows),
+              "sonar_id_blank": all(not r["sonar_id"] for r in rows),
+              "production_authority": False,
+          }
+          meta_path = os.path.join(os.path.dirname(out), "wave7-sonar-meta.json")
+          with open(meta_path, "w", encoding="utf-8") as fh:
+              json.dump(meta, fh, sort_keys=True, separators=(",", ":"))
+              fh.write("\n")
+          print(json.dumps(meta, sort_keys=True))
+          PY
+
+      - name: Upload public-safe SONAR evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: wave7-sonar-live-public
+          path: |
+            ${{ runner.temp }}/wave7-sonar.csv
+            ${{ runner.temp }}/wave7-sonar-meta.json
+          if-no-files-found: error
+          retention-days: 7
