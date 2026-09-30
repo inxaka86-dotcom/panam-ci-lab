@@ -17,6 +17,8 @@ OpenShell is pinned to `v0.1.2`.
 
 The workflow installs from the exact `v0.1.2` tag and verifies the reported CLI version before the canary.
 
+OpenShell 0.1.x uses a deliberately minimal default workload image. Wave 9 therefore builds a tiny local test image from the exact NVIDIA Ubuntu image digest observed in the first run and adds only `ca-certificates`, `curl`, and `python3`. The image runs as non-root UID/GID 1500 and is never pushed to a registry.
+
 ## Canary assertions
 
 The sandbox policy permits only `/usr/bin/curl` to use read-only REST access to `api.github.com:443`.
