@@ -48,6 +48,10 @@ function marksOf(node: any, type: string, out: any[] = []): any[] {
   return out;
 }
 
+function textOf(node: any): string {
+  return (node?.text ?? '') + (node?.content ?? []).map((child: any) => textOf(child)).join('');
+}
+
 describe('public legal-review compatibility canary', () => {
   it('records a synthetic AI replacement as deletion + insertion and requires human decision', async () => {
     const editor = reviewEditor('Исполнитель уведомляет Заказчика за один день.');
@@ -74,6 +78,44 @@ describe('public legal-review compatibility canary', () => {
     expect(editor.state.doc.textContent).toBe('Срок уведомления — пять рабочих дней.');
     expect(revisions(editor.state.doc)).toHaveLength(0);
     editor.destroy();
+  });
+
+  it('characterizes the current header/footer revision-fidelity limitation', async () => {
+    const body: any = {
+      type: 'doc',
+      content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Основной текст.' }] }],
+    };
+    const header: any = {
+      type: 'doc',
+      content: [{
+        type: 'paragraph',
+        content: [{
+          type: 'text',
+          text: 'HEADER REVIEW TEST',
+          marks: [{
+            type: 'insertion',
+            attrs: {
+              id: 'header-rev-1',
+              author: 'Reviewer TEST',
+              date: '2026-09-30T00:00:00.000Z',
+            },
+          }],
+        }],
+      }],
+    };
+
+    const bytes = await buildDocx(body, MARGINS, 'portrait', {
+      header,
+      footer: null,
+      pageCount: 1,
+    });
+    const back: any = importDocx(bytes);
+
+    // Current v0.7.0 behavior: header text survives, but zone import deliberately
+    // does not retain tracked-revision marks. Keep this test until the upstream
+    // capability changes; PANAM must treat such files as fidelity-risky.
+    expect(textOf(back.header)).toContain('HEADER REVIEW TEST');
+    expect(marksOf(back.header, 'insertion')).toHaveLength(0);
   });
 
   it('round-trips a synthetic AI comment thread and resolved state through DOCX', async () => {
