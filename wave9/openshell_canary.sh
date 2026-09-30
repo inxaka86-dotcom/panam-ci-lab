@@ -18,7 +18,9 @@ openshell sandbox create \
   --from "${image_name}" \
   --policy "${policy_path}" \
   --no-auto-providers \
-  --detach
+  --detach \
+  --no-tty \
+  -- /usr/bin/sleep 300
 
 # Capture what the sandbox is actually enforcing.
 openshell policy get "${sandbox_name}" --full > "${effective_policy_path}"
@@ -85,8 +87,13 @@ import sys
 
 path, version = sys.argv[1:3]
 result = {
-    "schema": "panam-ci-lab.wave9.openshell-public-canary.v1",
+    "schema": "panam-ci-lab.wave9.openshell-public-canary.v2",
     "openshell_version": version,
+    "strict_policy_alignment": True,
+    "include_workdir": False,
+    "run_as_user": "1500",
+    "run_as_group": "1500",
+    "landlock": "hard_requirement",
     "github_get_allowed": True,
     "github_mutating_methods_denied": ["POST", "PUT", "PATCH", "DELETE"],
     "unrelated_host_denied": True,
