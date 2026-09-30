@@ -1,0 +1,72 @@
+name: Wave 9 OpenShell guarded public canary
+
+on:
+  pull_request:
+    paths:
+      - 'WAVE9.md'
+      - 'wave9/**'
+      - '.github/workflows/wave9-openshell-public-canary.yml'
+      - 'checks/publication_gate.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wave9-openshell-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  guarded-public:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      OPENSHELL_VERSION: v0.1.2
+      EXPECTED_OPENSHELL_VERSION: "0.1.2"
+    steps:
+      - name: Checkout public CI lab
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Verify runner isolation assumptions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -S /var/run/docker.sock
+          docker version
+          test -z "${GITHUB_TOKEN:-}"
+          test -z "${GH_TOKEN:-}"
+          test -z "${OPENAI_API_KEY:-}"
+          test -z "${ANTHROPIC_API_KEY:-}"
+          test -z "${NVIDIA_API_KEY:-}"
+
+      - name: Install exact OpenShell release
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL "https://raw.githubusercontent.com/NVIDIA/OpenShell/${OPENSHELL_VERSION}/install.sh"             | OPENSHELL_VERSION="${OPENSHELL_VERSION}" sh
+          openshell --version
+          openshell --version | grep -F "${EXPECTED_OPENSHELL_VERSION}"
+          openshell status
+
+      - name: Execute policy enforcement canary
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x wave9/openshell_canary.sh
+          wave9/openshell_canary.sh             wave9-openshell             wave9/openshell_github_readonly.yaml             "${RUNNER_TEMP}/wave9-openshell-result.json"             "${RUNNER_TEMP}/wave9-openshell-effective-policy.yaml"
+
+      - name: Upload public-safe OpenShell evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: wave9-openshell-public-canary
+          path: |
+            ${{ runner.temp }}/wave9-openshell-result.json
+            ${{ runner.temp }}/wave9-openshell-effective-policy.yaml
+          if-no-files-found: error
+          retention-days: 7
