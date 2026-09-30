@@ -1,0 +1,84 @@
+name: FlyCore MaleCNS conservative signed benchmark
+
+on:
+  pull_request:
+    paths:
+      - 'flycore/inspect_malecns_neurotransmitters.py'
+      - 'flycore/run_conservative_signed_nt.py'
+      - '.github/workflows/flycore-malecns-neurotransmitters.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: flycore-malecns-nt-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  signed-public-malecns:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Install pinned Arrow reader
+        run: python3 -m pip install --disable-pip-version-check --no-input pyarrow==17.0.0
+
+      - name: Download official public MaleCNS graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://storage.googleapis.com/flyem-male-cns/v1.0/connectome-data/flat-connectome/connectome-weights-male-cns-v1.0-minconf-0.5.feather'
+          out="${RUNNER_TEMP}/connectome-weights-male-cns-v1.0-minconf-0.5.feather"
+          curl --fail --location --retry 3 --retry-all-errors --silent --show-error --output "${out}" "${url}"
+          test -s "${out}"
+
+      - name: Download official public MaleCNS annotations
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://storage.googleapis.com/flyem-male-cns/v1.0/connectome-data/flat-connectome/body-annotations-male-cns-v1.0-minconf-0.5.feather'
+          out="${RUNNER_TEMP}/body-annotations-male-cns-v1.0-minconf-0.5.feather"
+          curl --fail --location --retry 3 --retry-all-errors --silent --show-error --output "${out}" "${url}"
+          test -s "${out}"
+
+      - name: Download official public MaleCNS neurotransmitter predictions
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://storage.googleapis.com/flyem-male-cns/v1.0/connectome-data/flat-connectome/body-neurotransmitters-male-cns-v1.0.feather'
+          out="${RUNNER_TEMP}/body-neurotransmitters-male-cns-v1.0.feather"
+          curl --fail --location --retry 3 --retry-all-errors --silent --show-error --output "${out}" "${url}"
+          test -s "${out}"
+
+      - name: Inspect exact public neurotransmitter artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 flycore/inspect_malecns_neurotransmitters.py \
+            "${RUNNER_TEMP}/body-neurotransmitters-male-cns-v1.0.feather"
+
+      - name: Run conservative ACh-GABA signed benchmark
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 flycore/run_conservative_signed_nt.py \
+            --graph "${RUNNER_TEMP}/connectome-weights-male-cns-v1.0-minconf-0.5.feather" \
+            --annotations "${RUNNER_TEMP}/body-annotations-male-cns-v1.0-minconf-0.5.feather" \
+            --neurotransmitters "${RUNNER_TEMP}/body-neurotransmitters-male-cns-v1.0.feather"
+
+      - name: Run held-out signed operating-point experiment
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 flycore/run_signed_operating_point_holdout.py \
+            --graph "${RUNNER_TEMP}/connectome-weights-male-cns-v1.0-minconf-0.5.feather" \
+            --annotations "${RUNNER_TEMP}/body-annotations-male-cns-v1.0-minconf-0.5.feather" \
+            --neurotransmitters "${RUNNER_TEMP}/body-neurotransmitters-male-cns-v1.0.feather"
