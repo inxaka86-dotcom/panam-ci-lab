@@ -11,4 +11,4 @@ RUN groupadd --gid 1500 sandbox \
     && useradd --uid 1500 --gid 1500 --create-home --shell /bin/bash sandbox
 
 USER 1500:1500
-WORKDIR /home/sandbox
+WORKDIR /tmp
