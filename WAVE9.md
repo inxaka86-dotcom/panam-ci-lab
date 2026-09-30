@@ -17,11 +17,20 @@ OpenShell is pinned to `v0.1.2`.
 
 The workflow installs from the exact `v0.1.2` tag and verifies the reported CLI version before the canary.
 
-OpenShell 0.1.x uses a deliberately minimal default workload image. Wave 9 therefore builds a tiny local test image from the exact NVIDIA Ubuntu image digest observed in the first run and adds only `ca-certificates`, `curl`, and `python3`. The image runs as non-root UID/GID 1500 and is never pushed to a registry.
+OpenShell 0.1.x uses a deliberately minimal default workload image. Wave 9 therefore builds a tiny local test image from the exact NVIDIA Ubuntu image digest observed in the first run and adds only `ca-certificates`, `curl`, and `python3`. The image runs as non-root UID/GID 1500, uses `/tmp` as its working directory, and is never pushed to a registry.
+
+## Strict policy profile
+
+The final canary mirrors the private PANAM PoC policy's enforcement-relevant fields:
+
+- `filesystem_policy.include_workdir: false`;
+- read-only system paths and read-write only `/tmp` plus `/dev/null`;
+- `landlock.compatibility: hard_requirement`;
+- explicit `process.run_as_user: "1500"` and `run_as_group: "1500"`;
+- only `/usr/bin/curl` may reach `api.github.com:443`;
+- REST enforcement is `enforce` with `read-only` access.
 
 ## Canary assertions
-
-The sandbox policy permits only `/usr/bin/curl` to use read-only REST access to `api.github.com:443`.
 
 The canary requires:
 
