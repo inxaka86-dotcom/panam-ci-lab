@@ -39,3 +39,11 @@ The public synthetic canary verifies:
 - no automatic acceptance of AI edits.
 
 A green run is compatibility evidence only.
+
+## Known pinned-upstream limitation
+
+At EdenText v0.7.0, the header/footer zone schema does not retain tracked-revision
+marks on import. The Wave 8 canary characterizes this explicitly: header text survives
+DOCX round trip, while a revision mark in that header is flattened. PANAM must therefore
+treat documents with review markup inside headers/footers as a fidelity-risk case until
+that capability is implemented and verified.
