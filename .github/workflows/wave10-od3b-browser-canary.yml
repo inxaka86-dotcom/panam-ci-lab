@@ -84,9 +84,10 @@ jobs:
         run: |
           set -euo pipefail
           chmod +x wave10/run_canary.sh
-          wave10/run_canary.sh             wave10-od3b             wave10/openshell_od3b.yaml             "${OD3B_IMAGE}"             "${RUNNER_TEMP}/wave10-od3b-result.json"             "${RUNNER_TEMP}/wave10-od3b-post-stop.json"             "${RUNNER_TEMP}/wave10-od3b-effective-policy.yaml"             "${RUNNER_TEMP}/wave10-od3b-openshell.log"
+          wave10/run_canary.sh             wave10-od3b             wave10/openshell_od3b.yaml             "${OD3B_IMAGE}"             "${RUNNER_TEMP}/wave10-od3b-result.json"             "${RUNNER_TEMP}/wave10-od3b-post-stop.json"             "${RUNNER_TEMP}/wave10-od3b-effective-policy.yaml"             "${RUNNER_TEMP}/wave10-od3b-openshell.log"             "${RUNNER_TEMP}/wave10-od3b-browser.stderr.log"
 
       - name: Upload public-safe OD-3B evidence
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: wave10-od3b-live-public-canary
@@ -95,5 +96,6 @@ jobs:
             ${{ runner.temp }}/wave10-od3b-post-stop.json
             ${{ runner.temp }}/wave10-od3b-effective-policy.yaml
             ${{ runner.temp }}/wave10-od3b-openshell.log
-          if-no-files-found: error
+            ${{ runner.temp }}/wave10-od3b-browser.stderr.log
+          if-no-files-found: warn
           retention-days: 7
