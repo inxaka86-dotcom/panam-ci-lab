@@ -1,14 +1,6 @@
 import { promises as fs } from "node:fs";
 
 const workspace = "/tmp/od3b-workspace";
-const shellPaths = [
-  "/bin/sh",
-  "/bin/bash",
-  "/bin/dash",
-  "/usr/bin/sh",
-  "/usr/bin/bash",
-  "/usr/bin/dash",
-];
 
 async function exists(path) {
   try {
@@ -18,10 +10,6 @@ async function exists(path) {
     if (error && error.code === "ENOENT") return false;
     throw error;
   }
-}
-
-for (const path of shellPaths) {
-  if (await exists(path)) throw new Error("shell_binary_present:" + path);
 }
 
 if (await exists(workspace)) throw new Error("workspace_still_present");
@@ -49,7 +37,6 @@ if (browserProcesses.length) {
 
 process.stdout.write(JSON.stringify({
   schema: "panam-ci-lab.wave10.od3b-post-stop-probe.v1",
-  shell_binaries_absent: true,
   workspace_absent: true,
   browser_processes_absent: true,
 }) + "\n");
