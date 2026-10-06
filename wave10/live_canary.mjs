@@ -19,6 +19,7 @@ const result = {
   production_mounts_available: false,
   concurrency: 1,
   allowed_origin: "https://example.com",
+  synthetic_tls_interception_tolerance: true,
   browser_navigation_succeeded: false,
   unlisted_origin_denied: false,
   ephemeral_file_written: false,
@@ -97,7 +98,13 @@ try {
     ],
   });
 
-  const context = await browser.newContext({ acceptDownloads: false });
+  const context = await browser.newContext({
+    acceptDownloads: false,
+    // OpenShell terminates inspected TLS with a per-sandbox ephemeral CA.
+    // This exception is confined to this synthetic public canary; egress
+    // destination/method enforcement remains in OpenShell.
+    ignoreHTTPSErrors: true,
+  });
   const page = await context.newPage();
 
   requireActive();
