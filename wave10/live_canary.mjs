@@ -1,6 +1,8 @@
-import { chromium } from "playwright";
 import { promises as fs } from "node:fs";
 import crypto from "node:crypto";
+
+process.env.PLAYWRIGHT_BROWSERS_PATH = "/ms-playwright";
+const { chromium } = await import("playwright");
 
 const workspace = "/tmp/od3b-workspace";
 const outDir = workspace + "/out";
