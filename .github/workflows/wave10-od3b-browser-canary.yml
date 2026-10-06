@@ -58,6 +58,11 @@ jobs:
           echo "${OPENSHELL_DEB_SHA256}  ${RUNNER_TEMP}/${OPENSHELL_DEB}" | sha256sum -c -
           sudo dpkg --install "${RUNNER_TEMP}/${OPENSHELL_DEB}"
           openshell --version | grep -F "${OPENSHELL_VERSION}"
+          systemctl --user daemon-reload
+          systemctl --user enable --now openshell-gateway
+          openshell gateway add https://127.0.0.1:17670 --local --name openshell
+          openshell gateway select openshell
+          openshell status
 
       - name: Execute real isolated computer canary
         shell: bash
