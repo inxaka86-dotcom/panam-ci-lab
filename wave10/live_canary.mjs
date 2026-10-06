@@ -80,6 +80,9 @@ try {
     headless: true,
     args: [
       "--no-sandbox",
+      "--no-zygote",
+      "--single-process",
+      "--disable-gpu",
       "--disable-dev-shm-usage",
       "--disable-background-networking",
       "--disable-component-update",
