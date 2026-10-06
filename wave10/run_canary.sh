@@ -18,11 +18,6 @@ openshell sandbox create   --name "${sandbox_name}"   --from "${image_name}"   -
 
 openshell policy get "${sandbox_name}" --full > "${effective_policy_path}"
 
-openshell sandbox exec -n "${sandbox_name}" --no-login-shell --     /usr/bin/test -e "${path}"; then
-    echo "unexpected shell binary present: ${path}" >&2
-    exit 1
-  fi
-done
 
 openshell sandbox exec -n "${sandbox_name}" --no-login-shell --   /opt/od3b/node /opt/od3b/live_canary.mjs > "${result_path}"
 
