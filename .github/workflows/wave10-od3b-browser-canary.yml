@@ -1,0 +1,36 @@
+name: Wave 10 OD-3B browser image resolution
+
+on:
+  pull_request:
+    paths:
+      - 'WAVE10.md'
+      - 'wave10/**'
+      - '.github/workflows/wave10-od3b-browser-canary.yml'
+      - 'checks/publication_gate.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  resolve-image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PLAYWRIGHT_IMAGE: mcr.microsoft.com/playwright:v1.63.0-noble
+    steps:
+      - name: Checkout public CI lab
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Resolve exact Playwright image digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker pull "${PLAYWRIGHT_IMAGE}" >/dev/null
+          docker image inspect "${PLAYWRIGHT_IMAGE}" --format 'PLAYWRIGHT_RESOLVED_IMAGE={{index .RepoDigests 0}}'
