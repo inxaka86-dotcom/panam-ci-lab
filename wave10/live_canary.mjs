@@ -2,6 +2,7 @@ import { promises as fs } from "node:fs";
 import crypto from "node:crypto";
 
 process.env.PLAYWRIGHT_BROWSERS_PATH = "/ms-playwright";
+process.env.DEBUG = "pw:browser";
 const { chromium } = await import("playwright");
 
 const workspace = "/tmp/od3b-workspace";
