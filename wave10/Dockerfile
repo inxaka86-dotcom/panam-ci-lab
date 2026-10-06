@@ -11,5 +11,6 @@ COPY post_stop_probe.mjs /opt/od3b/post_stop_probe.mjs
 RUN groupadd --gid 1500 od3b     && useradd --uid 1500 --gid 1500 --create-home --shell /usr/sbin/nologin od3b
 
 ENV HOME=/tmp/od3b-home
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 USER 1500:1500
 WORKDIR /tmp
