@@ -1,0 +1,101 @@
+name: Wave 10 OD-3B isolated browser/files canary
+
+on:
+  pull_request:
+    paths:
+      - 'WAVE10.md'
+      - 'wave10/**'
+      - '.github/workflows/wave10-od3b-browser-canary.yml'
+      - 'checks/publication_gate.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wave10-od3b-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  live-public-canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      OPENSHELL_VERSION: "v0.1.2"
+      OPENSHELL_RELEASE_COMMIT: 6648bd0c290efbc41ba131ee9831ee45cd431f94
+      OD3B_IMAGE: wave10-od3b:local
+    steps:
+      - name: Checkout public CI lab
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Verify runner boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -S /var/run/docker.sock
+          docker version
+
+      - name: Verify task interface exposes no shell command path
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          text = Path("wave10/live_canary.mjs").read_text(encoding="utf-8")
+          forbidden = [
+              "node:child_process",
+              "child_process",
+              "shell.run",
+              "run_command",
+              "exec(",
+              "spawn(",
+          ]
+          found = [item for item in forbidden if item in text]
+          if found:
+              raise SystemExit(f"forbidden task-facing execution primitive: {found}")
+          PY
+
+      - name: Build digest-pinned shell-less computer image
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build --pull=false             --tag "${OD3B_IMAGE}"             --file wave10/Dockerfile             wave10
+          docker image inspect "${OD3B_IMAGE}" --format '{{.Id}}'
+
+      - name: Install exact OpenShell release and wait for gateway
+        shell: bash
+        run: |
+          set -euo pipefail
+          installer="${RUNNER_TEMP}/openshell-install-v0.1.2.sh"
+          curl -fsSL             "https://raw.githubusercontent.com/NVIDIA/OpenShell/${OPENSHELL_RELEASE_COMMIT}/install.sh"             -o "${installer}"
+          OPENSHELL_VERSION="${OPENSHELL_VERSION}" sh "${installer}"
+          test "$(dpkg-query -W -f='${Version}' openshell)" = "0.1.2-1"
+          openshell --version | grep -F "0.1.2"
+          openshell status
+
+      - name: Execute real isolated computer canary
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x wave10/run_canary.sh
+          wave10/run_canary.sh             wave10-od3b             wave10/openshell_od3b.yaml             "${OD3B_IMAGE}"             "${RUNNER_TEMP}/wave10-od3b-result.json"             "${RUNNER_TEMP}/wave10-od3b-post-stop.json"             "${RUNNER_TEMP}/wave10-od3b-effective-policy.yaml"             "${RUNNER_TEMP}/wave10-od3b-openshell.log"             "${RUNNER_TEMP}/wave10-od3b-browser.stderr.log"
+
+      - name: Upload public-safe OD-3B evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: wave10-od3b-live-public-canary
+          path: |
+            ${{ runner.temp }}/wave10-od3b-result.json
+            ${{ runner.temp }}/wave10-od3b-post-stop.json
+            ${{ runner.temp }}/wave10-od3b-effective-policy.yaml
+            ${{ runner.temp }}/wave10-od3b-openshell.log
+            ${{ runner.temp }}/wave10-od3b-browser.stderr.log
+          if-no-files-found: warn
+          retention-days: 7
