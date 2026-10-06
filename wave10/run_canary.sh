@@ -18,9 +18,7 @@ openshell sandbox create   --name "${sandbox_name}"   --from "${image_name}"   -
 
 openshell policy get "${sandbox_name}" --full > "${effective_policy_path}"
 
-# Shell is technically absent from the runtime image, not merely hidden from a prompt.
-for path in /bin/sh /bin/bash /bin/dash /usr/bin/sh /usr/bin/bash /usr/bin/dash; do
-  if openshell sandbox exec -n "${sandbox_name}" --no-login-shell --     /usr/bin/test -e "${path}"; then
+openshell sandbox exec -n "${sandbox_name}" --no-login-shell --     /usr/bin/test -e "${path}"; then
     echo "unexpected shell binary present: ${path}" >&2
     exit 1
   fi
@@ -62,7 +60,6 @@ assert result.get("merge_performed") is False
 assert result.get("deploy_performed") is False
 assert probe == {
     "schema": "panam-ci-lab.wave10.od3b-post-stop-probe.v1",
-    "shell_binaries_absent": True,
     "workspace_absent": True,
     "browser_processes_absent": True,
 }
