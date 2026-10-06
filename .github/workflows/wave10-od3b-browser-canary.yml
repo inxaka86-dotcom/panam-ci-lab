@@ -21,9 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      OPENSHELL_VERSION: "0.1.2"
-      OPENSHELL_DEB: openshell_0.1.2-1_amd64.deb
-      OPENSHELL_DEB_SHA256: 1f5416ea08f32fdc621f20a2cc0324298e60aba8bbe996459d9e3b44195f23df
+      OPENSHELL_VERSION: "v0.1.2"
+      OPENSHELL_RELEASE_COMMIT: 6648bd0c290efbc41ba131ee9831ee45cd431f94
       OD3B_IMAGE: wave10-od3b:local
     steps:
       - name: Checkout public CI lab
@@ -49,19 +48,15 @@ jobs:
           docker build --pull=false             --tag "${OD3B_IMAGE}"             --file wave10/Dockerfile             wave10
           docker image inspect "${OD3B_IMAGE}" --format '{{.Id}}'
 
-      - name: Install exact OpenShell package
+      - name: Install exact OpenShell release and wait for gateway
         shell: bash
         run: |
           set -euo pipefail
-          url="https://github.com/NVIDIA/OpenShell/releases/download/v0.1.2/${OPENSHELL_DEB}"
-          curl -fL --retry 3 --output "${RUNNER_TEMP}/${OPENSHELL_DEB}" "${url}"
-          echo "${OPENSHELL_DEB_SHA256}  ${RUNNER_TEMP}/${OPENSHELL_DEB}" | sha256sum -c -
-          sudo dpkg --install "${RUNNER_TEMP}/${OPENSHELL_DEB}"
-          openshell --version | grep -F "${OPENSHELL_VERSION}"
-          systemctl --user daemon-reload
-          systemctl --user enable --now openshell-gateway
-          openshell gateway add https://127.0.0.1:17670 --local --name openshell
-          openshell gateway select openshell
+          installer="${RUNNER_TEMP}/openshell-install-v0.1.2.sh"
+          curl -fsSL             "https://raw.githubusercontent.com/NVIDIA/OpenShell/${OPENSHELL_RELEASE_COMMIT}/install.sh"             -o "${installer}"
+          OPENSHELL_VERSION="${OPENSHELL_VERSION}" sh "${installer}"
+          test "$(dpkg-query -W -f='\${Version}' openshell)" = "0.1.2-1"
+          openshell --version | grep -F "0.1.2"
           openshell status
 
       - name: Execute real isolated computer canary
