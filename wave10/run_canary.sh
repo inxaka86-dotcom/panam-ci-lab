@@ -8,6 +8,7 @@ result_path="${4:-${RUNNER_TEMP:-/tmp}/wave10-od3b-result.json}"
 probe_path="${5:-${RUNNER_TEMP:-/tmp}/wave10-od3b-post-stop.json}"
 effective_policy_path="${6:-${RUNNER_TEMP:-/tmp}/wave10-od3b-effective-policy.yaml}"
 log_path="${7:-${RUNNER_TEMP:-/tmp}/wave10-od3b-openshell.log}"
+error_path="${8:-${RUNNER_TEMP:-/tmp}/wave10-od3b-browser.stderr.log}"
 
 cleanup() {
   openshell sandbox delete "${sandbox_name}" >/dev/null 2>&1 || true
@@ -19,7 +20,12 @@ openshell sandbox create   --name "${sandbox_name}"   --from "${image_name}"   -
 openshell policy get "${sandbox_name}" --full > "${effective_policy_path}"
 
 
-openshell sandbox exec -n "${sandbox_name}" --no-login-shell --   /opt/od3b/node /opt/od3b/live_canary.mjs > "${result_path}"
+if ! openshell sandbox exec -n "${sandbox_name}" --no-login-shell --   /opt/od3b/node /opt/od3b/live_canary.mjs > "${result_path}" 2> "${error_path}"; then
+  openshell logs "${sandbox_name}" --since 5m --source sandbox > "${log_path}" 2>&1 || true
+  cat "${error_path}" >&2 || true
+  cat "${log_path}" >&2 || true
+  exit 1
+fi
 
 openshell sandbox exec -n "${sandbox_name}" --no-login-shell --   /opt/od3b/node /opt/od3b/post_stop_probe.mjs > "${probe_path}"
 
