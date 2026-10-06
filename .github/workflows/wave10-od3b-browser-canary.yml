@@ -1,4 +1,4 @@
-name: Wave 10 OD-3B browser image resolution
+name: Wave 10 OD-3B isolated browser/files canary
 
 on:
   pull_request:
@@ -12,15 +12,22 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: wave10-od3b-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  resolve-image:
+  live-public-canary:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     env:
-      PLAYWRIGHT_IMAGE: mcr.microsoft.com/playwright:v1.63.0-noble
+      OPENSHELL_VERSION: "0.1.2"
+      OPENSHELL_DEB: openshell_0.1.2-1_amd64.deb
+      OPENSHELL_DEB_SHA256: 1f5416ea08f32fdc621f20a2cc0324298e60aba8bbe996459d9e3b44195f23df
+      OD3B_IMAGE: wave10-od3b:local
     steps:
       - name: Checkout public CI lab
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           persist-credentials: false
           fetch-depth: 1
@@ -28,9 +35,45 @@ jobs:
       - name: Enforce public-only publication boundary
         run: python3 checks/publication_gate.py
 
-      - name: Resolve exact Playwright image digest
+      - name: Verify runner boundary
         shell: bash
         run: |
           set -euo pipefail
-          docker pull "${PLAYWRIGHT_IMAGE}" >/dev/null
-          docker image inspect "${PLAYWRIGHT_IMAGE}" --format 'PLAYWRIGHT_RESOLVED_IMAGE={{index .RepoDigests 0}}'
+          test -S /var/run/docker.sock
+          docker version
+
+      - name: Build digest-pinned shell-less computer image
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build --pull=false             --tag "${OD3B_IMAGE}"             --file wave10/Dockerfile             wave10
+          docker image inspect "${OD3B_IMAGE}" --format '{{.Id}}'
+
+      - name: Install exact OpenShell package
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://github.com/NVIDIA/OpenShell/releases/download/v0.1.2/${OPENSHELL_DEB}"
+          curl -fL --retry 3 --output "${RUNNER_TEMP}/${OPENSHELL_DEB}" "${url}"
+          echo "${OPENSHELL_DEB_SHA256}  ${RUNNER_TEMP}/${OPENSHELL_DEB}" | sha256sum -c -
+          sudo dpkg --install "${RUNNER_TEMP}/${OPENSHELL_DEB}"
+          openshell --version | grep -F "${OPENSHELL_VERSION}"
+
+      - name: Execute real isolated computer canary
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x wave10/run_canary.sh
+          wave10/run_canary.sh             wave10-od3b             wave10/openshell_od3b.yaml             "${OD3B_IMAGE}"             "${RUNNER_TEMP}/wave10-od3b-result.json"             "${RUNNER_TEMP}/wave10-od3b-post-stop.json"             "${RUNNER_TEMP}/wave10-od3b-effective-policy.yaml"             "${RUNNER_TEMP}/wave10-od3b-openshell.log"
+
+      - name: Upload public-safe OD-3B evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: wave10-od3b-live-public-canary
+          path: |
+            ${{ runner.temp }}/wave10-od3b-result.json
+            ${{ runner.temp }}/wave10-od3b-post-stop.json
+            ${{ runner.temp }}/wave10-od3b-effective-policy.yaml
+            ${{ runner.temp }}/wave10-od3b-openshell.log
+          if-no-files-found: error
+          retention-days: 7
