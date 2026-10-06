@@ -30,16 +30,17 @@ The image digest was resolved in Wave 10 PR #33 run #1 before the live canary wa
 
 ## Shell boundary
 
-The derived runtime image removes the common general shell binaries after build:
+OpenShell's internal exec transport may depend on ordinary system shell infrastructure, so Wave 10 does not mutate or remove those transport internals.
 
-- `/bin/sh`;
-- `/bin/bash`;
-- `/bin/dash`;
-- equivalent `/usr/bin` paths.
+The **task-facing computer capability surface** still has no shell capability:
 
-The canary is a fixed Node program. The task is not given command text or a run-command interface.
+- the canary is a fixed Node program;
+- the task accepts no command string;
+- no `run_command` / `shell.run` operation exists;
+- the workflow statically rejects `child_process`, `exec(`, `spawn(` and shell/run-command primitives in the exact live canary source;
+- the canary reports the SHA-256 of its own source.
 
-A post-stop probe independently requires those shell paths to remain absent.
+This preserves the OD-3 requirement at the capability boundary without breaking the sandbox's own transport machinery.
 
 ## Network boundary
 
