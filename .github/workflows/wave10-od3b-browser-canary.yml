@@ -55,7 +55,7 @@ jobs:
           installer="${RUNNER_TEMP}/openshell-install-v0.1.2.sh"
           curl -fsSL             "https://raw.githubusercontent.com/NVIDIA/OpenShell/${OPENSHELL_RELEASE_COMMIT}/install.sh"             -o "${installer}"
           OPENSHELL_VERSION="${OPENSHELL_VERSION}" sh "${installer}"
-          test "$(dpkg-query -W -f='\${Version}' openshell)" = "0.1.2-1"
+          test "$(dpkg-query -W -f='${Version}' openshell)" = "0.1.2-1"
           openshell --version | grep -F "0.1.2"
           openshell status
 
