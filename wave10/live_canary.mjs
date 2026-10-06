@@ -10,6 +10,8 @@ const result = {
   playwright_version: "1.63.0",
   privacy_class: "SYNTHETIC",
   shell_capability: false,
+  shell_tool_exposed: false,
+  command_input_accepted: false,
   credentials_available: false,
   production_mounts_available: false,
   concurrency: 1,
@@ -64,6 +66,9 @@ async function stopComputer() {
 }
 
 try {
+  const sourceText = await fs.readFile("/opt/od3b/live_canary.mjs", "utf8");
+  result.canary_source_sha256 = crypto.createHash("sha256").update(sourceText).digest("hex");
+
   await fs.rm(workspace, { recursive: true, force: true });
   await fs.mkdir(outDir, { recursive: true });
 
