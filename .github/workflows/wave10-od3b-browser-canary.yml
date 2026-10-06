@@ -41,6 +41,26 @@ jobs:
           test -S /var/run/docker.sock
           docker version
 
+      - name: Verify task interface exposes no shell command path
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          text = Path("wave10/live_canary.mjs").read_text(encoding="utf-8")
+          forbidden = [
+              "node:child_process",
+              "child_process",
+              "shell.run",
+              "run_command",
+              "exec(",
+              "spawn(",
+          ]
+          found = [item for item in forbidden if item in text]
+          if found:
+              raise SystemExit(f"forbidden task-facing execution primitive: {found}")
+          PY
+
       - name: Build digest-pinned shell-less computer image
         shell: bash
         run: |
