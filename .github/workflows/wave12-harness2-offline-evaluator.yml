@@ -1,0 +1,62 @@
+name: Wave 12 Harness2 offline evidence evaluator
+
+on:
+  pull_request:
+    paths:
+      - "wave12/**"
+      - ".github/workflows/wave12-harness2-offline-evaluator.yml"
+  push:
+    branches: [main]
+    paths:
+      - "wave12/**"
+      - ".github/workflows/wave12-harness2-offline-evaluator.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wave12-harness2-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scorer-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout public CI laboratory
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+
+      - name: Compile evaluation code
+        run: python3 -m py_compile wave12/evaluator.py wave12/test_evaluator.py
+
+      - name: Run positive and adversarial evaluation contract tests
+        run: python3 -m unittest discover -s wave12 -p 'test_*.py' -v
+
+      - name: Verify exported solver pack contains no gold
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 wave12/evaluator.py export --cases wave12/synthetic_cases.json --out "${RUNNER_TEMP}/panam-wave12-tasks.json"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          path = Path(os.environ["RUNNER_TEMP"]) / "panam-wave12-tasks.json"
+          pack = json.loads(path.read_text(encoding="utf-8"))
+          assert len(pack["tasks"]) == 16
+          assert all(set(item) == {"case_id", "domain", "question", "sources"} for item in pack["tasks"])
+          assert all("gold" not in item for item in pack["tasks"])
+          print("PANAM_WAVE12_EXPORTED_NO_GOLD=PASS")
+          PY
+          echo "PANAM_WAVE12_SCORER_TESTS=PASS"
