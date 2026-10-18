@@ -1,0 +1,65 @@
+name: TesterArmy public synthetic e2e
+
+on:
+  pull_request:
+    paths:
+      - 'testerarmy-pilot/**'
+      - '.github/workflows/testerarmy-synthetic-e2e.yml'
+      - 'checks/publication_gate.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: testerarmy-public-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      E2E_TELEMETRY_DISABLED: '1'
+      npm_config_ignore_scripts: 'true'
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Set up Node 26
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '26'
+
+      - name: Verify committed dependency lock and install without scripts
+        working-directory: testerarmy-pilot
+        run: |
+          echo '82335677968bed86a0f117747cc2751c46e7a03cf5a9bec1ffd5ed8b07ead937  package-lock.json' | sha256sum -c -
+          npm ci --no-audit --no-fund --ignore-scripts
+
+      - name: Install Chromium and dependencies
+        working-directory: testerarmy-pilot
+        run: npx --no-install e2e-web install chromium --with-deps
+
+      - name: Run deterministic synthetic browser checks
+        working-directory: testerarmy-pilot
+        run: npm run test:e2e
+
+      - name: Upload synthetic reports and diagnostics
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: testerarmy-synthetic-e2e
+          path: |
+            testerarmy-pilot/package-lock.json
+            testerarmy-pilot/.e2e/report.json
+            testerarmy-pilot/.e2e/junit.xml
+            testerarmy-pilot/.e2e/results
+          if-no-files-found: warn
+          retention-days: 7

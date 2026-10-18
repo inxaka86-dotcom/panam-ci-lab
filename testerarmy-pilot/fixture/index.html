@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Synthetic Legal Portal</title>
+<style>
+* { box-sizing: border-box; }
+body { font: 16px system-ui, sans-serif; margin: 0; }
+header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px; border-bottom: 1px solid #ddd; }
+.brand { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.mark { width: 24px; height: 24px; flex: 0 0 24px; background: #555; }
+.desktop-nav { display: flex; gap: 16px; }
+.mobile-menu { display: none; }
+.mobile-menu nav { display: none; }
+.mobile-menu[open] nav { display: flex; flex-direction: column; gap: 12px; padding: 12px 0; }
+main { padding: 32px 16px; }
+@media (max-width: 600px) {
+  .brand { font-size: 14px; }
+  .desktop-nav { display: none; }
+  .mobile-menu { display: block; }
+}
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="/"><span class="mark" aria-hidden="true"></span>Synthetic Portal</a>
+  <nav class="desktop-nav" aria-label="Desktop navigation"><a href="/about.html">About</a></nav>
+  <details class="mobile-menu">
+    <summary>Menu</summary>
+    <nav aria-label="Mobile navigation"><a href="/about.html">About</a></nav>
+  </details>
+</header>
+<main><h1>Synthetic Legal Portal</h1><p>Fictional public testing fixture.</p></main>
+</body>
+</html>
