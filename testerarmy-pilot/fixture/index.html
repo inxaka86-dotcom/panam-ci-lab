@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Synthetic Portal</title>
+<style>
+* { box-sizing: border-box; }
+body { font: 16px system-ui; margin: 0; }
+header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; padding: 16px; border-bottom: 1px solid #ddd; }
+.brand { display: inline-flex; align-items: center; gap: 8px; }
+.mark { width: 24px; height: 24px; display: inline-block; background: #555; }
+nav { display: flex; gap: 16px; }
+summary { display: none; }
+main { padding: 32px 16px; }
+@media (max-width: 600px) {
+  nav { display: none; }
+  summary { display: list-item; }
+  details[open] nav { display: flex; flex-direction: column; }
+}
+</style>
+</head>
+<body>
+<header>
+<a class="brand" href="/"><span class="mark" aria-hidden="true"></span>Synthetic Portal</a>
+<details><summary>Menu</summary><nav aria-label="Primary navigation"><a href="/about.html">About</a></nav></details>
+</header>
+<main><h1>Synthetic Legal Portal</h1><p>Fictional public testing fixture.</p></main>
+</body>
+</html>
