@@ -37,12 +37,11 @@ jobs:
         with:
           node-version: '26'
 
-      - name: Install exact direct dependencies without scripts
+      - name: Verify committed dependency lock and install without scripts
         working-directory: testerarmy-pilot
         run: |
-          npm install --no-audit --no-fund --ignore-scripts
-          test -s package-lock.json
-          sha256sum package-lock.json
+          echo '82335677968bed86a0f117747cc2751c46e7a03cf5a9bec1ffd5ed8b07ead937  package-lock.json' | sha256sum -c -
+          npm ci --no-audit --no-fund --ignore-scripts
 
       - name: Install Chromium and dependencies
         working-directory: testerarmy-pilot
