@@ -39,7 +39,10 @@ jobs:
 
       - name: Install exact direct dependencies without scripts
         working-directory: testerarmy-pilot
-        run: npm install --no-audit --no-fund --ignore-scripts
+        run: |
+          npm install --no-audit --no-fund --ignore-scripts
+          test -s package-lock.json
+          sha256sum package-lock.json
 
       - name: Install Chromium and dependencies
         working-directory: testerarmy-pilot
@@ -55,6 +58,7 @@ jobs:
         with:
           name: testerarmy-synthetic-e2e
           path: |
+            testerarmy-pilot/package-lock.json
             testerarmy-pilot/.e2e/report.json
             testerarmy-pilot/.e2e/junit.xml
             testerarmy-pilot/.e2e/results
