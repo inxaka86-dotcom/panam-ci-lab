@@ -1,0 +1,111 @@
+name: Wave 10 Harness2 synthetic local recursion
+
+on:
+  pull_request:
+    paths:
+      - "wave10/**"
+      - ".github/workflows/wave10-harness2-local-demo.yml"
+  push:
+    branches: [main]
+    paths:
+      - "wave10/**"
+      - ".github/workflows/wave10-harness2-local-demo.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wave10-harness2-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  local-recursion-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      HARNESS2_UPSTREAM_SHA: 1cfe254e8d25b15f37048c3730134686abe60335
+      PYTHONDONTWRITEBYTECODE: "1"
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+    steps:
+      - name: Checkout public PANAM CI lab
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+
+      - name: Fetch and verify exact upstream source
+        shell: bash
+        run: |
+          set -euo pipefail
+          src="${RUNNER_TEMP}/harness2-src"
+          git init "${src}"
+          git -C "${src}" remote add origin https://github.com/google-research/harness2.git
+          git -C "${src}" fetch --depth=1 origin "${HARNESS2_UPSTREAM_SHA}"
+          git -C "${src}" checkout --detach FETCH_HEAD
+          test "$(git -C "${src}" rev-parse HEAD)" = "${HARNESS2_UPSTREAM_SHA}"
+          git -C "${src}" remote remove origin
+          echo "HARNESS2_SRC=${src}" >> "${GITHUB_ENV}"
+
+      - name: Install only the public demo package
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --no-input --no-deps "${HARNESS2_SRC}"
+          python -m pip show harness2
+
+      - name: Run deterministic parallel demo
+        shell: bash
+        run: |
+          set -euo pipefail
+          harness2-demo --mode parallel --k 1 --output "${RUNNER_TEMP}/harness2-parallel"
+
+      - name: Run deterministic sequential demo
+        shell: bash
+        run: |
+          set -euo pipefail
+          harness2-demo --mode sequential --k 1 --output "${RUNNER_TEMP}/harness2-sequential"
+
+      - name: Verify exact demo result contract and hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ["RUNNER_TEMP"])
+          for mode in ("parallel", "sequential"):
+              report = root / f"harness2-{mode}" / "demo.json"
+              raw = report.read_bytes()
+              data = json.loads(raw)
+              result = {
+                  "mode": mode,
+                  "done": data.get("done"),
+                  "failed": data.get("failed"),
+                  "execution_count": data.get("execution_count"),
+                  "editor_calls": data.get("editor_calls"),
+                  "sha256": hashlib.sha256(raw).hexdigest(),
+              }
+              print("HARNESS2_DEMO=" + json.dumps(result, sort_keys=True))
+              if not (
+                  data.get("done") == 2
+                  and data.get("failed") == 0
+                  and isinstance(data.get("execution_count"), int)
+                  and data["execution_count"] > 0
+                  and isinstance(data.get("editor_calls"), int)
+                  and data["editor_calls"] > 0
+              ):
+                  raise SystemExit(f"Demo contract failed for {mode}")
+          print("HARNESS2_LOCAL_DEMO=PASS")
+          PY
