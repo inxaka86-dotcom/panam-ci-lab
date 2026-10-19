@@ -154,6 +154,16 @@ jobs:
           echo "PANAM_LEANREA_NETNS_CONTRACT=PASS"
           echo "PANAM_LEANREA_ACTUAL_RUNNER_ISOLATION=NOT_PROVEN"
 
+      - name: Verify existing sandbox reuse does not grant Leanrea executor authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s wave13 -p 'test_sandbox_reuse.py' -v 2>&1 | tee "${RUNNER_TEMP}/leanrea-sandbox-reuse.log"
+          grep -E '^Ran 20 tests in ' "${RUNNER_TEMP}/leanrea-sandbox-reuse.log"
+          grep -x 'OK' "${RUNNER_TEMP}/leanrea-sandbox-reuse.log"
+          echo "PANAM_LEANREA_SANDBOX_REUSE_CONTRACT=PASS"
+          echo "PANAM_LEANREA_SANDBOX_REUSE_AUTHORITY=DENIED"
+
       - name: Verify missing tools fail closed
         shell: bash
         run: |
