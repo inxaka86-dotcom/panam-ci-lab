@@ -92,6 +92,10 @@ This is an **offline data-preparation stage**, not an agent/model launcher, a tr
 
 `probe_local_netns.py` contains a no-provider/no-internet **local-only** observation: create a fresh user/network namespace for a fixed Python child and test isolation from a temporary 127.0.0.1 listener owned by its parent. `test_local_netns_probe.py` exercises 20 verdict/JSON negatives. The public GitHub-hosted CI logs `PASS_LOCAL_EPHEMERAL_NETNS_ONLY` or explicit `BLOCKED_...` and always denies running a real agent; *CI success never means target-host or executor isolation is proven*. No candidate binary/agent is executed; no network provider requests, keys or production changes. See `BUDGET_AND_EXECUTOR.md`.
 
+## Existing sandbox compatibility, not permission
+
+`assess_sandbox_reuse.py` and `test_sandbox_reuse.py` check whether a proposed Leanrea run would be wrongly promoted from another historically successful PANAM **fixed-smoke** sandbox. The present trusted route's repository/operation restrictions do not permit this public Leanrea Draft PR or a Codex agent. Both positive and negative synthetic declarations are **unauthenticated**; assessment always returns execution denied. A separate protected-main trusted route, offline-only fixed job, pinned archive/tool hashes and independently inspected teardown would need review before using the pre-existing disposable VM/container boundary. See `SANDBOX_REUSE.md`.
+
 ## Next measurement gate
 
 To test agent benefit, run baseline-vs-candidate under an identical, separately approved model/provider/compute budget; freeze task data, environment, source/config hashes, scoring rubric and case order. Use real tool traces and provider receipts, held-out tasks and independently inspected output. No private materials or live production access. No promotion, merge or deployment is implied by a passing smoke check.
