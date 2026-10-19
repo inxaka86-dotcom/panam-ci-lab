@@ -132,6 +132,15 @@ jobs:
           grep -x 'OK' "${RUNNER_TEMP}/leanrea-reservations.log"
           echo "PANAM_LEANREA_SYNTHETIC_RESERVATIONS=PASS"
 
+      - name: Verify local SQLite synthetic reservations across restarts and processes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s wave13 -p 'test_synthetic_sqlite_ledger.py' -v 2>&1 | tee "${RUNNER_TEMP}/leanrea-sqlite.log"
+          grep -E '^Ran 27 tests in ' "${RUNNER_TEMP}/leanrea-sqlite.log"
+          grep -x 'OK' "${RUNNER_TEMP}/leanrea-sqlite.log"
+          echo "PANAM_LEANREA_SQLITE_SYNTHETIC=PASS"
+
       - name: Verify missing tools fail closed
         shell: bash
         run: |
