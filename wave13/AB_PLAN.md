@@ -76,6 +76,10 @@ The new `synthetic_sqlite_ledger.py` demonstrates fixed eight-slot reservations 
 
 `probe_local_netns.py` makes one strictly local test of an unprivileged Linux user/network namespace by comparing net/user namespace identities and testing that a child cannot contact its parent's 127.0.0.1 listener. It never sends Internet traffic, launches Codex or touches AiDostup. A local `PASS_LOCAL_EPHEMERAL_NETNS_ONLY` applies only to that test process and host, not the future worker. A `BLOCKED_...` result means the host lacks the demonstrated namespace capability and must NEVER fall back to an unrestricted agent. The CI suite tests correct verdict handling, but kernel isolation, filesystem boundary and model-executor admission remain unproven. See `BUDGET_AND_EXECUTOR.md`.
 
+## Existing PANAM sandbox must not be used by bypassing its route
+
+PANAM has historical evidence for a trusted disposable VM plus a fixed, networkless inner sandbox, but its reviewed route accepts only a non-draft same-repository PR and a specific fixed script. A separate public Leanrea Draft PR and model-enabled A/B cannot be presented as that fixed smoke. `assess_sandbox_reuse.py` reports the compatibility gaps from synthetic claims and always denies execution, including all-positive fake receipts. Use `SANDBOX_REUSE.md` for the future **separately reviewed** offline-only adaptation path; no real agent or model is authorized by this research work.
+
 ## Next explicit admission gate
 
 Real performance claims must come from a separate approved runner and verified end-to-end receipts: each case's accepted answer and cited source offset, safe action trace, tool-count, provider usage/expense, runtime duration, and success/failure. Ingest only redacted/hashes in public CI. Perform independent correctness/security review before calculating model advantage. No merge, deploy or production permission arises from this document or a green workflow.
