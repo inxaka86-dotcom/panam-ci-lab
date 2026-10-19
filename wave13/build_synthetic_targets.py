@@ -77,9 +77,12 @@ def sha256(path: Path) -> str:
 
 
 def build(root: Path) -> dict:
-    root = root.resolve()
-    # Never delete/overwrite an existing directory; avoid following output symlinks.
-    if root.exists() or root.is_symlink():
+    # Check the user-supplied leaf before normalization; a dangling link must not escape.
+    if root.is_symlink():
+        raise ValueError("Output symlink is forbidden")
+    root = root.absolute()
+    # Never delete/overwrite an existing directory.
+    if root.exists():
         raise ValueError("Output exists; provide a fresh private directory")
     cc = checked_tool("cc")
     go = checked_tool("go")
