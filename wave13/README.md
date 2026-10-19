@@ -80,6 +80,10 @@ This is an **offline data-preparation stage**, not an agent/model launcher, a tr
 
 `synthetic_usd_envelope.py` provides no-call, nonauthoritative arithmetic across eight paired response slots with explicit limits and adversarial failure controls. `test_synthetic_usd_envelope.py` verifies budget cap arithmetic, integer rounding, unsupported real tariff claims, retries, cross-arm mismatches and forbidden cost authorization. It never accesses the vendor, key, network or host. The toy $0.10 ceiling is **not** owner permission for this Leanrea pilot; no actual USD hard enforcement exists. `BUDGET_AND_EXECUTOR.md` describes the separately required OS-level network isolation and request broker.
 
+## Reservation-book simulation (no request broker)
+
+`synthetic_reservation_book.py` is a no-network, in-memory state machine for one-time holds against fabricated per-request maximum charges. `test_synthetic_reservation_book.py` stresses parallel reservations, replay attempts, stop-on-overclaim, unknown outcomes and permanent conservative holds. This is a concurrency-unit test only, **not** a real billable request limiter: it has no durable journal, kernel sandbox, API credentials or forward operation. Even when the toy bookkeeping succeeds, all execution and verified USD-cap flags are false. See `BUDGET_AND_EXECUTOR.md`.
+
 ## Next measurement gate
 
 To test agent benefit, run baseline-vs-candidate under an identical, separately approved model/provider/compute budget; freeze task data, environment, source/config hashes, scoring rubric and case order. Use real tool traces and provider receipts, held-out tasks and independently inspected output. No private materials or live production access. No promotion, merge or deployment is implied by a passing smoke check.
