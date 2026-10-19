@@ -56,6 +56,10 @@ python3 -m unittest discover -s wave13 -p 'test_score_synthetic.py' -v
 
 Generator output remains in a private temporary working directory, not in Git history. The model-facing `tasks.json` has no expected answers. The scorer's checks deliberately include a hand-written correct response, wrong-channel and wrong-Go-toolchain responses, schema errors, duplicates and forbidden injected assertions. Passing these controls does not imply model accuracy, independent citation verification or security approval.
 
+## Source-anchor checks (public, not semantic proof)
+
+`verify_public_evidence.py` and `test_public_evidence.py` add a separate **public synthetic citation verifier**. It checks nine submitted field references against precise Electron source lines and allowlisted read-only static CLI outputs for ELF, Go and strings; malformed paths/positions/cross-case citations fail closed. Its `anchor_present` flags do **not** prove behavior, derivation, tool traces, blindness, real model accuracy or cost. See `EVIDENCE.md`.
+
 ## Next explicit admission gate
 
 Real performance claims must come from a separate approved runner and verified end-to-end receipts: each case's accepted answer and cited source offset, safe action trace, tool-count, provider usage/expense, runtime duration, and success/failure. Ingest only redacted/hashes in public CI. Perform independent correctness/security review before calculating model advantage. No merge, deploy or production permission arises from this document or a green workflow.
