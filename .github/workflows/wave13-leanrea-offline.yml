@@ -114,6 +114,15 @@ jobs:
           grep -x 'OK' "${RUNNER_TEMP}/leanrea-grounding.log"
           echo "PANAM_LEANREA_PUBLIC_EVIDENCE=PASS"
 
+      - name: Verify synthetic USD arithmetic and prevent false spend authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s wave13 -p 'test_synthetic_usd_envelope.py' -v 2>&1 | tee "${RUNNER_TEMP}/leanrea-budget.log"
+          grep -E '^Ran 26 tests in ' "${RUNNER_TEMP}/leanrea-budget.log"
+          grep -x 'OK' "${RUNNER_TEMP}/leanrea-budget.log"
+          echo "PANAM_LEANREA_USD_SYNTHETIC_ONLY=PASS"
+
       - name: Verify missing tools fail closed
         shell: bash
         run: |
