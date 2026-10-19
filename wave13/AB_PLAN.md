@@ -18,6 +18,12 @@ The candidate skill changes guidance, NOT tool grants, model, task text, permitt
 
 Do **not** borrow the budget or permission from an unrelated Harness² A/B: this is a distinct research experiment. A full model-backed run requires separately approved spend, exact provider/model/wire entitlement, external USD-denominated enforcement, a disposable unprivileged executor with provable egress restrictions, independently blinded ground truth and held-out questions, and access through a reviewed existing PANAM execution/approval lane. Public GitHub Actions cannot call a model or hold credentials for this pilot.
 
+## Identical agent-only workspaces (now implemented; still no model invocation)
+
+`export_equal_workspaces.py` creates a pair of byte-identical analysis workspaces for the `base` and `leanrea` arms. It exports only the seven selected task/fixture files, leaves publicly visible scorer/test/source material outside both workspaces, clears binary executable bits, emits a separate SHA-256 manifest, and refuses unsafe/existing output locations. `test_equal_workspaces.py` checks exact equality and negative path/permission cases.
+
+The Leanrea skill is intentionally not included in either workspace; it would be selectively mounted/injected through a separately approved agent profile **only after** provider, isolated executor, cost and blind-label approvals. Workspace equality is not proof of an isolated runtime, model route, egress filtering or blindness. See `WORKSPACES.md`.
+
 ## Minimal offline receipt shape
 
 `ab_trace_contract.py` admits a packet containing:
