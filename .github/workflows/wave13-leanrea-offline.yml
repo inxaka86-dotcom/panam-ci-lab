@@ -68,6 +68,15 @@ jobs:
           python3 wave13/smoke_test.py 2>&1 | tee "${RUNNER_TEMP}/leanrea-smoke.log"
           grep -F "PANAM_LEANREA_OFFLINE_SMOKE=PASS; executed=7; skipped=0" "${RUNNER_TEMP}/leanrea-smoke.log"
 
+      - name: Verify pure paired-trace contract and adversarial controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s wave13 -p 'test_ab_trace_contract.py' -v 2>&1 | tee "${RUNNER_TEMP}/leanrea-ab-contract.log"
+          grep -E '^Ran [0-9]+ tests? in ' "${RUNNER_TEMP}/leanrea-ab-contract.log"
+          grep -x 'OK' "${RUNNER_TEMP}/leanrea-ab-contract.log"
+          echo "PANAM_LEANREA_AB_CONTRACT=PASS"
+
       - name: Verify missing tools fail closed
         shell: bash
         run: |
