@@ -88,7 +88,10 @@ def evidence_matches(path: Path, method: str, answer: str, line: int | None) -> 
             lines = data.decode("utf-8").splitlines()
         except UnicodeError as exc:
             raise Invalid("Non-UTF8 synthetic source") from exc
-        return line <= len(lines) and answer in lines[line - 1]
+        # Match an entire quoted JavaScript string literal, not a substring.
+        return (line <= len(lines)
+                and re.search(r"(['\"])" + re.escape(answer) + r"\1",
+                              lines[line - 1]) is not None)
     if line is not None:
         raise Invalid("Static inspector does not accept source line position")
     text = inspect(method, path)
@@ -104,7 +107,14 @@ def evidence_matches(path: Path, method: str, answer: str, line: int | None) -> 
     if method == "objdump-immediate":
         if not answer.isdecimal() or not (0 <= int(answer) <= 65535):
             return False
-        return re.search(r"\$0x" + format(int(answer), "x") + r"\b", text) is not None
+        # A random immediate is not permission-rule evidence. Demand the
+        # synthetic fixture's actual geteuid call and the immediate in CMP.
+        if re.search(r"\bcall(?:q)?\s+[^\n]*<geteuid@plt>", text) is None:
+            return False
+        compare = (r"(?m)^\s*[0-9a-f]+:\s+(?:[0-9a-f]{2}\s+)+"
+                   r"cmp(?:[bwlq])?\s+\$0x"
+                   + format(int(answer), "x") + r"\s*,\s*%[a-z0-9]+\b")
+        return re.search(compare, text) is not None
     raise Invalid("Unapproved method")
 
 
