@@ -76,6 +76,10 @@ This is an **offline data-preparation stage**, not an agent/model launcher, a tr
 
 `verify_public_evidence.py` reopens allowed synthetic artifacts and tests whether nine response values can be located at their cited source line, nm exported symbol, function-scoped objdump immediate, binary string or Go build metadata. `test_public_evidence.py` includes positive and adversarial citations. This detects fabricated source anchors, **not** semantic accuracy or trustworthy agent traces, and the labels remain public/nonblind. See `EVIDENCE.md`.
 
+## Synthetic bill-envelope and future isolation boundary
+
+`synthetic_usd_envelope.py` provides no-call, nonauthoritative arithmetic across eight paired response slots with explicit limits and adversarial failure controls. `test_synthetic_usd_envelope.py` verifies budget cap arithmetic, integer rounding, unsupported real tariff claims, retries, cross-arm mismatches and forbidden cost authorization. It never accesses the vendor, key, network or host. The toy $0.10 ceiling is **not** owner permission for this Leanrea pilot; no actual USD hard enforcement exists. `BUDGET_AND_EXECUTOR.md` describes the separately required OS-level network isolation and request broker.
+
 ## Next measurement gate
 
 To test agent benefit, run baseline-vs-candidate under an identical, separately approved model/provider/compute budget; freeze task data, environment, source/config hashes, scoring rubric and case order. Use real tool traces and provider receipts, held-out tasks and independently inspected output. No private materials or live production access. No promotion, merge or deployment is implied by a passing smoke check.
