@@ -88,6 +88,10 @@ This is an **offline data-preparation stage**, not an agent/model launcher, a tr
 
 `synthetic_sqlite_ledger.py` makes the fictional reservation state recoverable from an owned private local SQLite file and binds the data to its exact public synthetic envelope. The 27-case `test_synthetic_sqlite_ledger.py` suite verifies duplicate rejection across restarts, multi-process uniqueness, atomic interrupted writes, stop persistence and unsafe-file refusal. SQLite `synchronous=FULL` and `BEGIN IMMEDIATE` support the test contract, but this is still **not a request broker**, provider spend cap, production-ready trusted ledger, power-loss proof or isolated model executor. No outbound model requests are possible from this module. See `BUDGET_AND_EXECUTOR.md`.
 
+## Non-root Linux network namespace capability check
+
+`probe_local_netns.py` contains a no-provider/no-internet **local-only** observation: create a fresh user/network namespace for a fixed Python child and test isolation from a temporary 127.0.0.1 listener owned by its parent. `test_local_netns_probe.py` exercises 20 verdict/JSON negatives. The public GitHub-hosted CI logs `PASS_LOCAL_EPHEMERAL_NETNS_ONLY` or explicit `BLOCKED_...` and always denies running a real agent; *CI success never means target-host or executor isolation is proven*. No candidate binary/agent is executed; no network provider requests, keys or production changes. See `BUDGET_AND_EXECUTOR.md`.
+
 ## Next measurement gate
 
 To test agent benefit, run baseline-vs-candidate under an identical, separately approved model/provider/compute budget; freeze task data, environment, source/config hashes, scoring rubric and case order. Use real tool traces and provider receipts, held-out tasks and independently inspected output. No private materials or live production access. No promotion, merge or deployment is implied by a passing smoke check.
