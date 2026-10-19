@@ -22,6 +22,12 @@ Reproduce with Python and no external dependencies:
 
 This does not turn an estimated amount into a hard real-world spend cap. Provider tokens and dollars are different units. Hidden/streamed/retried subrequests, max context tokens and unbounded provider billing cannot be controlled by the module.
 
+## In-memory reservation prototype — NOT a request broker
+
+`synthetic_reservation_book.py` is a thread-safe **simulation of request-slot admission** over the **fabricated** eight-slot arithmetic envelope. It validates exact four paired slots, uses a process-local mutex to serialize concurrent reservations, blocks duplicate slots and nonce replays, denies reservation beyond the toy ceiling, permanently retains each reserved maximum on a claimed/unknown outcome, and stops new reservations on an over-limit fabricated charge. `test_synthetic_reservation_book.py` includes parallel multi-thread races, deliberate replays, malformed IDs, missing rates/approvals, uncertain outcomes, and over-claim stop behavior. No charges are actually made.
+
+A reservation record saying `synthetic_reservation_recorded=true` is NOT forwarding authorization: it explicitly says `real_upstream_request_allowed=false`. The module has **no socket, HTTP client, provider API, run launcher, model key, persistent journal, billing proof or crash recovery**; a new Python process starts a fresh fictional book. Even a green concurrent test does NOT prove cross-process or distributed atomicity, OS-level network confinement, bounded Codex subcalls, a vendor-recognized USD hard cap or model response compatibility. A real reservation service would require durable atomic state and strict fail-closed crash recovery; none is staged here.
+
 ## Explicit future executor boundary (NOT implemented, NOT deployed)
 
 1. Bind exact case bytes, fixture, route, allowed tools, model and environment hashes. Only the candidate arm receives a pinned Leanrea skill via a reviewed profile injection external to the identical task workspaces; the baseline has no such skill.
