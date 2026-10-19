@@ -6,10 +6,11 @@ import copy
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from build_synthetic_targets import build
 from score_synthetic import expected_from_target
-from verify_public_evidence import Invalid, approved_target, verify, SCHEMA, CASES
+from verify_public_evidence import Invalid, approved_target, verify, evidence_matches, SCHEMA, CASES
 
 
 def packet_for(root: Path) -> dict:
@@ -107,6 +108,34 @@ class PublicEvidenceTest(unittest.TestCase):
         r = verify(self.mutate(lambda p: p["responses"][1]["answers"].__setitem__(
             "permission_symbol", "not_an_export")), self.root)
         self.assertEqual(r["fields_with_matching_anchors"], 8)
+
+    def test_js_prefix_substring_not_grounded(self):
+        # A channel fragment must not be passed off as the quoted full channel.
+        r = verify(self.mutate(lambda p: p["responses"][0]["answers"].__setitem__(
+            "start_channel", "records:begin")), self.root)
+        self.assertEqual(r["fields_with_matching_anchors"], 8)
+
+    def test_js_suffix_substring_not_grounded(self):
+        r = verify(self.mutate(lambda p: p["responses"][0]["answers"].__setitem__(
+            "changed_channel", "changed-v2")), self.root)
+        self.assertEqual(r["fields_with_matching_anchors"], 8)
+
+    def test_unrelated_mov_immediate_not_grounded(self):
+        # A call to geteuid plus an unrelated MOV immediate is insufficient.
+        fake = ("  1010:\te8 00 00 00 00\tcall 1020 <geteuid@plt>\n"
+                "  1015:\tb8 d2 04 00 00\tmov $0x4d2,%eax\n")
+        with patch("verify_public_evidence.inspect", return_value=fake):
+            self.assertFalse(evidence_matches(Path("unused"), "objdump-immediate", "1234", None))
+
+    def test_unrelated_cmp_without_geteuid_not_grounded(self):
+        fake = "  1015:\t3d d2 04 00 00\tcmp $0x4d2,%eax\n"
+        with patch("verify_public_evidence.inspect", return_value=fake):
+            self.assertFalse(evidence_matches(Path("unused"), "objdump-immediate", "1234", None))
+
+    def test_quoted_literal_js_still_grounded(self):
+        r = verify(packet_for(self.root), self.root)
+        self.assertTrue(r["cases"][0]["anchor_present"]["start_channel"])
+        self.assertTrue(r["cases"][0]["anchor_present"]["changed_channel"])
 
     def test_reject_path_traversal(self):
         self.reject(lambda p: p["responses"][0]["evidence"]["start_channel"].__setitem__(
