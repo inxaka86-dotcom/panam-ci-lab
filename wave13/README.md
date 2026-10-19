@@ -44,6 +44,20 @@ The script checks hidden Electron folders, command regex alternation, HAR jq exp
 
 The first isolated workflow run failed *before executing smoke tests* because stock GitHub-hosted Ubuntu did not provide `rg`; publication gate passed. This setup failure is not a Leanrea benchmark result. Explicit signed Ubuntu package provisioning is isolated to CI setup; it is **not** a change to the candidate skill's ban on installing software. Read the exact-head run log before claiming a successful rerun.
 
+## Leanrea model A/B research contract (no model calls)
+
+A separate source-neutral, fail-closed paired-trace schema is staged in
+`ab_trace_contract.py` with adversarial tests `test_ab_trace_contract.py`.
+The four case identifiers represent future synthetic Electron, native ELF, Go
+and deep static-analysis targets. The targets and blinded answer key are NOT
+yet accepted. See `AB_PLAN.md` for equal-arm controls and execution gates.
+
+The trace projector only validates supplied shapes and computes **unverified**
+totals. Its output never treats synthetic/claimed observations as verified
+agent performance, model accuracy, evidence authenticity, USD billing or
+permission to execute. It makes zero provider/model calls; the existing
+path-scoped public CI runs the unit tests.
+
 ## Next measurement gate
 
 To test agent benefit, run baseline-vs-candidate under an identical, separately approved model/provider/compute budget; freeze task data, environment, source/config hashes, scoring rubric and case order. Use real tool traces and provider receipts, held-out tasks and independently inspected output. No private materials or live production access. No promotion, merge or deployment is implied by a passing smoke check.
