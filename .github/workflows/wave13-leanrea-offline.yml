@@ -40,6 +40,15 @@ jobs:
       - name: Enforce public-only publication gate
         run: python3 checks/publication_gate.py
 
+      - name: Provision public signed Ubuntu utilities before measured test
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends ripgrep jq
+          dpkg-query -W ripgrep jq
+          echo "PANAM_LEANREA_CI_SETUP=PASS"
+
       - name: Verify tools and print environment identity
         shell: bash
         run: |
