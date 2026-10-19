@@ -64,6 +64,10 @@ Generator output remains in a private temporary working directory, not in Git hi
 
 `synthetic_usd_envelope.py` now checks an eight-slot/four-pair synthetic budget plan: equal route/environment and task fingerprints, equal per-pair worst-case token reservations, zero retries/hidden extra billable calls, fixed example USD rates, and per-request integer rounding upward. It uses only fabricated-example tariffs and a toy $0.10 comparison ceiling. It cannot transform AiDostup **vendor tokens** to actual USD and never returns executable authority, real price verification, isolation or approved billing. The distinct Harness² spending cap is not transferable to Leanrea. See `BUDGET_AND_EXECUTOR.md`.
 
+## In-memory simulated admission — no real API broker
+
+`synthetic_reservation_book.py` implements lock-protected one-time holds for the eight fabricated A/B slots, duplicate/replay refusal, stop on an excessive *synthetic* claim, and no automatic refunds. Its snapshot unconditionally denies `real_upstream_request_allowed`, `real_usd_hard_cap_enforced`, crash-recovery, provider-billing and isolation claims. `test_synthetic_reservation_book.py` checks concurrency and negative admission paths; it does not create an executable Codex provider adapter. See `BUDGET_AND_EXECUTOR.md`.
+
 ## Next explicit admission gate
 
 Real performance claims must come from a separate approved runner and verified end-to-end receipts: each case's accepted answer and cited source offset, safe action trace, tool-count, provider usage/expense, runtime duration, and success/failure. Ingest only redacted/hashes in public CI. Perform independent correctness/security review before calculating model advantage. No merge, deploy or production permission arises from this document or a green workflow.
