@@ -134,8 +134,9 @@ class PublicEvidenceTest(unittest.TestCase):
 
     def test_quoted_literal_js_still_grounded(self):
         r = verify(packet_for(self.root), self.root)
-        self.assertTrue(r["cases"][0]["anchor_present"]["start_channel"])
-        self.assertTrue(r["cases"][0]["anchor_present"]["changed_channel"])
+        electron = next(c for c in r["cases"] if c["case_id"] == "LR-E01")
+        self.assertTrue(electron["anchor_present"]["start_channel"])
+        self.assertTrue(electron["anchor_present"]["changed_channel"])
 
     def test_reject_path_traversal(self):
         self.reject(lambda p: p["responses"][0]["evidence"]["start_channel"].__setitem__(
