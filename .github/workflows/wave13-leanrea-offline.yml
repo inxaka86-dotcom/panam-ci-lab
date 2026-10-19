@@ -87,6 +87,15 @@ jobs:
           grep -x 'OK' "${RUNNER_TEMP}/leanrea-targets.log"
           echo "PANAM_LEANREA_SYNTHETIC_TARGETS=PASS"
 
+      - name: Verify synthetic answer scorer positive and adversarial controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s wave13 -p 'test_score_synthetic.py' -v 2>&1 | tee "${RUNNER_TEMP}/leanrea-score.log"
+          grep -E '^Ran 12 tests in ' "${RUNNER_TEMP}/leanrea-score.log"
+          grep -x 'OK' "${RUNNER_TEMP}/leanrea-score.log"
+          echo "PANAM_LEANREA_PUBLIC_SYNTHETIC_SCORER=PASS"
+
       - name: Verify missing tools fail closed
         shell: bash
         run: |
