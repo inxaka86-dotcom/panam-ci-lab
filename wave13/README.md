@@ -66,6 +66,12 @@ path-scoped public CI runs the unit tests.
 
 The branch CI automatically checks all tests on a disposable GitHub-hosted runner. Public package bootstrap may use Ubuntu repository network access; no claim of kernel-enforced egress isolation is made.
 
+## Equal, scorer-free A/B task exports
+
+`export_equal_workspaces.py` and `test_equal_workspaces.py` now construct two byte-identical synthetic task folders (`base` and `leanrea`), each restricted to seven approved task/fixture files. No grader, gold labels, test scripts, skill file, git metadata, model credentials or private PANAM data is copied. All file execute bits are removed, a SHA-256 inventory is written outside both workspaces, and accidental output overwrite/symlink destinations are rejected.
+
+This is an **offline data-preparation stage**, not an agent/model launcher, a true blind benchmark or a sandbox. Publicly available grader code could still be found by an internet-connected model. A private independently sealed answer key, approved model/provider route, USD budget guard and network/exec isolation remain separate blockers. See `WORKSPACES.md`.
+
 ## Next measurement gate
 
 To test agent benefit, run baseline-vs-candidate under an identical, separately approved model/provider/compute budget; freeze task data, environment, source/config hashes, scoring rubric and case order. Use real tool traces and provider receipts, held-out tasks and independently inspected output. No private materials or live production access. No promotion, merge or deployment is implied by a passing smoke check.
