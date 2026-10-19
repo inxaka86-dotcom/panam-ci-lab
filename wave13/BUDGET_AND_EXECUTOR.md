@@ -48,6 +48,12 @@ The child uses a fixed command-vector, zero host root/sudo, no inherited file de
 
 See existing separate Harness² PR #2968 for its one-call *contract only*. It does not provide or authorize this Leanrea network boundary or billable requests.
 
+## Reuse of the already-proven disposable PANAM sandbox — route incompatibility
+
+A separately governed PANAM system already has historical live synthetic evidence of a disposable VM plus a networkless, read-only, non-root inner container, including fixed-script execution and verified teardown. This is more appropriate to evaluate than creating another privileged sandbox on the shared public GitHub runner. The existing trusted route is **same-repository**, **non-draft** and **fixed-script-only**. This Leanrea Draft PR is in a separate public CI lab repository and does not qualify for that route; even trusted fixed-script evidence does not permit Codex, the Leanrea agent workflow or real model calls.
+
+`assess_sandbox_reuse.py` and `test_sandbox_reuse.py` model 20 fail-closed compatibility/claim-injection scenarios and deliberately never grant authority. A future integration must be separately reviewed in protected PANAM infrastructure, pin source and tool image SHA, preserve the VM + networkless container boundaries, validate offline-only behavior first, and prohibit API credentials inside the agent. See `SANDBOX_REUSE.md`. There was no Control Plane/host action from this public PR.
+
 ## Explicit future executor boundary (NOT implemented, NOT deployed)
 
 1. Bind exact case bytes, fixture, route, allowed tools, model and environment hashes. Only the candidate arm receives a pinned Leanrea skill via a reviewed profile injection external to the identical task workspaces; the baseline has no such skill.
