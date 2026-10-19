@@ -18,9 +18,9 @@ The candidate here is a bounded research adaptation, not a verbatim installation
 
 ## Scope and boundaries
 
-Synthetic fixtures and host-native metadata only. No secrets, private repository source, user data, untrusted executable execution, automatic dependency installs, model/provider calls, network traffic, self-hosted runners, Control Plane actions or deployments. The script does not itself enforce network isolation and should be run only in a disposable credential-free environment.
+Synthetic fixtures and host-native metadata only. No secrets, private repository source, user data, untrusted executable execution, model/provider calls, self-hosted runners, Control Plane actions or deployments. The skill and measured test do not install dependencies, make HTTP requests or call a model. The disposable public CI runner may fetch signed Ubuntu distribution packages to provision missing static inspection tools *before* the test; the CI run is not a network-isolation proof and the runner itself has network access. The script does not enforce OS network isolation and should be run only in a disposable credential-free environment.
 
-No workflow is added to automatically run this experiment.
+The path-scoped `.github/workflows/wave13-leanrea-offline.yml` workflow is public-only Route A, runs on standard GitHub-hosted runners, checks the publication gate, provisions missing public OS packages for the test host, runs positive and missing-tool negative checks, and records the exact checkout/CLI versions. No external model or production workflow is added.
 
 ## Test
 
@@ -39,6 +39,10 @@ The script checks hidden Electron folders, command regex alternation, HAR jq exp
 - Positive local run: seven executed, zero skipped, zero failed; `PANAM_LEANREA_OFFLINE_SMOKE=PASS`.
 - Adversarial local run (PATH=/nonexistent): preflight reports all five missing tools; zero tests executed; exit 1; `PANAM_LEANREA_OFFLINE_SMOKE=FAIL`.
 - This is a single-machine local command smoke; it does NOT prove agent performance, compatibility of a real target, egress isolation, generic subprocess security or CI success. Do not count a skipped test as capability evidence.
+
+## Public CI note
+
+The first isolated workflow run failed *before executing smoke tests* because stock GitHub-hosted Ubuntu did not provide `rg`; publication gate passed. This setup failure is not a Leanrea benchmark result. Explicit signed Ubuntu package provisioning is isolated to CI setup; it is **not** a change to the candidate skill's ban on installing software. Read the exact-head run log before claiming a successful rerun.
 
 ## Next measurement gate
 
