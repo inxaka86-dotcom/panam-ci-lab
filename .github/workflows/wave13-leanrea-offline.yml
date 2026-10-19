@@ -123,6 +123,15 @@ jobs:
           grep -x 'OK' "${RUNNER_TEMP}/leanrea-budget.log"
           echo "PANAM_LEANREA_USD_SYNTHETIC_ONLY=PASS"
 
+      - name: Verify in-memory synthetic request reservations and concurrency controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s wave13 -p 'test_synthetic_reservation_book.py' -v 2>&1 | tee "${RUNNER_TEMP}/leanrea-reservations.log"
+          grep -E '^Ran 26 tests in ' "${RUNNER_TEMP}/leanrea-reservations.log"
+          grep -x 'OK' "${RUNNER_TEMP}/leanrea-reservations.log"
+          echo "PANAM_LEANREA_SYNTHETIC_RESERVATIONS=PASS"
+
       - name: Verify missing tools fail closed
         shell: bash
         run: |
