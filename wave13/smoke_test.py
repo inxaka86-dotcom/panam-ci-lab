@@ -23,6 +23,13 @@ def command(*args: str, env: dict[str, str] | None = None) -> str:
     return result.stdout
 
 class OfflineSmoke(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        required = ("rg", "jq", "file", "readelf", "go")
+        missing = [tool for tool in required if shutil.which(tool) is None]
+        if missing:
+            raise RuntimeError("Missing required offline tools: " + ", ".join(missing))
+
     def test_security_constraints(self):
         skill = (HERE / "SKILL.md").read_text()
         for marker in ("NO_PRODUCTION_AUTHORITY", "No network access",
@@ -31,7 +38,6 @@ class OfflineSmoke(unittest.TestCase):
             with self.subTest(marker=marker):
                 self.assertIn(marker, skill)
 
-    @unittest.skipUnless(shutil.which("rg"), "ripgrep not installed")
     def test_hidden_bundle_search(self):
         with tempfile.TemporaryDirectory(prefix="leanrea-safe-") as d:
             folder = Path(d) / ".webpack"
@@ -41,7 +47,6 @@ class OfflineSmoke(unittest.TestCase):
             self.assertIn("main.js:1:", output)
             self.assertIn("ipcMain.handle", output)
 
-    @unittest.skipUnless(shutil.which("jq"), "jq not installed")
     def test_har_jq(self):
         with tempfile.TemporaryDirectory(prefix="leanrea-safe-") as d:
             p = Path(d) / "fixture.har"
@@ -53,7 +58,6 @@ class OfflineSmoke(unittest.TestCase):
             self.assertEqual("GET https://example.invalid/synthetic",
                              output.strip())
 
-    @unittest.skipUnless(shutil.which("rg"), "ripgrep not installed")
     def test_regex_alternation(self):
         with tempfile.TemporaryDirectory(prefix="leanrea-safe-") as d:
             p = Path(d) / "fixture.asm"
@@ -75,19 +79,16 @@ class OfflineSmoke(unittest.TestCase):
                 self.assertTrue((Path(work) / "observation").is_file())
             self.assertEqual("unchanged", marker.read_text())
 
-    @unittest.skipUnless(shutil.which("file") and shutil.which("readelf"),
-                         "ELF inspection tools unavailable")
     def test_elf_header_read_only(self):
         target = Path("/bin/ls")
         if not target.is_file():
-            self.skipTest("/bin/ls unavailable")
+            self.fail("Required Linux /bin/ls ELF fixture is unavailable")
         if "ELF" not in command("file", "--", str(target)):
-            self.skipTest("host target is not ELF")
+            self.fail("Required Linux /bin/ls fixture is not ELF")
         header = command("readelf", "-h", "--", str(target))
         self.assertIn("ELF Header", header)
         self.assertIn("Machine:", header)
 
-    @unittest.skipUnless(shutil.which("go"), "Go not installed")
     def test_go_build_metadata_without_execution(self):
         with tempfile.TemporaryDirectory(prefix="leanrea-safe-") as d:
             folder = Path(d)
