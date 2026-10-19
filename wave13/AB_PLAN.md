@@ -68,6 +68,10 @@ Generator output remains in a private temporary working directory, not in Git hi
 
 `synthetic_reservation_book.py` implements lock-protected one-time holds for the eight fabricated A/B slots, duplicate/replay refusal, stop on an excessive *synthetic* claim, and no automatic refunds. Its snapshot unconditionally denies `real_upstream_request_allowed`, `real_usd_hard_cap_enforced`, crash-recovery, provider-billing and isolation claims. `test_synthetic_reservation_book.py` checks concurrency and negative admission paths; it does not create an executable Codex provider adapter. See `BUDGET_AND_EXECUTOR.md`.
 
+## Crash/restart simulation (SQLite local only)
+
+The new `synthetic_sqlite_ledger.py` demonstrates fixed eight-slot reservations using SQLite local transactions and a synthetic-envelope fingerprint. Concurrent processes compete for the same key/nonce; unknown or lower fabricated claims cannot release a held maximum; an over-claim persists a stopped flag. New `test_synthetic_sqlite_ledger.py` exercises reopen, multi-process competition, interruption before/after a commit, unsafe-path refusal and metadata mismatch. It is NOT an API broker, real billing ledger, verified power-loss recovery or target-host network sandbox. See `BUDGET_AND_EXECUTOR.md`.
+
 ## Next explicit admission gate
 
 Real performance claims must come from a separate approved runner and verified end-to-end receipts: each case's accepted answer and cited source offset, safe action trace, tool-count, provider usage/expense, runtime duration, and success/failure. Ingest only redacted/hashes in public CI. Perform independent correctness/security review before calculating model advantage. No merge, deploy or production permission arises from this document or a green workflow.
