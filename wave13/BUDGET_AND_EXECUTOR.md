@@ -38,6 +38,16 @@ On a disposable, existing directory owned by the test user and mode `0700`, a ne
 
 **Threat limitations:** SQLite is the durability primitive for this *toy local filesystem*, not a money-service authorization source. The repository does not provide a kernel sandbox, trusted USD conversion, dollar-denominated prepaid API quota, authenticated provider receipts or a separate credential-holding request broker. The file path guard is a best-effort local demo, not a defense against a hostile user with write access to the parent directory or filesystem races. No API wiring is authorized.
 
+## Local kernel network namespace capability probe — not a sandbox
+
+`probe_local_netns.py` launches only a fixed, credential-free Python observation child through Linux `/usr/bin/unshare --user --map-root-user --net` when non-root user namespaces are available. It opens a one-use listener at **127.0.0.1 only** in the parent, then asks the child to connect locally. A positive LOCAL observation requires (a) different network and user namespace inode IDs, (b) only `lo` inside the new network namespace, (c) the child NOT reaching the parent's loopback listener, and (d) an unmapped host-root-independent child UID 0 inside its private user namespace. It makes **no external internet, provider, LLM or payment connection**, has no agent/candidate execution, and contains no API key.
+
+The child uses a fixed command-vector, zero host root/sudo, no inherited file descriptors, temporary working directory and scrubbed environment; only predefined JSON fields leave the process. `test_local_netns_probe.py` runs 20 adversarial contract checks. CI runs a real capability check on the **public GitHub-hosted ephemeral runner** and logs either `PASS_LOCAL_EPHEMERAL_NETNS_ONLY` or `BLOCKED_...`. A blocked kernel feature is an evidence outcome, **not** a check pass for network isolation; the surrounding CI contract may pass while actual namespace capability stays blocked.
+
+**Important:** even a positive local namespace test is NOT a deployable sandbox. The child can still see its host filesystem; no filesystem mount namespace, process boundary, resource quotas, broker access policy, Docker socket checks, secrets protection, or execution of a real Codex worker has been demonstrated. Public GitHub CI cannot certify the separate target runner or vendor USD cap. No fallback to ordinary unrestricted execution is permitted if `unshare` is blocked.
+
+See existing separate Harness² PR #2968 for its one-call *contract only*. It does not provide or authorize this Leanrea network boundary or billable requests.
+
 ## Explicit future executor boundary (NOT implemented, NOT deployed)
 
 1. Bind exact case bytes, fixture, route, allowed tools, model and environment hashes. Only the candidate arm receives a pinned Leanrea skill via a reviewed profile injection external to the identical task workspaces; the baseline has no such skill.
