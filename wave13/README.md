@@ -84,6 +84,10 @@ This is an **offline data-preparation stage**, not an agent/model launcher, a tr
 
 `synthetic_reservation_book.py` is a no-network, in-memory state machine for one-time holds against fabricated per-request maximum charges. `test_synthetic_reservation_book.py` stresses parallel reservations, replay attempts, stop-on-overclaim, unknown outcomes and permanent conservative holds. This is a concurrency-unit test only, **not** a real billable request limiter: it has no durable journal, kernel sandbox, API credentials or forward operation. Even when the toy bookkeeping succeeds, all execution and verified USD-cap flags are false. See `BUDGET_AND_EXECUTOR.md`.
 
+## SQLite local-file crash and process race simulation
+
+`synthetic_sqlite_ledger.py` makes the fictional reservation state recoverable from an owned private local SQLite file and binds the data to its exact public synthetic envelope. The 27-case `test_synthetic_sqlite_ledger.py` suite verifies duplicate rejection across restarts, multi-process uniqueness, atomic interrupted writes, stop persistence and unsafe-file refusal. SQLite `synchronous=FULL` and `BEGIN IMMEDIATE` support the test contract, but this is still **not a request broker**, provider spend cap, production-ready trusted ledger, power-loss proof or isolated model executor. No outbound model requests are possible from this module. See `BUDGET_AND_EXECUTOR.md`.
+
 ## Next measurement gate
 
 To test agent benefit, run baseline-vs-candidate under an identical, separately approved model/provider/compute budget; freeze task data, environment, source/config hashes, scoring rubric and case order. Use real tool traces and provider receipts, held-out tasks and independently inspected output. No private materials or live production access. No promotion, merge or deployment is implied by a passing smoke check.
