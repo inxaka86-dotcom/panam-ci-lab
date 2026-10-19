@@ -87,7 +87,8 @@ def project(packet: dict) -> dict:
         x = exact_obj(slot, SLOT_FIELDS, "slot")
         case, arm = x["case_id"], x["arm"]
         if (not isinstance(case, str) or case not in CASES
-                or arm not in ARMS or (case, arm) in seen):
+                or not isinstance(arm, str) or arm not in ARMS
+                or (case, arm) in seen):
             raise Invalid("Unknown, duplicate or unsupported A/B slot")
         seen.add((case, arm))
         task_sha = digest(x["task_sha256"], "task")
