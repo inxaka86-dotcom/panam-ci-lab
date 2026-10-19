@@ -1,0 +1,74 @@
+name: Wave 13 Leanrea offline smoke
+
+on:
+  pull_request:
+    paths:
+      - "wave13/**"
+      - ".github/workflows/wave13-leanrea-offline.yml"
+  push:
+    branches: [main]
+    paths:
+      - "wave13/**"
+      - ".github/workflows/wave13-leanrea-offline.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wave13-leanrea-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      GOPROXY: "off"
+      GOSUMDB: "off"
+      GOTOOLCHAIN: "local"
+      GO111MODULE: "off"
+      GOWORK: "off"
+      GOTELEMETRY: "off"
+    steps:
+      - name: Checkout public CI lab without persisted credentials
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication gate
+        run: python3 checks/publication_gate.py
+
+      - name: Verify tools and print environment identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          for tool in python3 rg jq file readelf go; do
+            command -v "$tool"
+          done
+          python3 --version
+          go version
+          echo "HEAD_SHA=$(git rev-parse HEAD)"
+          sha256sum wave13/SKILL.md wave13/smoke_test.py
+
+      - name: Execute deterministic positive tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 wave13/smoke_test.py 2>&1 | tee "${RUNNER_TEMP}/leanrea-smoke.log"
+          grep -F "PANAM_LEANREA_OFFLINE_SMOKE=PASS; executed=7; skipped=0" "${RUNNER_TEMP}/leanrea-smoke.log"
+
+      - name: Verify missing tools fail closed
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          output="$(PATH=/nonexistent /usr/bin/python3 wave13/smoke_test.py 2>&1)"
+          code=$?
+          set -e
+          printf '%s\n' "$output"
+          test "$code" -ne 0
+          printf '%s\n' "$output" | grep -F "Missing required offline tools:"
+          printf '%s\n' "$output" | grep -F "PANAM_LEANREA_OFFLINE_SMOKE=FAIL; executed=0; skipped=0"
+          echo "PANAM_LEANREA_NEGATIVE_CONTROL=PASS"
