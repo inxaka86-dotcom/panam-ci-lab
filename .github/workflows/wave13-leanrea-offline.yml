@@ -96,6 +96,15 @@ jobs:
           grep -x 'OK' "${RUNNER_TEMP}/leanrea-score.log"
           echo "PANAM_LEANREA_PUBLIC_SYNTHETIC_SCORER=PASS"
 
+      - name: Verify identical scorer-free base and candidate workspaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s wave13 -p 'test_equal_workspaces.py' -v 2>&1 | tee "${RUNNER_TEMP}/leanrea-equal-workspaces.log"
+          grep -E '^Ran 12 tests in ' "${RUNNER_TEMP}/leanrea-equal-workspaces.log"
+          grep -x 'OK' "${RUNNER_TEMP}/leanrea-equal-workspaces.log"
+          echo "PANAM_LEANREA_EQUAL_WORKSPACES=PASS"
+
       - name: Verify missing tools fail closed
         shell: bash
         run: |
