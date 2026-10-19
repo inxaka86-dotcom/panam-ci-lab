@@ -28,6 +28,16 @@ This does not turn an estimated amount into a hard real-world spend cap. Provide
 
 A reservation record saying `synthetic_reservation_recorded=true` is NOT forwarding authorization: it explicitly says `real_upstream_request_allowed=false`. The module has **no socket, HTTP client, provider API, run launcher, model key, persistent journal, billing proof or crash recovery**; a new Python process starts a fresh fictional book. Even a green concurrent test does NOT prove cross-process or distributed atomicity, OS-level network confinement, bounded Codex subcalls, a vendor-recognized USD hard cap or model response compatibility. A real reservation service would require durable atomic state and strict fail-closed crash recovery; none is staged here.
 
+## Local SQLite transaction simulation — still not a broker
+
+`synthetic_sqlite_ledger.py` adds a **separate, public-synthetic SQLite local-file prototype** on top of the fabricated eight-slot cost envelope. It does not replace or extend any protected PANAM Control Plane ledger.
+
+On a disposable, existing directory owned by the test user and mode `0700`, a new SQLite file (mode `0600`) is created with `O_EXCL`/no-follow. It records a canonical synthetic envelope SHA-256, fixed schema version and stopped bit. Each reservation uses SQLite `BEGIN IMMEDIATE`, `synchronous=FULL`, a fixed case/arm primary key and a unique nonce; it refuses a changed envelope, unsafe file ownership/mode/hard links, symlinked DB path, duplicate slot/nonce and missing or corrupt DB metadata. Each slot consumes its entire fabricated worst-case reserve permanently. A fabricated over-claim commits the stop state **before** returning failure. There is NO callback to transmit a request, use a model or hold credentials.
+
+`test_synthetic_sqlite_ledger.py` uses **27 local tests**, including 16 competing Python processes, interrupted transactions and a fresh reopen after process exit. A transaction interrupted before commit must not appear as a completed reservation, while one committed before a test-process exit remains visible. Even if these tests pass, they do not prove survival of host power failures, filesystem failure, malicious modification, independent server trust, multi-host atomicity or real billing.
+
+**Threat limitations:** SQLite is the durability primitive for this *toy local filesystem*, not a money-service authorization source. The repository does not provide a kernel sandbox, trusted USD conversion, dollar-denominated prepaid API quota, authenticated provider receipts or a separate credential-holding request broker. The file path guard is a best-effort local demo, not a defense against a hostile user with write access to the parent directory or filesystem races. No API wiring is authorized.
+
 ## Explicit future executor boundary (NOT implemented, NOT deployed)
 
 1. Bind exact case bytes, fixture, route, allowed tools, model and environment hashes. Only the candidate arm receives a pinned Leanrea skill via a reviewed profile injection external to the identical task workspaces; the baseline has no such skill.
