@@ -21,7 +21,7 @@ concurrency:
 jobs:
   offline-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     env:
       PYTHONDONTWRITEBYTECODE: "1"
       GOPROXY: "off"
@@ -76,6 +76,16 @@ jobs:
           grep -E '^Ran [0-9]+ tests? in ' "${RUNNER_TEMP}/leanrea-ab-contract.log"
           grep -x 'OK' "${RUNNER_TEMP}/leanrea-ab-contract.log"
           echo "PANAM_LEANREA_AB_CONTRACT=PASS"
+
+      - name: Build and statically inspect four synthetic targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          for tool in cc nm objdump strings readelf rg go; do command -v "$tool"; done
+          python3 -m unittest discover -s wave13 -p 'test_synthetic_targets.py' -v 2>&1 | tee "${RUNNER_TEMP}/leanrea-targets.log"
+          grep -E '^Ran 10 tests in ' "${RUNNER_TEMP}/leanrea-targets.log"
+          grep -x 'OK' "${RUNNER_TEMP}/leanrea-targets.log"
+          echo "PANAM_LEANREA_SYNTHETIC_TARGETS=PASS"
 
       - name: Verify missing tools fail closed
         shell: bash
