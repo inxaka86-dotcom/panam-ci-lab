@@ -5,6 +5,7 @@ No HTTP, npm, model, private source or untrusted executable execution.
 Test output is not an agent-performance measurement.
 """
 from __future__ import annotations
+import os
 import json
 from pathlib import Path
 import shutil
@@ -14,10 +15,10 @@ import unittest
 
 HERE = Path(__file__).resolve().parent
 
-def command(*args: str) -> str:
+def command(*args: str, env: dict[str, str] | None = None) -> str:
     result = subprocess.run(
         list(args), check=True, text=True, stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE, timeout=20
+        stderr=subprocess.PIPE, timeout=45, env=env
     )
     return result.stdout
 
@@ -94,14 +95,19 @@ class OfflineSmoke(unittest.TestCase):
             source.write_text("package main\nfunc main() {}\n")
             target = folder / "synthetic"
             # Compiles controlled synthetic source; never invokes target.
-            command("go", "build", "-o", str(target), str(source))
-            info = command("go", "version", "-m", str(target))
+            go_env = dict(os.environ, GOPROXY="off", GOSUMDB="off",
+                          GOTOOLCHAIN="local", GO111MODULE="off",
+                          GOWORK="off", GOTELEMETRY="off")
+            command("go", "build", "-o", str(target), str(source), env=go_env)
+            info = command("go", "version", "-m", str(target), env=go_env)
             self.assertIn("go1.", info)
             self.assertIn("synthetic", info)
 
 if __name__ == "__main__":
     checks = unittest.defaultTestLoader.loadTestsFromTestCase(OfflineSmoke)
     result = unittest.TextTestRunner(verbosity=2).run(checks)
-    print("PANAM_LEANREA_OFFLINE_SMOKE=" +
-          ("PASS" if result.wasSuccessful() else "FAIL"))
-    raise SystemExit(0 if result.wasSuccessful() else 1)
+    complete = result.wasSuccessful() and result.testsRun == 7 and not result.skipped
+    print(f"PANAM_LEANREA_OFFLINE_SMOKE={'PASS' if complete else 'FAIL'}"
+          f"; executed={result.testsRun - len(result.skipped)}"
+          f"; skipped={len(result.skipped)}")
+    raise SystemExit(0 if complete else 1)
