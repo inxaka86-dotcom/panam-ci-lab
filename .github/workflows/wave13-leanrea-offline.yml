@@ -110,7 +110,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m unittest discover -s wave13 -p 'test_public_evidence.py' -v 2>&1 | tee "${RUNNER_TEMP}/leanrea-grounding.log"
-          grep -E '^Ran 23 tests in ' "${RUNNER_TEMP}/leanrea-grounding.log"
+          grep -E '^Ran 28 tests in ' "${RUNNER_TEMP}/leanrea-grounding.log"
           grep -x 'OK' "${RUNNER_TEMP}/leanrea-grounding.log"
           echo "PANAM_LEANREA_PUBLIC_EVIDENCE=PASS"
 
