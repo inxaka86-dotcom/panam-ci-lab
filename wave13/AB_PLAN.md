@@ -1,6 +1,6 @@
 # Leanrea paired Codex A/B — evidence intake contract (research only)
 
-Status: PUBLIC-SAFE / SYNTHETIC CONTRACT / NO EXECUTOR / NO LLM / NO BILLING / NO INDEPENDENT SCORE.
+Status: PUBLIC-SAFE / SYNTHETIC CONTRACT / PUBLIC GOLD SCORER / NO AGENT EXECUTOR / NO LLM / NO BILLING / NOT BLIND.
 
 ## Question
 
@@ -8,7 +8,7 @@ Does a pinned, constrained Leanrea instruction improve an otherwise identical co
 
 ## Proposed equal-condition pairs (not yet conducted)
 
-Four case IDs reserve these analysis types: LR-E01 (Electron hidden bundler / IPC), LR-N01 (ELF/native import inventory), LR-G01 (Go static build information), LR-D01 (multi-hop static call/string reasoning). All targets must be newly fabricated public-safe fixtures; no third-party desktop app, customer data, production binaries, company secrets or private source. Target content and answer keys **have not yet been built or accepted**. The IDs are placeholders, not benchmark evidence.
+Four case IDs reserve these analysis types: LR-E01 (Electron hidden bundler / IPC), LR-N01 (ELF/native import inventory), LR-G01 (Go static build information), LR-D01 (multi-hop static call/string reasoning). The four targets are now created by `build_synthetic_targets.py` from invented local Electron JavaScript, C and Go programs, using only local compilers and standard libraries. `test_synthetic_targets.py` checks actual static metadata, hidden source folders, ELF symbols/disassembly and binary Go build info; the test does not execute compiled targets. The targets and tests are NOT a blinded agent evaluation or accepted independent reference set.
 
 Run both arms on the **same exact task bytes and fixture bytes**:
 - `base`: selected agent/model/provider and native preinstalled local CLI tools, without Leanrea instructions.
@@ -28,7 +28,7 @@ Do **not** borrow the budget or permission from an unrelated Harness² A/B: this
 
 The program rejects extra/missing fields, duplicated cases/runs, changed route/environment, mismatched profiles, malformed digests, negative and Boolean token counts, unsupported accuracy claims and unsupported USD costs. It projects **unverified input** counts and differences for inspection. It has no network, provider client, runtime launcher, answer scorer, privileged action or persistent state. It cannot verify the hashes against an external ledger, inspect provider receipts or validate actual model responses. Its output always says `SHAPE_ONLY_NEVER_EXECUTION_AUTHORITY` and `real_model_benefit_proven=false` — including when `data_class=observed`.
 
-Do not label synthetic fixture arithmetic as a measured agent improvement. Task scoring and blind accepted answers belong to a separately reviewed evaluator and must not be provided to the running model. A published public task pack cannot be treated as truly held out against internet-connected models.
+Do not label synthetic fixture arithmetic as a measured agent improvement. A separate **public synthetic scorer** (`score_synthetic.py`) checks nine bounded answer values against code-defined public labels and the actual synthetic Go binary's build metadata. It does not inspect submitted citations or traces, verify independent ground truth or authenticate actual model responses. The candidate must never be given the scorer source or keys in its workspace, but publication makes them discoverable on the internet; therefore **this is not a blinded evaluation**. The scorer is only for testing answer-checking behavior. Real held-out scoring and blind accepted answers require a separate restricted, independently reviewed evaluator.
 
 ## Offline tests (no model/provider calls)
 
@@ -38,6 +38,17 @@ python3 -m unittest discover -s wave13 -p 'test_ab_trace_contract.py' -v
 ```
 
 All test records and hashes are deliberately fabricated and safe for publication. The tests check positive schema parsing and adversarial rejection, not an actual Codex A/B. The existing Wave 13 workflow runs them on a temporary public GitHub-hosted runner with no secrets or model endpoints.
+
+## Synthetic artifact and scorer checks already implemented
+
+The public GitHub-hosted CI generates an isolated temporary fixture pack and runs:
+
+```sh
+python3 -m unittest discover -s wave13 -p 'test_synthetic_targets.py' -v
+python3 -m unittest discover -s wave13 -p 'test_score_synthetic.py' -v
+```
+
+Generator output remains in a private temporary working directory, not in Git history. The model-facing `tasks.json` has no expected answers. The scorer's checks deliberately include a hand-written correct response, wrong-channel and wrong-Go-toolchain responses, schema errors, duplicates and forbidden injected assertions. Passing these controls does not imply model accuracy, independent citation verification or security approval.
 
 ## Next explicit admission gate
 
