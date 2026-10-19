@@ -1,0 +1,179 @@
+name: Wave 13 Leanrea offline smoke
+
+on:
+  pull_request:
+    paths:
+      - "wave13/**"
+      - ".github/workflows/wave13-leanrea-offline.yml"
+  push:
+    branches: [main]
+    paths:
+      - "wave13/**"
+      - ".github/workflows/wave13-leanrea-offline.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wave13-leanrea-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      GOPROXY: "off"
+      GOSUMDB: "off"
+      GOTOOLCHAIN: "local"
+      GO111MODULE: "off"
+      GOWORK: "off"
+      GOTELEMETRY: "off"
+    steps:
+      - name: Checkout public CI lab without persisted credentials
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication gate
+        run: python3 checks/publication_gate.py
+
+      - name: Provision public signed Ubuntu utilities before measured test
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends ripgrep jq
+          dpkg-query -W ripgrep jq
+          echo "PANAM_LEANREA_CI_SETUP=PASS"
+
+      - name: Verify tools and print environment identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          for tool in python3 rg jq file readelf go; do
+            command -v "$tool"
+          done
+          python3 --version
+          go version
+          echo "HEAD_SHA=$(git rev-parse HEAD)"
+          sha256sum wave13/SKILL.md wave13/smoke_test.py
+
+      - name: Execute deterministic positive tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 wave13/smoke_test.py 2>&1 | tee "${RUNNER_TEMP}/leanrea-smoke.log"
+          grep -F "PANAM_LEANREA_OFFLINE_SMOKE=PASS; executed=7; skipped=0" "${RUNNER_TEMP}/leanrea-smoke.log"
+
+      - name: Verify pure paired-trace contract and adversarial controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s wave13 -p 'test_ab_trace_contract.py' -v 2>&1 | tee "${RUNNER_TEMP}/leanrea-ab-contract.log"
+          grep -E '^Ran [0-9]+ tests? in ' "${RUNNER_TEMP}/leanrea-ab-contract.log"
+          grep -x 'OK' "${RUNNER_TEMP}/leanrea-ab-contract.log"
+          echo "PANAM_LEANREA_AB_CONTRACT=PASS"
+
+      - name: Build and statically inspect four synthetic targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          for tool in cc nm objdump strings readelf rg go; do command -v "$tool"; done
+          python3 -m unittest discover -s wave13 -p 'test_synthetic_targets.py' -v 2>&1 | tee "${RUNNER_TEMP}/leanrea-targets.log"
+          grep -E '^Ran 10 tests in ' "${RUNNER_TEMP}/leanrea-targets.log"
+          grep -x 'OK' "${RUNNER_TEMP}/leanrea-targets.log"
+          echo "PANAM_LEANREA_SYNTHETIC_TARGETS=PASS"
+
+      - name: Verify synthetic answer scorer positive and adversarial controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s wave13 -p 'test_score_synthetic.py' -v 2>&1 | tee "${RUNNER_TEMP}/leanrea-score.log"
+          grep -E '^Ran 12 tests in ' "${RUNNER_TEMP}/leanrea-score.log"
+          grep -x 'OK' "${RUNNER_TEMP}/leanrea-score.log"
+          echo "PANAM_LEANREA_PUBLIC_SYNTHETIC_SCORER=PASS"
+
+      - name: Verify identical scorer-free base and candidate workspaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s wave13 -p 'test_equal_workspaces.py' -v 2>&1 | tee "${RUNNER_TEMP}/leanrea-equal-workspaces.log"
+          grep -E '^Ran 12 tests in ' "${RUNNER_TEMP}/leanrea-equal-workspaces.log"
+          grep -x 'OK' "${RUNNER_TEMP}/leanrea-equal-workspaces.log"
+          echo "PANAM_LEANREA_EQUAL_WORKSPACES=PASS"
+
+      - name: Verify claimed answer anchors in compiled synthetic artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s wave13 -p 'test_public_evidence.py' -v 2>&1 | tee "${RUNNER_TEMP}/leanrea-grounding.log"
+          grep -E '^Ran 28 tests in ' "${RUNNER_TEMP}/leanrea-grounding.log"
+          grep -x 'OK' "${RUNNER_TEMP}/leanrea-grounding.log"
+          echo "PANAM_LEANREA_PUBLIC_EVIDENCE=PASS"
+
+      - name: Verify synthetic USD arithmetic and prevent false spend authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s wave13 -p 'test_synthetic_usd_envelope.py' -v 2>&1 | tee "${RUNNER_TEMP}/leanrea-budget.log"
+          grep -E '^Ran 26 tests in ' "${RUNNER_TEMP}/leanrea-budget.log"
+          grep -x 'OK' "${RUNNER_TEMP}/leanrea-budget.log"
+          echo "PANAM_LEANREA_USD_SYNTHETIC_ONLY=PASS"
+
+      - name: Verify in-memory synthetic request reservations and concurrency controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s wave13 -p 'test_synthetic_reservation_book.py' -v 2>&1 | tee "${RUNNER_TEMP}/leanrea-reservations.log"
+          grep -E '^Ran 26 tests in ' "${RUNNER_TEMP}/leanrea-reservations.log"
+          grep -x 'OK' "${RUNNER_TEMP}/leanrea-reservations.log"
+          echo "PANAM_LEANREA_SYNTHETIC_RESERVATIONS=PASS"
+
+      - name: Verify local SQLite synthetic reservations across restarts and processes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s wave13 -p 'test_synthetic_sqlite_ledger.py' -v 2>&1 | tee "${RUNNER_TEMP}/leanrea-sqlite.log"
+          grep -E '^Ran 27 tests in ' "${RUNNER_TEMP}/leanrea-sqlite.log"
+          grep -x 'OK' "${RUNNER_TEMP}/leanrea-sqlite.log"
+          echo "PANAM_LEANREA_SQLITE_SYNTHETIC=PASS"
+
+      - name: Check local kernel network namespace availability without external egress
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s wave13 -p 'test_local_netns_probe.py' -v 2>&1 | tee "${RUNNER_TEMP}/leanrea-netns-contract.log"
+          grep -E '^Ran 20 tests in ' "${RUNNER_TEMP}/leanrea-netns-contract.log"
+          grep -x 'OK' "${RUNNER_TEMP}/leanrea-netns-contract.log"
+          python3 wave13/probe_local_netns.py | tee "${RUNNER_TEMP}/leanrea-netns-host.log"
+          grep -E '^PANAM_LEANREA_LOCAL_NETNS=(PASS_LOCAL_EPHEMERAL_NETNS_ONLY|BLOCKED_[A-Z_]+)$' "${RUNNER_TEMP}/leanrea-netns-host.log"
+          grep -x 'PANAM_LEANREA_REAL_AGENT_EXECUTION=DENIED' "${RUNNER_TEMP}/leanrea-netns-host.log"
+          echo "PANAM_LEANREA_NETNS_CONTRACT=PASS"
+          echo "PANAM_LEANREA_ACTUAL_RUNNER_ISOLATION=NOT_PROVEN"
+
+      - name: Verify existing sandbox reuse does not grant Leanrea executor authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s wave13 -p 'test_sandbox_reuse.py' -v 2>&1 | tee "${RUNNER_TEMP}/leanrea-sandbox-reuse.log"
+          grep -E '^Ran 20 tests in ' "${RUNNER_TEMP}/leanrea-sandbox-reuse.log"
+          grep -x 'OK' "${RUNNER_TEMP}/leanrea-sandbox-reuse.log"
+          echo "PANAM_LEANREA_SANDBOX_REUSE_CONTRACT=PASS"
+          echo "PANAM_LEANREA_SANDBOX_REUSE_AUTHORITY=DENIED"
+
+      - name: Verify missing tools fail closed
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          output="$(PATH=/nonexistent /usr/bin/python3 wave13/smoke_test.py 2>&1)"
+          code=$?
+          set -e
+          printf '%s\n' "$output"
+          test "$code" -ne 0
+          printf '%s\n' "$output" | grep -F "Missing required offline tools:"
+          printf '%s\n' "$output" | grep -F "PANAM_LEANREA_OFFLINE_SMOKE=FAIL; executed=0; skipped=0"
+          echo "PANAM_LEANREA_NEGATIVE_CONTROL=PASS"
