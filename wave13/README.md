@@ -28,7 +28,17 @@ Run from the wave13 directory:
 
     python3 smoke_test.py
 
-The script checks hidden Electron folders, command regex alternation, HAR jq expressions, temporary directory safety, static ELF inventory, static Go build metadata, and candidate security assertions. Optional tools (rg/jq/file/readelf/go) are explicitly skipped if absent; missing tools never prove the corresponding capability works.
+The script checks hidden Electron folders, command regex alternation, HAR jq expressions, temporary directory safety, static ELF inventory, static Go build metadata, and candidate security assertions. Missing required local tools are reported as skipped and cause the documented direct script entrypoint to exit with FAIL (not PASS). The synthetic Go build sets GOPROXY=off, GOSUMDB=off and GOTOOLCHAIN=local; no provider or external API is contacted.
+
+## Exact-branch local audit (2026-10-19)
+
+- Inspected draft PR #38, three changed files, exact fetched smoke_test.py and SKILL.md Git blob identities.
+- Initial script bug reproduced: five missing-tool skips still gave PASS.
+- Corrected fail-closed completion check and Go offline environment on the existing draft branch.
+- Verified updated smoke_test.py Git blob SHA-1 `284b95432582b99a2f4ebfd80be918acc1d2096b` matches the locally executed file.
+- Positive local run: seven executed, zero skipped, zero failed; `PANAM_LEANREA_OFFLINE_SMOKE=PASS`.
+- Adversarial local run (PATH=/nonexistent): two executed, five skipped, exit 1; `PANAM_LEANREA_OFFLINE_SMOKE=FAIL`.
+- This is a single-machine local command smoke; it does NOT prove agent performance, compatibility of a real target, egress isolation, generic subprocess security or CI success. Do not count a skipped test as capability evidence.
 
 ## Next measurement gate
 
