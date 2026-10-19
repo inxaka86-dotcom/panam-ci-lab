@@ -58,6 +58,14 @@ agent performance, model accuracy, evidence authenticity, USD billing or
 permission to execute. It makes zero provider/model calls; the existing
 path-scoped public CI runs the unit tests.
 
+## Four offline reverse-engineering fixtures and public scorer
+
+`build_synthetic_targets.py` creates four invented public-safe artifacts into a **new** temporary target directory: Electron IPC files in hidden bundler directories, two compiled ELF shared libraries and a locally built Go executable. Only local C/Go compilers and Go standard-library packages are used; target binaries are never executed. `test_synthetic_targets.py` exercises static extraction and fails on unexpected overwrite or a dangling destination symlink.
+
+`score_synthetic.py` tests exactly nine concrete answer fields over four cases, including a Go toolchain read from actual binary build metadata. `test_score_synthetic.py` exercises positive and deliberately incorrect synthetic submissions. Its publicly visible labels do **not** amount to independent blinded ground truth, validated tool traces, verified citations, or a real A/B result. No model ever receives a prompt or makes an API request in this CI phase.
+
+The branch CI automatically checks all tests on a disposable GitHub-hosted runner. Public package bootstrap may use Ubuntu repository network access; no claim of kernel-enforced egress isolation is made.
+
 ## Next measurement gate
 
 To test agent benefit, run baseline-vs-candidate under an identical, separately approved model/provider/compute budget; freeze task data, environment, source/config hashes, scoring rubric and case order. Use real tool traces and provider receipts, held-out tasks and independently inspected output. No private materials or live production access. No promotion, merge or deployment is implied by a passing smoke check.
