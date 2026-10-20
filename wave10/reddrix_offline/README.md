@@ -52,3 +52,48 @@ The new `test_source_projection.py` suite runs through the same offline
 `unittest discover` command. A passing CI job proves only the synthetic shape
 and negative checks, not legality, privacy compliance, runtime readiness or
 production persistence.
+
+## Synthetic ingress and retention simulation (no live connector)
+
+`synthetic_ingress.py` offers a **pure in-process boundary**, not an HTTP/API
+server. `SyntheticInbox.accept(...)` and `expire(...)` operate only on
+invented fixture events and ephemeral Python memory. The hard-coded exact
+fixture context requires `synthetic-ci-harness`, `synthetic_offline_only`,
+`projection_contract_test`, `in_process`, `network_allowed=false` and the
+reserved synthetic source. It is a test *assertion*, **not authentication,
+not an IAM permission, and not a real source licence**.
+
+- Rejects foreign/missing context properties, real-source modes, invalid events,
+  noncanonical URLs, future/expired records, oversized batches and capacity
+  overflow. No partial in-memory acceptance when any event is invalid.
+- Reuses `source_projection.py` and retains only bounded metadata fields.
+  Full post/comment text and author identifiers never enter the inbox.
+- Replayed event keys are deduplicated within a running inbox.
+- `expire(..., now=...)` explicitly removes rows from this Python dictionary
+  at or after `retention_until`; it is not scheduled and does **not** erase
+  databases, durable storage, exports, audit logs or backups.
+- Results explicitly state `production_write_authorized=false`,
+  `runtime_authorization_verified=false` and
+  `persistent_retention_enforced=false`.
+
+Use the same offline test command; it now includes `test_synthetic_ingress.py`.
+
+### Admission criteria before any real integration
+
+1. Independently verify a written entitlement for the actual source, exact
+   purpose, commercial use where applicable, collection mechanism and
+   permitted fields. No assumption that a public page is a licensed feed.
+2. Map into an **existing** PANAM source-ingestion/approval path in a private
+   reviewed change. The public test context must not be reused as a token.
+3. Define production identity and least-privilege authN/authZ, rate limits,
+   input validation, replay semantics, isolated runtime and audit receipts.
+4. Perform a privacy/security assessment of purpose limitation, personally
+   identifying content, minimization and cross-border retention requirements.
+5. Implement measured scheduled persistent expiry and deletion evidence for
+   every storage/backup/export layer where legally and technically applicable.
+6. Run private isolated integration checks, a source-specific authorized
+   canary, current-state risk gates and separate owner approval before any
+   production write/deploy. Green public CI is **not** authority.
+
+No production schema migration, listener, API credential, network connection,
+scheduler, secrets, deployment or external source collection is included.
