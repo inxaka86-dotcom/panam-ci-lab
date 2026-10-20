@@ -97,3 +97,21 @@ Use the same offline test command; it now includes `test_synthetic_ingress.py`.
 
 No production schema migration, listener, API credential, network connection,
 scheduler, secrets, deployment or external source collection is included.
+
+### Verified Reddit source-rights boundary
+
+Official source pages (checked 2026-10-21):
+
+- [Reddit: Don't break the site](https://support.reddithelp.com/hc/en-us/articles/360043512931-Don-t-break-the-site)
+  (updated 2026-10-06) expressly lists scraping without an authorized
+  agreement and collecting data without permission as prohibited activity.
+- [Reddit: Developer Platform & Accessing Reddit Data](https://support.reddithelp.com/hc/en-us/articles/14945211791892-Developer-Platform-Accessing-Reddit-Data)
+  (updated 2026-05-28) states that commercial uses of Reddit data require
+  Reddit permission and a contract.
+- [Reddit: Data API Terms](https://redditinc.com/policies/data-api-terms)
+  (last revised 2026-07-20) describe separate agreements for commercial use
+  and restrictions on retention and repurposing.
+
+This public test has **no Reddit agreement or authenticated API entitlement
+evidence**; therefore source-specific live admission remains `DENIED`.
+An MIT licence for the scraper package does not change data-access rights.
