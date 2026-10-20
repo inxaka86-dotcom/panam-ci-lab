@@ -1,0 +1,9 @@
+{
+  "mode": "offline_fixture_only",
+  "data_status": "synthetic",
+  "authorization": "locally_authored_synthetic_fixture",
+  "source_id": "synthetic_legal_discussions",
+  "allowed_host": "forum.example.org",
+  "max_records": 20,
+  "retention_days": 7
+}

@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://panam.example.invalid/schemas/panam.signal.v1.schema.json",
+  "title": "Proposed PANAM SIGNAL v1 synthetic offline event",
+  "description": "Research-only fixture contract, not approved by PANAM production",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "record_key",
+    "source_id",
+    "source_url",
+    "type",
+    "published_at",
+    "captured_at",
+    "delete_after",
+    "title",
+    "body",
+    "topics",
+    "provenance"
+  ],
+  "properties": {
+    "schema": {
+      "const": "panam.signal.v1"
+    },
+    "record_key": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{24}$"
+    },
+    "source_id": {
+      "const": "synthetic_legal_discussions"
+    },
+    "source_url": {
+      "type": "string",
+      "pattern": "^https://forum\\.example\\.org/discussions/[A-Za-z0-9_-]{1,100}/?$",
+      "maxLength": 2048
+    },
+    "type": {
+      "enum": [
+        "post",
+        "comment",
+        "discussion"
+      ]
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "captured_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "delete_after": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 250
+    },
+    "body": {
+      "type": "string",
+      "maxLength": 3000
+    },
+    "topics": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "consumer",
+          "contracts",
+          "procurement",
+          "employment",
+          "housing"
+        ]
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "document_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "synthetic_fixture"
+        },
+        "document_ref": {
+          "const": "PANAM-OFFLINE-2026-10-20"
+        }
+      }
+    }
+  }
+}
