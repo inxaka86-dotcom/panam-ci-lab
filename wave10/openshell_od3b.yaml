@@ -1,0 +1,35 @@
+version: 1
+
+filesystem_policy:
+  include_workdir: false
+  read_only:
+    - /opt/od3b
+    - /ms-playwright
+    - /usr
+    - /lib
+    - /lib64
+    - /proc
+    - /dev/urandom
+    - /etc
+  read_write:
+    - /tmp
+    - /dev/null
+
+landlock:
+  compatibility: hard_requirement
+
+process:
+  run_as_user: "1500"
+  run_as_group: "1500"
+
+network_policies:
+  od3b_public_page:
+    name: od3b-example-readonly
+    endpoints:
+      - host: example.com
+        port: 443
+        protocol: rest
+        enforcement: enforce
+        access: read-only
+    binaries:
+      - path: /opt/od3b/node
