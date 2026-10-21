@@ -1,0 +1,97 @@
+name: Wave 8 EdenText legal-review public canary
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'WAVE8.md'
+      - 'wave8/**'
+      - '.github/workflows/wave8-edentext-legal-review-public-canary.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'WAVE8.md'
+      - 'wave8/**'
+      - '.github/workflows/wave8-edentext-legal-review-public-canary.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wave8-edentext-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  edentext-public-canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      EDENTEXT_UPSTREAM_SHA: d64db2d7bf2a304b8bbe63e4ab3131f962229799
+      NO_UPDATE_NOTIFIER: "1"
+    steps:
+      - name: Checkout public CI lab
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Setup Node 24
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+
+      - name: Fetch exact EdenText source
+        shell: bash
+        run: |
+          set -euo pipefail
+          src="${RUNNER_TEMP}/edentext-src"
+          rm -rf "${src}"
+          git init "${src}"
+          git -C "${src}" remote add origin https://github.com/stffnb/edentext.git
+          git -C "${src}" fetch --depth=1 origin "${EDENTEXT_UPSTREAM_SHA}"
+          git -C "${src}" checkout --detach FETCH_HEAD
+          test "$(git -C "${src}" rev-parse HEAD)" = "${EDENTEXT_UPSTREAM_SHA}"
+          printf 'UPSTREAM_PACKAGE_LOCK_SHA256='
+          sha256sum "${src}/package-lock.json" | awk '{print $1}'
+          git -C "${src}" remote remove origin
+          echo "EDENTEXT_SRC=${src}" >> "${GITHUB_ENV}"
+
+      - name: Install pinned upstream dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "${EDENTEXT_SRC}"
+          npm ci --ignore-scripts
+
+      - name: Add public synthetic legal-review canary
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp wave8/edentext_legal_review_public.test.ts "${EDENTEXT_SRC}/tests/panam-public-legal-review.test.ts"
+
+      - name: Run upstream and legal-review compatibility tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "${EDENTEXT_SRC}"
+          npx vitest run \
+            tests/unit/track-changes-replace.test.ts \
+            tests/unit/link-scheme.test.ts \
+            tests/unit/image-formats.test.ts \
+            tests/roundtrip.test.ts \
+            tests/panam-public-legal-review.test.ts
+
+      - name: Emit bounded evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s\n' \
+            "WAVE8_EDENTEXT_PUBLIC_CANARY=PASS" \
+            "UPSTREAM_COMMIT=${EDENTEXT_UPSTREAM_SHA}" \
+            "REAL_DOCUMENTS=NO" \
+            "PRIVATE_PANAM_SOURCE=NO" \
+            "PRODUCTION_AUTHORITY=NO" \
+            "AI_AUTO_ACCEPT=NO"
