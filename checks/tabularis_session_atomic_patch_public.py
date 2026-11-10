@@ -40,8 +40,8 @@ def patch(src: str) -> str:
     if src.count(ORIGINAL) != 1:
         raise ValueError("Expected exact upstream session write not present exactly once")
     start = src.index(FUNCTION_ANCHOR)
-    end = src.find("\n}\n", start)
-    if end < start or ORIGINAL not in src[start:end+3]:
+    end = src.find("\n}", start)
+    if end < start or ORIGINAL not in src[start:end+2]:
         raise ValueError("Original write not inside expected function")
     return src.replace(ORIGINAL, REPLACEMENT)
 
