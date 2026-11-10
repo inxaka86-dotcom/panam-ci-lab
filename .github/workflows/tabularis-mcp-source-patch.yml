@@ -48,7 +48,7 @@ jobs:
           sudo apt-get update -qq
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
             libwebkit2gtk-4.1-0 libgtk-3-0 libayatana-appindicator3-1 librsvg2-2 \
-            build-essential pkg-config libssl-dev
+            build-essential pkg-config libssl-dev libdbus-1-dev
           cargo --version
           rustc --version
 
