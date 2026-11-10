@@ -1,0 +1,61 @@
+name: Public Tabularis v0.32.0 native MCP test
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/tabularis-native-smoke.yml'
+      - 'checks/tabularis_mcp_public_smoke.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-mcp-public-synthetic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Checkout public-only source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Self-test synthetic harness
+        run: python3 checks/tabularis_mcp_public_smoke.py --selftest
+
+      - name: Download and authenticate upstream release
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://github.com/TabularisDB/tabularis/releases/download/v0.32.0/tabularis_0.32.0_amd64.deb'
+          expected='02156031dd7d46be7ca964a12932497d8e51536bce4682746a4164381f963765'
+          mkdir -p "$RUNNER_TEMP/tabularis-extract"
+          curl --fail --silent --show-error --location --retry 2 --connect-timeout 20 \
+            --max-time 180 "$url" -o "$RUNNER_TEMP/tabularis_0.32.0_amd64.deb"
+          printf '%s  %s\n' "$expected" "$RUNNER_TEMP/tabularis_0.32.0_amd64.deb" | sha256sum -c -
+          dpkg-deb --extract "$RUNNER_TEMP/tabularis_0.32.0_amd64.deb" "$RUNNER_TEMP/tabularis-extract"
+          test -x "$RUNNER_TEMP/tabularis-extract/usr/bin/tabularis"
+
+      - name: Install upstream desktop runtime dependencies on ephemeral hosted runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
+            libwebkit2gtk-4.1-0 libgtk-3-0 libayatana-appindicator3-1 librsvg2-2
+          missing="$(ldd "$RUNNER_TEMP/tabularis-extract/usr/bin/tabularis" | grep 'not found' || true)"
+          if [ -n "$missing" ]; then
+            printf 'Unresolved upstream runtime libraries:\\n%s\\n' "$missing"
+            exit 1
+          fi
+
+      - name: Probe actual MCP with public synthetic SQLite
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 checks/tabularis_mcp_public_smoke.py \
+            --binary "$RUNNER_TEMP/tabularis-extract/usr/bin/tabularis" --timeout 35
