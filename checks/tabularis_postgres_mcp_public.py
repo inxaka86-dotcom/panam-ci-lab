@@ -203,7 +203,7 @@ def evaluate(stdout: str, stderr: str, exit_code: int,
                           and not error(responses.get(7, {}))),
         "writer_cte_select": ("17" in content(8)
                              and not error(responses.get(8, {}))),
-        "eight_write_attempts_denied": all(
+        "nine_mutating_attempts_denied": all(
             error(responses.get(i, {})) for i in range(9, 18)
         ),
         "reader_private_select_denied": error(responses.get(18, {})),
