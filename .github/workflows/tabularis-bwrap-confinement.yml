@@ -1,0 +1,87 @@
+name: Public Tabularis MCP unprivileged OS sandbox confinement test
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/tabularis-bwrap-confinement.yml'
+      - 'checks/tabularis_bwrap_public.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-unprivileged-bubblewrap:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout public synthetic test source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Verify public-only boundary and test harness
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 checks/publication_gate.py
+          python3 checks/tabularis_bwrap_public.py --selftest
+          python3 checks/tabularis_upstream_redact_v032.py --selftest
+          python3 checks/tabularis_audit_hardening_public.py --selftest
+          python3 checks/tabularis_session_atomic_patch_public.py --selftest
+          test "$(id -u)" -ne 0
+
+      - name: Install isolated unprivileged Linux sandbox tooling and Rust dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
+            bubblewrap build-essential pkg-config libssl-dev libdbus-1-dev
+          bwrap --version
+          cargo --version
+
+      - name: Fail-closed preflight — prove no runner host TCP or hidden files in namespace
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 checks/tabularis_bwrap_public.py --preflight
+          echo "BWRAP_UNPRIVILEGED_NETWORK_AND_FILE_ISOLATION=PASS"
+
+      - name: Fetch immutable Tabularis source and apply prior tested hardening
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --depth 1 --branch v0.32.0 --single-branch \
+            https://github.com/TabularisDB/tabularis.git "$RUNNER_TEMP/vendor"
+          test "$(git -C "$RUNNER_TEMP/vendor" rev-parse HEAD)" = \
+            "82ee2e7abbbfc2e26bd91536e3e16b924e280ddd"
+          python3 checks/tabularis_upstream_redact_v032.py \
+            --source "$RUNNER_TEMP/vendor/src-tauri/src/mcp/mod.rs"
+          python3 checks/tabularis_audit_hardening_public.py \
+            --mcp "$RUNNER_TEMP/vendor/src-tauri/src/mcp/mod.rs" \
+            --activity "$RUNNER_TEMP/vendor/src-tauri/src/ai_activity.rs"
+          python3 checks/tabularis_session_atomic_patch_public.py \
+            --source "$RUNNER_TEMP/vendor/src-tauri/src/ai_activity.rs"
+
+      - name: Build patched native Tabularis MCP
+        shell: bash
+        env:
+          CARGO_INCREMENTAL: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/vendor/src-tauri"
+          cargo build --locked --no-default-features --bin tabularis --jobs 2
+          test -x target/debug/tabularis
+
+      - name: Run real patched MCP inside no-network, reduced-filesystem sandbox
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          ulimit -n 128
+          python3 checks/tabularis_bwrap_public.py \
+            --binary "$RUNNER_TEMP/vendor/src-tauri/target/debug/tabularis"
+          echo "PATCHED_MCP_BWRAP_NATIVE_SQLITE_AND_PRIVACY=PASS"
