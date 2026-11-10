@@ -40,6 +40,19 @@ jobs:
           dpkg-deb --extract "$RUNNER_TEMP/tabularis_0.32.0_amd64.deb" "$RUNNER_TEMP/tabularis-extract"
           test -x "$RUNNER_TEMP/tabularis-extract/usr/bin/tabularis"
 
+      - name: Install upstream desktop runtime dependencies on ephemeral hosted runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
+            libwebkit2gtk-4.1-0 libgtk-3-0 libayatana-appindicator3-1 librsvg2-2
+          missing="$(ldd "$RUNNER_TEMP/tabularis-extract/usr/bin/tabularis" | grep 'not found' || true)"
+          if [ -n "$missing" ]; then
+            printf 'Unresolved upstream runtime libraries:\\n%s\\n' "$missing"
+            exit 1
+          fi
+
       - name: Probe actual MCP with public synthetic SQLite
         shell: bash
         run: |
