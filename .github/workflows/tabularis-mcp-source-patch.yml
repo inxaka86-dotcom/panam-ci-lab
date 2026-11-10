@@ -1,0 +1,103 @@
+name: Public Tabularis MCP redaction source-patch experiment
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/tabularis-mcp-source-patch.yml'
+      - 'checks/tabularis_upstream_redact_v032.py'
+      - 'checks/tabularis_mcp_public_smoke.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-patched-mcp:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout public-only experiment
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Public-only gate and bounded patch self-tests
+        run: |
+          set -euo pipefail
+          python3 checks/publication_gate.py
+          python3 checks/tabularis_upstream_redact_v032.py --selftest
+          python3 checks/tabularis_mcp_public_smoke.py --selftest
+
+      - name: Download official Tabularis v0.32.0 baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://github.com/TabularisDB/tabularis/releases/download/v0.32.0/tabularis_0.32.0_amd64.deb'
+          expected='02156031dd7d46be7ca964a12932497d8e51536bce4682746a4164381f963765'
+          curl --fail --silent --show-error --location --retry 2 --connect-timeout 20 --max-time 180 "$url" -o "$RUNNER_TEMP/upstream.deb"
+          printf '%s  %s\n' "$expected" "$RUNNER_TEMP/upstream.deb" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/upstream"
+          dpkg-deb -x "$RUNNER_TEMP/upstream.deb" "$RUNNER_TEMP/upstream"
+          test -x "$RUNNER_TEMP/upstream/usr/bin/tabularis"
+
+      - name: Set up dependencies for baseline and Rust CLI build
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
+            libwebkit2gtk-4.1-0 libgtk-3-0 libayatana-appindicator3-1 librsvg2-2 \
+            build-essential pkg-config libssl-dev
+          cargo --version
+          rustc --version
+
+      - name: Establish negative control — unmodified upstream logs payloads
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          python3 checks/tabularis_mcp_public_smoke.py \
+            --binary "$RUNNER_TEMP/upstream/usr/bin/tabularis" --timeout 40 > "$RUNNER_TEMP/baseline.json"
+          exit_code=$?
+          set -e
+          python3 - "$RUNNER_TEMP/baseline.json" "$exit_code" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1],encoding='utf-8'))
+          assert int(sys.argv[2]) != 0
+          assert r['functional_pass'] is True
+          assert r['status']=='PRIVACY_FAIL'
+          assert r['disclosure_flags']['sql_request_logged']
+          assert r['disclosure_flags']['result_logged']
+          print('UPSTREAM_BASELINE=FUNCTIONAL_PASS_PRIVACY_FAIL')
+          PY
+
+      - name: Fetch immutable upstream source commit and remove unredacted MCP payload logging
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --depth 1 --branch v0.32.0 --single-branch https://github.com/TabularisDB/tabularis.git "$RUNNER_TEMP/vendor"
+          test "$(git -C "$RUNNER_TEMP/vendor" rev-parse HEAD)" = "82ee2e7abbbfc2e26bd91536e3e16b924e280ddd"
+          python3 checks/tabularis_upstream_redact_v032.py --source "$RUNNER_TEMP/vendor/src-tauri/src/mcp/mod.rs"
+          if grep -Fq 'eprintln!("[MCP] Received: {}", line)' "$RUNNER_TEMP/vendor/src-tauri/src/mcp/mod.rs"; then exit 1; fi
+          if grep -Fq 'eprintln!("[MCP] Sending: {}", json)' "$RUNNER_TEMP/vendor/src-tauri/src/mcp/mod.rs"; then exit 1; fi
+          echo "PINNED_UPSTREAM_SOURCE_PATCH=PASS"
+
+      - name: Compile CLI-only patched Tabularis from public source
+        shell: bash
+        env:
+          CARGO_INCREMENTAL: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/vendor/src-tauri"
+          cargo build --locked --no-default-features --bin tabularis --jobs 2
+          test -x target/debug/tabularis
+
+      - name: Run exact native MCP functional and privacy acceptance on patched executable
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 checks/tabularis_mcp_public_smoke.py \
+            --binary "$RUNNER_TEMP/vendor/src-tauri/target/debug/tabularis" --timeout 40
+          echo "PATCHED_NATIVE_MCP_FUNCTIONAL_AND_PRIVACY=PASS"
