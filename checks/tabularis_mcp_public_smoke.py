@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import sqlite3
 import subprocess
@@ -154,6 +155,12 @@ def run(binary, timeout):
             cwd=root,env=env,check=False)
         result=assess(p.stdout,p.stderr,db,original,p.returncode)
         result["binary_sha256"]=sha(binary)
+        result["process_exit_code"]=p.returncode
+        # Extract only a safe dynamic loader library name, never raw stderr.
+        missing=re.search(
+            r"error while loading shared libraries: ([a-zA-Z0-9_.+\-]+)", p.stderr
+        )
+        result["missing_shared_library"]=missing.group(1) if missing else None
         return result
 
 class SelfTest(unittest.TestCase):
