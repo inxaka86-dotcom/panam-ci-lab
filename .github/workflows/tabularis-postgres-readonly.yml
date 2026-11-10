@@ -1,0 +1,142 @@
+name: Public Tabularis PostgreSQL least-privilege MCP acceptance
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/tabularis-postgres-readonly.yml'
+      - 'checks/tabularis_postgres_mcp_public.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  postgres-synthetic-mcp:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: public-admin-fixture-only
+          POSTGRES_DB: public_mcp_test
+        ports:
+          - 55432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d public_mcp_test"
+          --health-interval 3s
+          --health-timeout 5s
+          --health-retries 20
+
+    steps:
+      - name: Checkout only public experimental source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Verify public publication boundary and test harness
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 checks/publication_gate.py
+          python3 checks/tabularis_upstream_redact_v032.py --selftest
+          python3 checks/tabularis_postgres_mcp_public.py --selftest
+          echo "POSTGRES_PUBLIC_HARNESS_SELFTEST=PASS"
+
+      - name: Install isolated PostgreSQL client and Rust source build dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
+            postgresql-client pkg-config build-essential libssl-dev libdbus-1-dev
+          cargo --version
+          psql --version
+
+      - name: Initialize invented PostgreSQL table and separate ACL roles
+        shell: bash
+        env:
+          PGPASSWORD: public-admin-fixture-only
+          PGHOST: 127.0.0.1
+          PGPORT: "55432"
+          PGUSER: postgres
+          PGDATABASE: public_mcp_test
+        run: |
+          set -euo pipefail
+          psql -X -v ON_ERROR_STOP=1 <<'SQL'
+          REVOKE ALL ON DATABASE public_mcp_test FROM PUBLIC;
+          REVOKE ALL ON SCHEMA public FROM PUBLIC;
+          CREATE ROLE public_mcp_reader LOGIN PASSWORD 'public-reader-fixture-only';
+          CREATE ROLE public_mcp_writer LOGIN PASSWORD 'public-writer-fixture-only';
+          GRANT CONNECT ON DATABASE public_mcp_test TO public_mcp_reader, public_mcp_writer;
+          GRANT USAGE ON SCHEMA public TO public_mcp_reader, public_mcp_writer;
+          CREATE TABLE public.public_items (
+            id text PRIMARY KEY, title text NOT NULL, amount integer NOT NULL
+          );
+          INSERT INTO public.public_items VALUES
+            ('p-1', 'FICTIONAL_POSTGRES_ITEM_A007', 17);
+          CREATE TABLE public.private_items(secret_marker text NOT NULL);
+          INSERT INTO public.private_items VALUES ('FICTIONAL_PRIVATE_DENIED_S078');
+          CREATE SEQUENCE public.public_counter START WITH 42;
+          GRANT SELECT ON public.public_items TO public_mcp_reader;
+          GRANT SELECT, INSERT, UPDATE, DELETE ON public.public_items TO public_mcp_writer;
+          GRANT ALL PRIVILEGES ON SEQUENCE public.public_counter TO public_mcp_writer;
+          GRANT CREATE ON SCHEMA public TO public_mcp_writer;
+          SQL
+          test "$(psql -X -v ON_ERROR_STOP=1 -At -c "SELECT count(*) FROM public.public_items")" = "1"
+          echo "POSTGRES_SYNTHETIC_FIXTURE=PASS"
+
+      - name: Verify database-level permission baseline independently
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PGHOST=127.0.0.1 PGPORT=55432 PGDATABASE=public_mcp_test
+          export PGUSER=public_mcp_reader PGPASSWORD=public-reader-fixture-only
+          test "$(psql -X -v ON_ERROR_STOP=1 -At -c 'SELECT amount FROM public.public_items')" = "17"
+          if psql -X -v ON_ERROR_STOP=1 -c "UPDATE public.public_items SET amount=0" >/dev/null 2>&1; then
+            echo "::error::Reader unexpectedly has UPDATE permission"
+            exit 1
+          fi
+          if psql -X -v ON_ERROR_STOP=1 -c "SELECT secret_marker FROM public.private_items" >/dev/null 2>&1; then
+            echo "::error::Reader unexpectedly sees private fixture table"
+            exit 1
+          fi
+          export PGUSER=public_mcp_writer PGPASSWORD=public-writer-fixture-only
+          psql -X -v ON_ERROR_STOP=1 -c "BEGIN; UPDATE public.public_items SET amount=0; ROLLBACK;" >/dev/null
+          test "$(psql -X -v ON_ERROR_STOP=1 -At -c 'SELECT amount FROM public.public_items')" = "17"
+          echo "POSTGRES_ACL_READER_DENIED_WRITER_PERMITTED=PASS"
+
+      - name: Fetch immutable Tabularis v0.32 source and remove raw MCP stderr logging
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --depth 1 --branch v0.32.0 --single-branch \
+            https://github.com/TabularisDB/tabularis.git "$RUNNER_TEMP/vendor"
+          test "$(git -C "$RUNNER_TEMP/vendor" rev-parse HEAD)" = \
+            "82ee2e7abbbfc2e26bd91536e3e16b924e280ddd"
+          python3 checks/tabularis_upstream_redact_v032.py \
+            --source "$RUNNER_TEMP/vendor/src-tauri/src/mcp/mod.rs"
+          echo "PINNED_UPSTREAM_MCP_REDACTION=PASS"
+
+      - name: Compile real patched Tabularis CLI-only executable
+        shell: bash
+        env:
+          CARGO_INCREMENTAL: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/vendor/src-tauri"
+          cargo build --locked --no-default-features --bin tabularis --jobs 2
+          test -x target/debug/tabularis
+          echo "PATCHED_POSTGRES_MCP_BINARY_BUILD=PASS"
+
+      - name: Native MCP PostgreSQL ACL, read-only transaction, and stderr acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 checks/tabularis_postgres_mcp_public.py \
+            --binary "$RUNNER_TEMP/vendor/src-tauri/target/debug/tabularis" \
+            --timeout 90
+          echo "NATIVE_POSTGRES_MCP_FUNCTIONAL_PRIVACY=PASS"
