@@ -18,7 +18,19 @@ import tempfile
 import time
 import uuid
 
-from tabularis_mcp_docker_public import secure_options as base_secure_options
+def base_secure_options() -> list[str]:
+    # Standalone so the exact public probe can run inside a minimal container
+    # without importing any code from the host repository.
+    return [
+        "--network", "none", "--ipc", "none",
+        "--read-only", "--user", "65532:65532",
+        "--cap-drop", "ALL", "--security-opt", "no-new-privileges",
+        "--pids-limit", "64", "--memory", "512m", "--cpus", "1",
+        "--tmpfs", "/tmp:rw,nosuid,nodev,mode=1777,size=64m",
+        "--tmpfs", "/work:rw,nosuid,nodev,mode=1777,size=16m",
+        "--env", "HOME=/work", "--env", "TMPDIR=/tmp",
+        "--env", "RUST_LOG=off", "--env", "PYTHONDONTWRITEBYTECODE=1",
+    ]
 
 SOURCE = Path(__file__).resolve()
 DB = "public_mcp_test"
