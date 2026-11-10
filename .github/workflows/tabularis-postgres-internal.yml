@@ -1,0 +1,90 @@
+name: Public Tabularis MCP restricted PostgreSQL internal-network acceptance
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/tabularis-postgres-internal.yml'
+      - 'checks/tabularis_mcp_pg_internal_public.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  restricted-postgres-egress:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout public synthetic source only
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Publication, Python syntax and upstream privacy patch self-tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 checks/publication_gate.py
+          python3 -m py_compile checks/tabularis_mcp_pg_internal_public.py
+          python3 checks/tabularis_upstream_redact_v032.py --selftest
+          python3 checks/tabularis_audit_hardening_public.py --selftest
+          python3 checks/tabularis_session_atomic_patch_public.py --selftest
+
+      - name: Build public synthetic nonroot container runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build --pull \
+            --file checks/tabularis_sandbox.Dockerfile \
+            --tag panam-public-tabularis-sandbox:v1 checks
+
+      - name: Prove PostgreSQL reachable only within internal Docker network
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 checks/tabularis_mcp_pg_internal_public.py --preflight
+          echo "PUBLIC_INTERNAL_PG_NETWORK_PREFLIGHT=PASS"
+
+      - name: Install public Rust source build dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
+            build-essential pkg-config libssl-dev libdbus-1-dev
+
+      - name: Fetch exact upstream v0.32 and apply three previously verified privacy patches
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --depth 1 --branch v0.32.0 --single-branch \
+            https://github.com/TabularisDB/tabularis.git "$RUNNER_TEMP/vendor"
+          test "$(git -C "$RUNNER_TEMP/vendor" rev-parse HEAD)" = \
+            "82ee2e7abbbfc2e26bd91536e3e16b924e280ddd"
+          python3 checks/tabularis_upstream_redact_v032.py \
+            --source "$RUNNER_TEMP/vendor/src-tauri/src/mcp/mod.rs"
+          python3 checks/tabularis_audit_hardening_public.py \
+            --mcp "$RUNNER_TEMP/vendor/src-tauri/src/mcp/mod.rs" \
+            --activity "$RUNNER_TEMP/vendor/src-tauri/src/ai_activity.rs"
+          python3 checks/tabularis_session_atomic_patch_public.py \
+            --source "$RUNNER_TEMP/vendor/src-tauri/src/ai_activity.rs"
+
+      - name: Build real patched native Tabularis CLI
+        shell: bash
+        env:
+          CARGO_INCREMENTAL: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/vendor/src-tauri"
+          cargo build --locked --no-default-features --bin tabularis --jobs 2
+          test -x target/debug/tabularis
+
+      - name: Verify PostgreSQL MCP read-only, network isolation and unchanged synthetic data
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 checks/tabularis_mcp_pg_internal_public.py \
+            --binary "$RUNNER_TEMP/vendor/src-tauri/target/debug/tabularis"
+          echo "PUBLIC_TABULARIS_INTERNAL_PG_MCP_NATIVE_ACCEPTANCE=PASS"
