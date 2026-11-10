@@ -89,15 +89,33 @@ def execute(args: list[str], timeout: int) -> dict:
                            timeout=timeout, check=False)
     except subprocess.TimeoutExpired:
         return {"status": "BLOCKED", "reason": "bounded sandbox execution timeout"}
-    if p.returncode != 0:
-        # No raw stderr: it could include host/file details.
-        return {"status": "BLOCKED", "reason": "bubblewrap or test child failed",
-                "exit_code": p.returncode}
+    # If the child executed, retain only its explicit structured canary flags.
+    # Never print raw stdout/stderr or runner paths.
     try:
         data = json.loads(p.stdout.splitlines()[-1])
     except (IndexError, json.JSONDecodeError):
-        return {"status": "BLOCKED", "reason": "no valid structured child result"}
-    return data
+        data = None
+    if isinstance(data, dict) and data.get("status") in ("PASS", "FAIL"):
+        if p.returncode != 0 and data.get("status") == "PASS":
+            return {"status": "BLOCKED", "reason": "inconsistent exit code"}
+        return data
+    if p.returncode != 0:
+        err = p.stderr.lower()
+        category = (
+            "USER_NAMESPACE_PERMISSION" if (
+                "operation not permitted" in err
+                or "permission denied" in err
+                or "user namespace" in err
+            ) else
+            "MOUNT_OR_FILESYSTEM_SETUP" if (
+                "mount" in err or "file exists" in err
+                or "no such file or directory" in err
+            ) else
+            "UNCLASSIFIED_SANDBOX_ERROR"
+        )
+        return {"status": "BLOCKED", "reason": category,
+                "exit_code": p.returncode}
+    return {"status": "BLOCKED", "reason": "no valid structured child result"}
 
 
 def preflight() -> dict:
