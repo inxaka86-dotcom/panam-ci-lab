@@ -1,0 +1,103 @@
+name: Public Tabularis MCP audit persistence and opt-in hardening
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/tabularis-audit-residue.yml'
+      - 'checks/tabularis_mcp_audit_public.py'
+      - 'checks/tabularis_audit_hardening_public.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-audit-minimization:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout public experimental source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Public-only boundary and harness self-tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 checks/publication_gate.py
+          python3 checks/tabularis_upstream_redact_v032.py --selftest
+          python3 checks/tabularis_audit_hardening_public.py --selftest
+          python3 checks/tabularis_mcp_audit_public.py --selftest
+
+      - name: Install public Rust CLI compilation dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
+            build-essential pkg-config libssl-dev libdbus-1-dev
+          cargo --version
+
+      - name: Resolve immutable upstream source and apply previously proven stderr patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --depth 1 --branch v0.32.0 --single-branch \
+            https://github.com/TabularisDB/tabularis.git "$RUNNER_TEMP/vendor"
+          test "$(git -C "$RUNNER_TEMP/vendor" rev-parse HEAD)" = \
+            "82ee2e7abbbfc2e26bd91536e3e16b924e280ddd"
+          python3 checks/tabularis_upstream_redact_v032.py \
+            --source "$RUNNER_TEMP/vendor/src-tauri/src/mcp/mod.rs"
+
+      - name: Build stderr-patched baseline with upstream default audit behavior
+        shell: bash
+        env:
+          CARGO_INCREMENTAL: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/vendor/src-tauri"
+          cargo build --locked --no-default-features --bin tabularis --jobs 2
+          test -x target/debug/tabularis
+
+      - name: Verify baseline retains SQL in default and opted-in AI activity audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 022
+          python3 checks/tabularis_mcp_audit_public.py \
+            --binary "$RUNNER_TEMP/vendor/src-tauri/target/debug/tabularis" \
+            --experiment baseline
+          echo "MCP_AUDIT_DEFAULT_SQL_RESIDUE_REPRODUCED=PASS"
+
+      - name: Apply exact-match audit minimization and owner-only log permissions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 checks/tabularis_audit_hardening_public.py \
+            --mcp "$RUNNER_TEMP/vendor/src-tauri/src/mcp/mod.rs" \
+            --activity "$RUNNER_TEMP/vendor/src-tauri/src/ai_activity.rs"
+          echo "MCP_AUDIT_HARDENING_PATCH_APPLIED=PASS"
+
+      - name: Rebuild actual MCP executable with audit hardening
+        shell: bash
+        env:
+          CARGO_INCREMENTAL: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/vendor/src-tauri"
+          cargo build --locked --no-default-features --bin tabularis --jobs 2
+          test -x target/debug/tabularis
+
+      - name: Verify no default SQL residue and restricted explicit opt-in audit file
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 022
+          python3 checks/tabularis_mcp_audit_public.py \
+            --binary "$RUNNER_TEMP/vendor/src-tauri/target/debug/tabularis" \
+            --experiment hardened
+          echo "MCP_AUDIT_OPT_IN_DEFAULT_OFF_PRIVACY=PASS"
