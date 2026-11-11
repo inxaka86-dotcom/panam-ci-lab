@@ -1,0 +1,171 @@
+name: Public CodeChart synthetic canary
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/codechart-synthetic-canary.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codechart-public-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  isolated-synthetic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout public lab
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Set up pinned Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22.16.0'
+          package-manager-cache: false
+
+      - name: Install audited pinned package without install scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          if printenv GITHUB_TOKEN >/dev/null; then exit 1; fi
+          if printenv GH_TOKEN >/dev/null; then exit 1; fi
+          vendor="$RUNNER_TEMP/codechart-vendor"
+          mkdir -p "$vendor"
+          printf '%s\n' '{"private":true,"name":"synthetic-codechart-check","version":"0.0.0","dependencies":{"codechart":"0.9.0"}}' > "$vendor/package.json"
+          cd "$vendor"
+          npm install --ignore-scripts --no-fund --no-audit
+          npm audit signatures
+          node -e 'const p=require("./node_modules/codechart/package.json");if(p.version!=="0.9.0"){process.exit(1)}'
+
+      - name: Create generic synthetic Git diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          fixture="$RUNNER_TEMP/codechart-fixture"
+          mkdir -p "$fixture/src"
+          cd "$fixture"
+          git init -q
+          git config user.name "Synthetic CI"
+          git config user.email "synthetic@example.invalid"
+          git config commit.gpgsign false
+          cat > src/intake.py <<'PY'
+          def receive(message):
+              return message["body"]
+          PY
+          cat > src/decision.py <<'PY'
+          def decide(body):
+              return "pending"
+          PY
+          cat > src/report.py <<'PY'
+          def summary(result):
+              return result
+          PY
+          git add -- src
+          git commit -qm "synthetic baseline"
+          cat > src/intake.py <<'PY'
+          def receive(message):
+              return {"id": message["id"], "body": message["body"]}
+          PY
+          cat > src/decision.py <<'PY'
+          from src.intake import receive
+
+          def decide(message):
+              payload = receive(message)
+              return "accepted" if payload["body"] else "rejected"
+          PY
+          cat > src/report.py <<'PY'
+          from src.decision import decide
+
+          def summary(message):
+              return {"decision": decide(message), "review": "synthetic"}
+          PY
+          test "$(git diff --name-only | wc -l)" -eq 3
+          cat > "$RUNNER_TEMP/codechart-spec.json" <<'JSON'
+          {
+            "kind": "summary",
+            "title": "Generic synthetic intake decision report",
+            "rules": ["related-files"],
+            "nodes": [
+              {"id":"intake","label":"Incoming payload","kind":"file","status":"changed","layer":"backend","path":"src/intake.py"},
+              {"id":"decision","label":"Decision rule","kind":"file","status":"changed","layer":"backend","path":"src/decision.py"},
+              {"id":"report","label":"Result report","kind":"file","status":"changed","layer":"backend","path":"src/report.py"}
+            ],
+            "edges": [
+              {"from":"decision","to":"intake","label":"imports intake","kind":"imports"},
+              {"from":"report","to":"decision","label":"imports decision","kind":"imports"}
+            ],
+            "gaps":["Synthetic example only; no real production source was inspected."]
+          }
+          JSON
+          python3 -m json.tool "$RUNNER_TEMP/codechart-spec.json" > /dev/null
+
+      - name: Build disposable Node and Git runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build --pull --tag codechart-public-synthetic:0.9.0 - <<'DOCKER'
+          FROM node:22.16.0-alpine
+          RUN apk add --no-cache git
+          DOCKER
+
+      - name: Render strict map as nonroot with no network
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/codechart-output"
+          mkdir -p "$output"
+          docker run --rm \
+            --network none \
+            --read-only \
+            --cap-drop ALL \
+            --security-opt no-new-privileges \
+            --user "$(id -u):$(id -g)" \
+            --tmpfs /tmp:rw,nosuid,nodev,mode=1777 \
+            --mount "type=bind,src=$RUNNER_TEMP/codechart-fixture,dst=/work,readonly" \
+            --mount "type=bind,src=$RUNNER_TEMP/codechart-spec.json,dst=/input/spec.json,readonly" \
+            --mount "type=bind,src=$RUNNER_TEMP/codechart-vendor,dst=/vendor,readonly" \
+            --mount "type=bind,src=$output,dst=/out" \
+            -e HOME=/tmp/codechart-home \
+            -e XDG_CACHE_HOME=/tmp/codechart-home/.cache \
+            -e XDG_CONFIG_HOME=/tmp/codechart-home/.config \
+            -e CI=true \
+            -e CODECHART_NO_UPDATE_CHECK=1 \
+            -e NO_UPDATE_NOTIFIER=1 \
+            -w /work \
+            codechart-public-synthetic:0.9.0 \
+            sh -ec '
+              mkdir -p "$HOME"
+              node /vendor/node_modules/codechart/dist/cli.js --version | grep -F "0.9.0"
+              node /vendor/node_modules/codechart/dist/cli.js check --git > /out/check.json
+              node /vendor/node_modules/codechart/dist/cli.js render --strict --output both --git /input/spec.json > /out/map.txt
+              page=$(find "$XDG_CACHE_HOME" -type f -name "*.html" -print -quit)
+              test -n "$page"
+              cp "$page" /out/map.html
+            '
+          python3 -m json.tool "$output/check.json" > /dev/null
+          test -s "$output/map.html"
+          test -s "$output/map.txt"
+          grep -F "intake" "$output/map.txt"
+          grep -F "decision" "$output/map.txt"
+          grep -F "report" "$output/map.txt"
+
+      - name: Upload public synthetic evidence only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: codechart-synthetic-0-9-0
+          path: |
+            ${{ runner.temp }}/codechart-output/check.json
+            ${{ runner.temp }}/codechart-output/map.txt
+            ${{ runner.temp }}/codechart-output/map.html
+          if-no-files-found: error
+          retention-days: 7
