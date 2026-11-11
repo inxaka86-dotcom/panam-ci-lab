@@ -159,6 +159,26 @@ jobs:
           grep -F "decision" "$output/map.txt"
           grep -F "report" "$output/map.txt"
 
+      - name: Archive exact public package for offline reproducibility
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar -czf "$RUNNER_TEMP/codechart-public-vendor-0.9.0.tar.gz" \
+            -C "$RUNNER_TEMP/codechart-vendor" \
+            package.json package-lock.json node_modules
+          sha256sum "$RUNNER_TEMP/codechart-public-vendor-0.9.0.tar.gz" \
+            > "$RUNNER_TEMP/codechart-public-vendor-0.9.0.sha256"
+
+      - name: Upload public package for offline verification
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: codechart-public-vendor-0-9-0
+          path: |
+            ${{ runner.temp }}/codechart-public-vendor-0.9.0.tar.gz
+            ${{ runner.temp }}/codechart-public-vendor-0.9.0.sha256
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Upload public synthetic evidence only
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
