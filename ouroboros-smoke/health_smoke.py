@@ -14,7 +14,7 @@ import urllib.request
 
 PORT = 8765
 VERSION = "7.10.0"
-LIMIT_SECONDS = 150
+LIMIT_SECONDS = 90
 MAX_BYTES = 16_384
 
 
@@ -77,6 +77,8 @@ def main() -> int:
         Path(env[name]).mkdir(parents=True, exist_ok=True)
     log_path = Path(os.environ["RUNNER_TEMP"]) / "ouroboros-smoke.log"
     observed = None
+    ready = False
+    last_report = None
     started = time.monotonic()
     with log_path.open("wb") as log:
         proc = subprocess.Popen(cmd, cwd=root, env=env, stdout=log,
@@ -89,8 +91,13 @@ def main() -> int:
                 try:
                     observed = observe()
                     if observed is not None:
-                        print("SMOKE="+json.dumps(observed, sort_keys=True))
-                        break
+                        if observed != last_report:
+                            print("SMOKE="+json.dumps(observed, sort_keys=True), flush=True)
+                            last_report = observed
+                        if (observed["boot_phase"] == "ready" and observed["tasks_ready"]
+                                and observed["dialogue_ready"]):
+                            ready = True
+                            break
                 except (ValueError, RuntimeError) as exc:
                     print(f"SMOKE=INVALID_HEALTH,{type(exc).__name__}")
                     break
@@ -110,7 +117,10 @@ def main() -> int:
         print("SMOKE=NOT_CONFIRMED")
         # No full log dump: transient logs may contain implementation details.
         return 2
-    print("SMOKE=PASS_HTTP_ONLY")
+    if not ready:
+        print("SMOKE=HTTP_ALIVE_BUT_NOT_FULLY_READY")
+        return 2
+    print("SMOKE=PASS_READY")
     return 0
 
 
