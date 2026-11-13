@@ -1,0 +1,85 @@
+name: Ouroboros v7.10.0 public isolated headless smoke
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/ouroboros-headless-smoke.yml"
+      - "ouroboros-smoke/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ouroboros-headless-smoke-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  runtime-http-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      OUROBOROS_SHA: 9352d2840ad79f70993730b7463b2332703234dc
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      UV_NO_PROGRESS: "1"
+    steps:
+      - name: Checkout public-only CI laboratory
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Reject restricted material
+        run: python3 checks/publication_gate.py
+
+      - name: Confirm disposable non-root runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(id -u)" -ne 0
+          test -z "${SSH_AUTH_SOCK:-}"
+          echo "RUNNER_BOUNDARY=UNPRIVILEGED_PUBLIC"
+
+      - name: Fetch pinned public upstream source
+        shell: bash
+        run: |
+          set -euo pipefail
+          repo="${RUNNER_TEMP}/ouroboros-src"
+          git init "$repo"
+          git -C "$repo" remote add origin https://github.com/razzant/ouroboros.git
+          git -C "$repo" fetch --depth=1 origin "$OUROBOROS_SHA"
+          git -C "$repo" checkout --detach FETCH_HEAD
+          test "$(git -C "$repo" rev-parse HEAD)" = "$OUROBOROS_SHA"
+          git -C "$repo" remote remove origin
+          echo "OUROBOROS_PUBLIC_SOURCE=$repo" >> "$GITHUB_ENV"
+          echo "UPSTREAM_PIN=MATCH"
+
+      - name: Install pinned uv and locked dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/uv-bootstrap"
+          "$RUNNER_TEMP/uv-bootstrap/bin/python" -m pip install --no-input --no-cache-dir 'uv==0.12.1'
+          cd "$OUROBOROS_PUBLIC_SOURCE"
+          "$RUNNER_TEMP/uv-bootstrap/bin/uv" sync --locked --no-dev --python 3.10
+          test -x .venv/bin/python
+          echo "UPSTREAM_INSTALL=COMPLETE"
+
+      - name: Launch local Ouroboros, confirm health and stop
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ouroboros-smoke/health_smoke.py
+
+      - name: Report bounded storage metric
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "STORAGE_MEASUREMENT=OBSERVATION_ONLY_NO_QUOTA"
+          if test -d "$RUNNER_TEMP/ouroboros-src"; then
+            du -sh "$RUNNER_TEMP/ouroboros-src" || true
+          fi
+          if test -d "$RUNNER_TEMP/ouroboros-data"; then
+            du -sh "$RUNNER_TEMP/ouroboros-data" || true
+          fi
