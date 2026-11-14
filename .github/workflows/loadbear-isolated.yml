@@ -1,0 +1,66 @@
+name: LoadBear isolated synthetic pilot
+
+on:
+  pull_request:
+    paths:
+      - "loadbear-pilot/**"
+      - ".github/workflows/loadbear-isolated.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  upstream-and-hardened-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout public-only PANAM CI lab
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only boundary and Python syntax
+        run: |
+          set -euo pipefail
+          python3 checks/publication_gate.py
+          python3 -m py_compile loadbear-pilot/harden.py loadbear-pilot/smoke.py
+
+      - name: Install Go
+        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
+        with:
+          go-version: "1.23"
+          cache: false
+
+      - name: Fetch exact public upstream commit
+        shell: bash
+        env:
+          UPSTREAM_PIN: 39a40f1ee550d944b3131ff228e458c9396e62fe
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/loadbear-src"
+          git -C "$RUNNER_TEMP/loadbear-src" init -q
+          git -C "$RUNNER_TEMP/loadbear-src" remote add origin https://github.com/weaztoven/loadbear.git
+          git -C "$RUNNER_TEMP/loadbear-src" fetch --depth 1 origin "$UPSTREAM_PIN"
+          git -C "$RUNNER_TEMP/loadbear-src" -c advice.detachedHead=false checkout --detach FETCH_HEAD
+          test "$(git -C "$RUNNER_TEMP/loadbear-src" rev-parse HEAD)" = "$UPSTREAM_PIN"
+          echo "UPSTREAM_PIN=MATCH"
+
+      - name: Verify upstream tests and apply ephemeral hardening
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/loadbear-src"
+          go mod verify
+          go test ./...
+          python3 "$GITHUB_WORKSPACE/loadbear-pilot/harden.py" "$RUNNER_TEMP/loadbear-src"
+          go vet ./...
+          go test -race ./...
+          go build -trimpath -o "$RUNNER_TEMP/loadbear-research" ./cmd/loadbear
+
+      - name: Run synthetic loopback-only runtime and failover smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$GITHUB_WORKSPACE/loadbear-pilot/smoke.py" "$RUNNER_TEMP/loadbear-research"
