@@ -1,0 +1,176 @@
+name: Steer pinned public offline canary
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/steer-pinned-offline.yml'
+      - 'steer/**'
+      - 'checks/publication_gate.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: steer-public-offline-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pinned-offline:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - name: Checkout public PANAM CI lab
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Checkout pinned public Steer source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          repository: splify2/steer
+          ref: 70d11ebb6ab7b618508e1bbb593a3d28a9cf4d08
+          path: upstream-steer
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Verify immutable source and credential boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C upstream-steer rev-parse HEAD)" = '70d11ebb6ab7b618508e1bbb593a3d28a9cf4d08'
+          test "$(cat upstream-steer/VERSION)" = '2.1.4'
+          test -z "${GITHUB_TOKEN:-}"
+          test -z "${GH_TOKEN:-}"
+          test -z "${OPENAI_API_KEY:-}"
+          if git -C upstream-steer config --get-regexp '^http\..*\.extraheader$' >/dev/null; then
+            echo 'Unexpected persisted HTTP credentials' >&2
+            exit 1
+          fi
+          git -C upstream-steer show -s --format='%H %cs %s' HEAD
+
+      - name: Build pinned Steer native binaries (unprivileged)
+        shell: bash
+        run: |
+          set -euo pipefail
+          make -C upstream-steer -j2 all 2>&1 | tee "${RUNNER_TEMP}/steer-build.log"
+          test -x upstream-steer/build/steer
+          upstream-steer/build/steer --version
+
+      - name: Run upstream offline test suite (unprivileged)
+        shell: bash
+        run: |
+          set -euo pipefail
+          make -C upstream-steer test 2>&1 | tee "${RUNNER_TEMP}/steer-test.log"
+
+      - name: Record evidence limits
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo '## Steer public-source offline canary'
+            echo 'Pinned Steer commit: `70d11ebb6ab7b618508e1bbb593a3d28a9cf4d08` (version 2.1.4).'
+            echo 'Execution: disposable GitHub-hosted Ubuntu runner; no PANAM production credentials.'
+            echo 'The make-test step result must be checked separately; an exit code 0 can include skipped tests.'
+            echo 'Real nftables, network-namespace egress containment, OpenWrt and fail-closed traffic: **NOT VERIFIED** by this job.'
+            if [ -f "${RUNNER_TEMP}/steer-test.log" ]; then
+              echo ''
+              echo '### Skip-related output (review all occurrences)'
+              echo '```text'
+              grep -Ein 'skip|skipp|пропуск|пропускаю|нужен root|unshare.*недоступен' "${RUNNER_TEMP}/steer-test.log" | head -60 || true
+              echo '```'
+            else
+              echo 'Test log missing: test execution not established.'
+            fi
+          } | tee -a "${GITHUB_STEP_SUMMARY}"
+
+      - name: Upload synthetic public-source test logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: steer-public-offline-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/steer-build.log
+            ${{ runner.temp }}/steer-test.log
+          if-no-files-found: warn
+          retention-days: 7
+
+  real-nft-isolated:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Checkout public CI lab (no credentials persisted)
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce public-only publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Checkout exact Steer revision
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          repository: splify2/steer
+          ref: 70d11ebb6ab7b618508e1bbb593a3d28a9cf4d08
+          path: upstream-steer
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Check source pin
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C upstream-steer rev-parse HEAD)" = '70d11ebb6ab7b618508e1bbb593a3d28a9cf4d08'
+          test "$(cat upstream-steer/VERSION)" = '2.1.4'
+
+      - name: Install kernel test tools on disposable runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends nftables iproute2 util-linux
+          command -v nft
+          command -v unshare
+          command -v ip
+
+      - name: Build upstream code without privileges
+        shell: bash
+        run: |
+          set -euo pipefail
+          make -C upstream-steer -j2 all
+
+      - name: Run real nftables test inside disposable namespace only
+        shell: bash
+        run: |
+          set -euo pipefail
+          PARENT_NS="$(readlink /proc/self/ns/net)"
+          test -n "$PARENT_NS"
+          sudo env -i PATH=/usr/sbin:/usr/bin:/sbin:/bin HOME=/tmp \
+            PANAM_TEST_PARENT_NETNS="$PARENT_NS" RUNNER_TEMP="$RUNNER_TEMP" \
+            timeout -k 5s 180s unshare --net --mount --pid --fork --mount-proc \
+            bash steer/netns_canary.sh
+
+      - name: Record real-kernel limits
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo '## Disposable Linux netns kernel test'
+            echo 'The test either proves a fresh namespace with no external routes and real nftables operations, or fails blocked.'
+            echo 'This job is **not** OpenWrt VM testing, not end-to-end DNS/IPv4/IPv6 leak testing, and never grants production approval.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload public synthetic namespace evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: steer-real-nft-${{ github.run_id }}
+          path: ${{ runner.temp }}/steer-real-nft.log
+          if-no-files-found: warn
+          retention-days: 7
