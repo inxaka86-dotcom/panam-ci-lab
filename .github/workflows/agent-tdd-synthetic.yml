@@ -1,0 +1,30 @@
+name: Public synthetic agent TDD pilot
+
+on:
+  pull_request:
+    paths:
+      - 'agent_tdd/**'
+      - '.github/workflows/agent-tdd-synthetic.yml'
+      - 'checks/publication_gate.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agent-tdd-synthetic-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-tdd:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout public synthetic repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Verify public-only boundary
+        run: python3 checks/publication_gate.py
+      - name: Execute RED/GREEN synthetic verification
+        run: python3 -m agent_tdd.verify
