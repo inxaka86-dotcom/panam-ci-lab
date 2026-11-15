@@ -22,9 +22,10 @@ concurrency:
 jobs:
   upstream-agent-smoke:
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    timeout-minutes: 25
     env:
       MINI_SWE_SHA: 04d809ceab9df28f9adaed044884180159172930
+      LLAMA_CPP_SHA: fc504f91d8cfdfcd9b0fedcf14600fd2b0e63420
       PANAM_SYNTHETIC_IMAGE: python@sha256:935c3c5b12357a7e10caa9c1e6ca5692344d97cf229832ef584be2cec9fc03df
       MSWEA_SILENT_STARTUP: '1'
       MSWEA_GLOBAL_CONFIG_DIR: /tmp/panam-mini-swe-config
@@ -77,3 +78,47 @@ jobs:
           set -euo pipefail
           source "${RUNNER_TEMP}/agent-venv/bin/activate"
           python agent_runtime_pilot/run_upstream_smoke.py
+
+      - name: Build pinned llama.cpp CPU code generator
+        shell: bash
+        run: |
+          set -euo pipefail
+          src="${RUNNER_TEMP}/llama-cpp-source"
+          git init -q "${src}"
+          git -C "${src}" remote add origin https://github.com/ggml-org/llama.cpp.git
+          git -C "${src}" fetch --depth 1 origin "${LLAMA_CPP_SHA}"
+          git -C "${src}" checkout -q --detach FETCH_HEAD
+          test "$(git -C "${src}" rev-parse HEAD)" = "${LLAMA_CPP_SHA}"
+          git -C "${src}" remote remove origin
+          echo "LLAMA_CPP_PIN=MATCH sha=${LLAMA_CPP_SHA}"
+          cmake -S "${src}" -B "${src}/build" -DCMAKE_BUILD_TYPE=Release \
+            -DGGML_NATIVE=OFF -DGGML_OPENMP=OFF -DLLAMA_CURL=OFF
+          cmake --build "${src}/build" --target llama-cli --parallel 2
+          test -x "${src}/build/bin/llama-cli"
+
+      - name: Download and verify exact public Qwen GGUF
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://huggingface.co/Qwen/Qwen2.5-Coder-0.5B-Instruct-GGUF/resolve/ebb2015119c907b064c512bf053e945850b5875f/qwen2.5-coder-0.5b-instruct-q4_k_m.gguf'
+          curl --fail --location --silent --show-error --retry 2 --max-time 240 \
+            --output "${RUNNER_TEMP}/qwen-model.gguf" "${url}"
+          echo "1d9614638d18024d0fbb36575a15f1302a3adf044df10345688ec4f6e1c4ff32  ${RUNNER_TEMP}/qwen-model.gguf" | sha256sum --check
+          test "$(stat -c%s "${RUNNER_TEMP}/qwen-model.gguf")" = 491400064
+          echo 'QWEN_MODEL_PIN=MATCH bytes=491400064'
+
+      - name: Build isolated model runtime image
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build --tag panam-public-llama-runtime:research \
+            --file agent_runtime_pilot/Dockerfile.llama agent_runtime_pilot
+
+      - name: Run real local LLM with mini-SWE-agent synthetic code tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          source "${RUNNER_TEMP}/agent-venv/bin/activate"
+          export PANAM_MODEL_FILE="${RUNNER_TEMP}/qwen-model.gguf"
+          export PANAM_LLAMA_BIN_DIR="${RUNNER_TEMP}/llama-cpp-source/build/bin"
+          python agent_runtime_pilot/run_local_qwen_agent.py
