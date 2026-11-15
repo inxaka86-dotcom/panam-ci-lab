@@ -97,7 +97,7 @@ class LocalQwenModel:
             "panam-public-llama-runtime:research",
             "/opt/llama/llama-cli", "-m", "/model/model.gguf", "-p", prompt,
             "-n", "180", "--temp", "0", "-c", "1024", "-t", "2",
-            "--no-display-prompt", "--simple-io", "-no-cnv", "-st",
+            "--no-display-prompt", "--simple-io",
         ]
         r = subprocess.run(cmd, capture_output=True, text=True, timeout=140, check=False)
         if r.returncode != 0:
