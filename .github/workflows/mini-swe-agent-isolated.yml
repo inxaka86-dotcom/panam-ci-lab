@@ -1,0 +1,73 @@
+name: Public mini-SWE-agent sandbox pilot
+
+on:
+  pull_request:
+    paths:
+      - 'agent_runtime_pilot/**'
+      - '.github/workflows/mini-swe-agent-isolated.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-mini-swe-agent-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  upstream-agent-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      MINI_SWE_SHA: 04d809ceab9df28f9adaed044884180159172930
+      PANAM_SYNTHETIC_IMAGE: python:3.12-slim-bookworm
+      MSWEA_SILENT_STARTUP: '1'
+      MSWEA_GLOBAL_CONFIG_DIR: ${{ runner.temp }}/mini-swe-config
+    steps:
+      - name: Checkout public lab
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce publication boundary
+        run: python3 checks/publication_gate.py
+
+      - name: Fetch upstream mini-SWE-agent by immutable commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          src="${RUNNER_TEMP}/mini-swe-agent-source"
+          git init -q "${src}"
+          git -C "${src}" remote add origin https://github.com/SWE-agent/mini-swe-agent.git
+          git -C "${src}" fetch --depth 1 origin "${MINI_SWE_SHA}"
+          git -C "${src}" checkout -q --detach FETCH_HEAD
+          test "$(git -C "${src}" rev-parse HEAD)" = "${MINI_SWE_SHA}"
+          git -C "${src}" remote remove origin
+          echo "UPSTREAM_PIN=MATCH sha=${MINI_SWE_SHA}"
+
+      - name: Install minimal runtime dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "${RUNNER_TEMP}/agent-venv"
+          source "${RUNNER_TEMP}/agent-venv/bin/activate"
+          python -m pip install --disable-pip-version-check --quiet \
+            'setuptools==80.9.0' 'pydantic==2.12.4' 'Jinja2==3.1.6' \
+            'rich==14.2.0' 'python-dotenv==1.1.1' 'platformdirs==4.5.0'
+          python -m pip install --disable-pip-version-check --no-deps --no-build-isolation --quiet \
+            "${RUNNER_TEMP}/mini-swe-agent-source"
+          python -c 'from minisweagent import __version__; assert __version__ == "2.4.6"'
+
+      - name: Pull disposable public image and record digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker pull "${PANAM_SYNTHETIC_IMAGE}"
+          docker image inspect --format 'PUBLIC_IMAGE_DIGEST={{join .RepoDigests ","}}' "${PANAM_SYNTHETIC_IMAGE}"
+
+      - name: Run real upstream agent loop with deterministic model
+        shell: bash
+        run: |
+          set -euo pipefail
+          source "${RUNNER_TEMP}/agent-venv/bin/activate"
+          python agent_runtime_pilot/run_upstream_smoke.py
