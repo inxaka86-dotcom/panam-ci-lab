@@ -62,10 +62,12 @@ def assert_isolation(container_id: str) -> None:
     assert host['Memory'] == 256 * 1024 * 1024
     assert not host.get('Binds'), 'host volume binds forbidden'
     assert spec['Config']['User'] == '65532:65532'
-    assert any(
-        m['Destination'] == '/work' and m['Type'] == 'tmpfs'
-        for m in spec['Mounts']
-    )
+    # Docker --tmpfs declarations are represented in HostConfig.Tmpfs;
+    # Mounts normally lists volumes/bind mounts instead.
+    tmpfs = host.get('Tmpfs') or {}
+    assert '/work' in tmpfs, tmpfs
+    assert 'uid=65532' in tmpfs['/work'] and 'gid=65532' in tmpfs['/work'], tmpfs
+    assert '/tmp' in tmpfs, tmpfs
     print('SANDBOX_BOUNDARY=PASS')
 
 
