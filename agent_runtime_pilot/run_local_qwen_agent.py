@@ -14,6 +14,7 @@ from pathlib import Path
 
 from minisweagent.agents.default import DefaultAgent
 from minisweagent.environments.docker import DockerEnvironment
+from minisweagent.exceptions import LimitsExceeded
 
 MODEL_SHA = "1d9614638d18024d0fbb36575a15f1302a3adf044df10345688ec4f6e1c4ff32"
 TESTS = """cat > /work/test_solution.py <<'PY'
@@ -54,7 +55,7 @@ class LocalQwenModel:
     def parse_source(raw: str) -> str | None:
         if "def add(" not in raw:
             return None
-        text = raw[raw.index("def add("):].split("<|im_end|>")[0]
+        text = raw[raw.rindex("def add("):].split("<|im_end|>")[0]
         text = text.split("\x60\x60\x60")[0].split("\n\n")[0].strip() + "\n"
         if len(text) > 1200:
             return None
@@ -115,12 +116,13 @@ class LocalQwenModel:
                 ]}}
         self.attempts += 1
         if self.attempts > 3:
-            return {"role": "assistant", "content": "limit", "extra": {
-                "cost": 0.0, "actions": [{"command": "echo MODEL_CAPABILITY=NOT_READY; exit 2"}]}}
+            raise LimitsExceeded({"role": "exit", "content": "MODEL_CAPABILITY=NOT_READY",
+                                  "extra": {"exit_status": "ModelNotReady", "submission": ""}})
         output = self.run_inference(last.get("content", ""))
         source = self.parse_source(output)
         if source is None:
             print(f"MODEL_SOURCE_PARSE=FAIL attempt={self.attempts}")
+            print("SYNTHETIC_MODEL_OUTPUT_SAMPLE=" + repr(output[:1200]))
             return {"role": "assistant", "content": "invalid model output", "extra": {
                 "cost": 0.0, "actions": [{"command": "echo MODEL_OUTPUT_INVALID; exit 3"}]}}
         digest = hashlib.sha256(source.encode()).hexdigest()
