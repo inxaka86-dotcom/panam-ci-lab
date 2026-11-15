@@ -6,8 +6,8 @@ evidence, without running an AI agent or accessing any private environment.
 ## Scope
 
 - All samples are invented; paths refer to a **virtual** synthetic/ root.
-- No model calls, remote tool execution, live repository edits, secrets, or
-  private PANAM data are used by this pilot.
+- No model calls, remote agent tool execution, live repo edits, secrets,
+  or private PANAM data are used by this pilot.
 - plan_guard.py validates an inert plan manifest only. It does not establish
   real filesystem containment, symlink policy, process isolation, production
   approval, or a replacement for any existing security gate.
@@ -28,20 +28,20 @@ evidence, without running an AI agent or accessing any private environment.
 
 Run from the repository root:
 
-\`\`\`sh
+~~~sh
 python3 checks/publication_gate.py
 python3 -m agent_tdd.verify
-\`\`\`
+~~~
 
 Expected receipt fields:
 
-\`\`\`text
+~~~text
 TDD_NEGATIVE_CONTROL=PASS expected_failures=<nonzero>
 TDD_GREEN=PASS tests=9
 DATA_CLASS=PUBLIC_SYNTHETIC
 LIVE_AGENT_EXECUTION=NO
 PRODUCTION_ACCESS=NO
-\`\`\`
+~~~
 
 This is a **Superpowers-inspired engineering-method experiment**, not an
 installation or actual execution of Superpowers, OpenHands, Aider or any other
