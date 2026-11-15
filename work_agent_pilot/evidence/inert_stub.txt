@@ -1,0 +1,5 @@
+"""Synthetic RED control only: intentionally inert, not an implementation attempt."""
+
+
+def dependency_layers(graph):
+    return []

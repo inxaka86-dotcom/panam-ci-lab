@@ -1,0 +1,2771 @@
+test_calls_are_independent (work_agent_pilot.test_dependencies.DependencyLayersTests.test_calls_are_independent) ... FAIL
+test_dependency_limit_is_total_across_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dependency_limit_is_total_across_lists) ... FAIL
+test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) ... 
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'b', 'c', 'd', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'b', 'c', 'e', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'b', 'd', 'c', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'b', 'd', 'e', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'b', 'e', 'c', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'b', 'e', 'd', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'c', 'b', 'd', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'c', 'b', 'e', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'c', 'd', 'b', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'c', 'd', 'e', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'c', 'e', 'b', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'c', 'e', 'd', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'd', 'b', 'c', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'd', 'b', 'e', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'd', 'c', 'b', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'd', 'c', 'e', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'd', 'e', 'b', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'd', 'e', 'c', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'e', 'b', 'c', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'e', 'b', 'd', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'e', 'c', 'b', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'e', 'c', 'd', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'e', 'd', 'b', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'e', 'd', 'c', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'a', 'c', 'd', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'a', 'c', 'e', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'a', 'd', 'c', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'a', 'd', 'e', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'a', 'e', 'c', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'a', 'e', 'd', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'c', 'a', 'd', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'c', 'a', 'e', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'c', 'd', 'a', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'c', 'd', 'e', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'c', 'e', 'a', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'c', 'e', 'd', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'd', 'a', 'c', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'd', 'a', 'e', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'd', 'c', 'a', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'd', 'c', 'e', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'd', 'e', 'a', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'd', 'e', 'c', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'e', 'a', 'c', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'e', 'a', 'd', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'e', 'c', 'a', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'e', 'c', 'd', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'e', 'd', 'a', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'e', 'd', 'c', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'a', 'b', 'd', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'a', 'b', 'e', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'a', 'd', 'b', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'a', 'd', 'e', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'a', 'e', 'b', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'a', 'e', 'd', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'b', 'a', 'd', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'b', 'a', 'e', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'b', 'd', 'a', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'b', 'd', 'e', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'b', 'e', 'a', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'b', 'e', 'd', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'd', 'a', 'b', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'd', 'a', 'e', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'd', 'b', 'a', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'd', 'b', 'e', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'd', 'e', 'a', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'd', 'e', 'b', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'e', 'a', 'b', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'e', 'a', 'd', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'e', 'b', 'a', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'e', 'b', 'd', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'e', 'd', 'a', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'e', 'd', 'b', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'a', 'b', 'c', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'a', 'b', 'e', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'a', 'c', 'b', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'a', 'c', 'e', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'a', 'e', 'b', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'a', 'e', 'c', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'b', 'a', 'c', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'b', 'a', 'e', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'b', 'c', 'a', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'b', 'c', 'e', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'b', 'e', 'a', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'b', 'e', 'c', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'c', 'a', 'b', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'c', 'a', 'e', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'c', 'b', 'a', 'e']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'c', 'b', 'e', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'c', 'e', 'a', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'c', 'e', 'b', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'e', 'a', 'b', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'e', 'a', 'c', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'e', 'b', 'a', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'e', 'b', 'c', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'e', 'c', 'a', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'e', 'c', 'b', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'a', 'b', 'c', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'a', 'b', 'd', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'a', 'c', 'b', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'a', 'c', 'd', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'a', 'd', 'b', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'a', 'd', 'c', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'b', 'a', 'c', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'b', 'a', 'd', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'b', 'c', 'a', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'b', 'c', 'd', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'b', 'd', 'a', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'b', 'd', 'c', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'c', 'a', 'b', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'c', 'a', 'd', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'c', 'b', 'a', 'd']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'c', 'b', 'd', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'c', 'd', 'a', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'c', 'd', 'b', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'd', 'a', 'b', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'd', 'a', 'c', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'd', 'b', 'a', 'c']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'd', 'b', 'c', 'a']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'd', 'c', 'a', 'b']) ... FAIL
+  test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'd', 'c', 'b', 'a']) ... FAIL
+test_disconnected_cycle_rejects_entire_graph (work_agent_pilot.test_dependencies.DependencyLayersTests.test_disconnected_cycle_rejects_entire_graph) ... FAIL
+test_duplicate_prerequisites_are_harmless (work_agent_pilot.test_dependencies.DependencyLayersTests.test_duplicate_prerequisites_are_harmless) ... FAIL
+test_empty_graph (work_agent_pilot.test_dependencies.DependencyLayersTests.test_empty_graph) ... ok
+test_independent_nodes_are_lexicographically_sorted (work_agent_pilot.test_dependencies.DependencyLayersTests.test_independent_nodes_are_lexicographically_sorted) ... FAIL
+test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) ... 
+  test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='') ... FAIL
+  test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='A') ... FAIL
+  test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='1a') ... FAIL
+  test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='_a') ... FAIL
+  test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='-a') ... FAIL
+  test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='a.b') ... FAIL
+  test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='a b') ... FAIL
+  test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='a\n') ... FAIL
+  test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='a\t') ... FAIL
+  test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='a/b') ... FAIL
+  test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='é') ... FAIL
+  test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='а') ... FAIL
+  test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa') ... FAIL
+  test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node=None) ... FAIL
+  test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node=True) ... FAIL
+  test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node=7) ... FAIL
+  test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node=('a',)) ... FAIL
+test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) ... 
+  test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite='') ... FAIL
+  test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite='A') ... FAIL
+  test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite='1a') ... FAIL
+  test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite='a\n') ... FAIL
+  test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite='é') ... FAIL
+  test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa') ... FAIL
+  test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite=None) ... FAIL
+  test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite=True) ... FAIL
+  test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite=7) ... FAIL
+  test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite=[]) ... FAIL
+  test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite={}) ... FAIL
+  test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite=('a',)) ... FAIL
+test_layers_wait_for_all_prerequisites (work_agent_pilot.test_dependencies.DependencyLayersTests.test_layers_wait_for_all_prerequisites) ... FAIL
+test_longer_cycle_is_rejected (work_agent_pilot.test_dependencies.DependencyLayersTests.test_longer_cycle_is_rejected) ... FAIL
+test_more_than_thousand_nodes_is_rejected (work_agent_pilot.test_dependencies.DependencyLayersTests.test_more_than_thousand_nodes_is_rejected) ... FAIL
+test_prerequisite_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_prerequisite_order_does_not_change_layers) ... 
+  test_prerequisite_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_prerequisite_order_does_not_change_layers) (order=('a', 'b', 'c')) ... FAIL
+  test_prerequisite_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_prerequisite_order_does_not_change_layers) (order=('a', 'c', 'b')) ... FAIL
+  test_prerequisite_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_prerequisite_order_does_not_change_layers) (order=('b', 'a', 'c')) ... FAIL
+  test_prerequisite_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_prerequisite_order_does_not_change_layers) (order=('b', 'c', 'a')) ... FAIL
+  test_prerequisite_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_prerequisite_order_does_not_change_layers) (order=('c', 'a', 'b')) ... FAIL
+  test_prerequisite_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_prerequisite_order_does_not_change_layers) (order=('c', 'b', 'a')) ... FAIL
+test_rejection_does_not_mutate_input (work_agent_pilot.test_dependencies.DependencyLayersTests.test_rejection_does_not_mutate_input) ... FAIL
+test_repeats_count_toward_dependency_limit (work_agent_pilot.test_dependencies.DependencyLayersTests.test_repeats_count_toward_dependency_limit) ... FAIL
+test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) ... 
+  test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph=None) ... FAIL
+  test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph=True) ... FAIL
+  test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph=False) ... FAIL
+  test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph=0) ... FAIL
+  test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph='') ... FAIL
+  test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph='a') ... FAIL
+  test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph=[]) ... FAIL
+  test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph=()) ... FAIL
+  test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph=set()) ... FAIL
+  test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph={'a': []}) ... FAIL
+  test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph={'a': []}) ... FAIL
+test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) ... 
+  test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) (prerequisites=None) ... FAIL
+  test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) (prerequisites=True) ... FAIL
+  test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) (prerequisites=False) ... FAIL
+  test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) (prerequisites=0) ... FAIL
+  test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) (prerequisites='') ... FAIL
+  test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) (prerequisites='a') ... FAIL
+  test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) (prerequisites=()) ... FAIL
+  test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) (prerequisites=set()) ... FAIL
+  test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) (prerequisites={}) ... FAIL
+  test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) (prerequisites=[]) ... FAIL
+test_self_dependency_is_rejected (work_agent_pilot.test_dependencies.DependencyLayersTests.test_self_dependency_is_rejected) ... FAIL
+test_specification_example (work_agent_pilot.test_dependencies.DependencyLayersTests.test_specification_example) ... FAIL
+test_success_does_not_mutate_input (work_agent_pilot.test_dependencies.DependencyLayersTests.test_success_does_not_mutate_input) ... FAIL
+test_ten_thousand_dependency_entries_are_accepted (work_agent_pilot.test_dependencies.DependencyLayersTests.test_ten_thousand_dependency_entries_are_accepted) ... FAIL
+test_thousand_node_chain_is_accepted (work_agent_pilot.test_dependencies.DependencyLayersTests.test_thousand_node_chain_is_accepted) ... FAIL
+test_two_node_cycle_is_rejected (work_agent_pilot.test_dependencies.DependencyLayersTests.test_two_node_cycle_is_rejected) ... FAIL
+test_unknown_prerequisite_in_disconnected_component_is_rejected (work_agent_pilot.test_dependencies.DependencyLayersTests.test_unknown_prerequisite_in_disconnected_component_is_rejected) ... FAIL
+test_unknown_prerequisite_is_rejected (work_agent_pilot.test_dependencies.DependencyLayersTests.test_unknown_prerequisite_is_rejected) ... FAIL
+test_valid_id_boundaries (work_agent_pilot.test_dependencies.DependencyLayersTests.test_valid_id_boundaries) ... FAIL
+
+======================================================================
+FAIL: test_calls_are_independent (work_agent_pilot.test_dependencies.DependencyLayersTests.test_calls_are_independent)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 154, in test_calls_are_independent
+    self.assertEqual(first, [['a'], ['b']])
+AssertionError: Lists differ: [] != [['a'], ['b']]
+
+Second list contains 2 additional elements.
+First extra element 0:
+['a']
+
+- []
++ [['a'], ['b']]
+
+======================================================================
+FAIL: test_dependency_limit_is_total_across_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dependency_limit_is_total_across_lists)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 133, in test_dependency_limit_is_total_across_lists
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'b', 'c', 'd', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'b', 'c', 'e', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'b', 'd', 'c', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'b', 'd', 'e', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'b', 'e', 'c', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'b', 'e', 'd', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'c', 'b', 'd', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'c', 'b', 'e', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'c', 'd', 'b', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'c', 'd', 'e', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'c', 'e', 'b', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'c', 'e', 'd', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'd', 'b', 'c', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'd', 'b', 'e', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'd', 'c', 'b', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'd', 'c', 'e', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'd', 'e', 'b', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'd', 'e', 'c', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'e', 'b', 'c', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'e', 'b', 'd', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'e', 'c', 'b', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'e', 'c', 'd', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'e', 'd', 'b', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['a', 'e', 'd', 'c', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'a', 'c', 'd', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'a', 'c', 'e', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'a', 'd', 'c', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'a', 'd', 'e', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'a', 'e', 'c', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'a', 'e', 'd', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'c', 'a', 'd', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'c', 'a', 'e', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'c', 'd', 'a', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'c', 'd', 'e', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'c', 'e', 'a', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'c', 'e', 'd', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'd', 'a', 'c', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'd', 'a', 'e', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'd', 'c', 'a', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'd', 'c', 'e', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'd', 'e', 'a', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'd', 'e', 'c', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'e', 'a', 'c', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'e', 'a', 'd', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'e', 'c', 'a', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'e', 'c', 'd', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'e', 'd', 'a', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['b', 'e', 'd', 'c', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'a', 'b', 'd', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'a', 'b', 'e', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'a', 'd', 'b', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'a', 'd', 'e', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'a', 'e', 'b', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'a', 'e', 'd', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'b', 'a', 'd', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'b', 'a', 'e', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'b', 'd', 'a', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'b', 'd', 'e', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'b', 'e', 'a', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'b', 'e', 'd', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'd', 'a', 'b', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'd', 'a', 'e', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'd', 'b', 'a', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'd', 'b', 'e', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'd', 'e', 'a', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'd', 'e', 'b', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'e', 'a', 'b', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'e', 'a', 'd', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'e', 'b', 'a', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'e', 'b', 'd', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'e', 'd', 'a', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['c', 'e', 'd', 'b', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'a', 'b', 'c', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'a', 'b', 'e', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'a', 'c', 'b', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'a', 'c', 'e', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'a', 'e', 'b', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'a', 'e', 'c', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'b', 'a', 'c', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'b', 'a', 'e', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'b', 'c', 'a', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'b', 'c', 'e', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'b', 'e', 'a', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'b', 'e', 'c', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'c', 'a', 'b', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'c', 'a', 'e', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'c', 'b', 'a', 'e'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'c', 'b', 'e', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'c', 'e', 'a', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'c', 'e', 'b', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'e', 'a', 'b', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'e', 'a', 'c', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'e', 'b', 'a', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'e', 'b', 'c', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'e', 'c', 'a', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['d', 'e', 'c', 'b', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'a', 'b', 'c', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'a', 'b', 'd', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'a', 'c', 'b', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'a', 'c', 'd', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'a', 'd', 'b', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'a', 'd', 'c', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'b', 'a', 'c', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'b', 'a', 'd', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'b', 'c', 'a', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'b', 'c', 'd', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'b', 'd', 'a', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'b', 'd', 'c', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'c', 'a', 'b', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'c', 'a', 'd', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'c', 'b', 'a', 'd'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'c', 'b', 'd', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'c', 'd', 'a', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'c', 'd', 'b', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'd', 'a', 'b', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'd', 'a', 'c', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'd', 'b', 'a', 'c'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'd', 'b', 'c', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'd', 'c', 'a', 'b'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_dictionary_insertion_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_dictionary_insertion_order_does_not_change_layers) (order=['e', 'd', 'c', 'b', 'a'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 44, in test_dictionary_insertion_order_does_not_change_layers
+    self.assertEqual(dependency_layers(dict(ordered)),
+AssertionError: Lists differ: [] != [['a', 'b'], ['c', 'd'], ['e']]
+
+Second list contains 3 additional elements.
+First extra element 0:
+['a', 'b']
+
+- []
++ [['a', 'b'], ['c', 'd'], ['e']]
+
+======================================================================
+FAIL: test_disconnected_cycle_rejects_entire_graph (work_agent_pilot.test_dependencies.DependencyLayersTests.test_disconnected_cycle_rejects_entire_graph)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 111, in test_disconnected_cycle_rejects_entire_graph
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_duplicate_prerequisites_are_harmless (work_agent_pilot.test_dependencies.DependencyLayersTests.test_duplicate_prerequisites_are_harmless)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 54, in test_duplicate_prerequisites_are_harmless
+    self.assertEqual(dependency_layers({'a': [], 'b': ['a', 'a', 'a']}),
+AssertionError: Lists differ: [] != [['a'], ['b']]
+
+Second list contains 2 additional elements.
+First extra element 0:
+['a']
+
+- []
++ [['a'], ['b']]
+
+======================================================================
+FAIL: test_independent_nodes_are_lexicographically_sorted (work_agent_pilot.test_dependencies.DependencyLayersTests.test_independent_nodes_are_lexicographically_sorted)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 31, in test_independent_nodes_are_lexicographically_sorted
+    self.assertEqual(dependency_layers(graph), [['a', 'a-1', 'a0', 'a_1', 'z']])
+AssertionError: Lists differ: [] != [['a', 'a-1', 'a0', 'a_1', 'z']]
+
+Second list contains 1 additional elements.
+First extra element 0:
+['a', 'a-1', 'a0', 'a_1', 'z']
+
+- []
++ [['a', 'a-1', 'a0', 'a_1', 'z']]
+
+======================================================================
+FAIL: test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 66, in test_invalid_node_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='A')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 66, in test_invalid_node_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='1a')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 66, in test_invalid_node_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='_a')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 66, in test_invalid_node_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='-a')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 66, in test_invalid_node_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='a.b')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 66, in test_invalid_node_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='a b')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 66, in test_invalid_node_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='a\n')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 66, in test_invalid_node_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='a\t')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 66, in test_invalid_node_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='a/b')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 66, in test_invalid_node_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='é')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 66, in test_invalid_node_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='а')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 66, in test_invalid_node_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 66, in test_invalid_node_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 66, in test_invalid_node_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 66, in test_invalid_node_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node=7)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 66, in test_invalid_node_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_node_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_node_ids) (node=('a',))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 66, in test_invalid_node_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite='')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 74, in test_invalid_prerequisite_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite='A')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 74, in test_invalid_prerequisite_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite='1a')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 74, in test_invalid_prerequisite_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite='a\n')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 74, in test_invalid_prerequisite_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite='é')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 74, in test_invalid_prerequisite_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 74, in test_invalid_prerequisite_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 74, in test_invalid_prerequisite_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 74, in test_invalid_prerequisite_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite=7)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 74, in test_invalid_prerequisite_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite=[])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 74, in test_invalid_prerequisite_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite={})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 74, in test_invalid_prerequisite_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_prerequisite_ids (work_agent_pilot.test_dependencies.DependencyLayersTests.test_invalid_prerequisite_ids) (prerequisite=('a',))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 74, in test_invalid_prerequisite_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_layers_wait_for_all_prerequisites (work_agent_pilot.test_dependencies.DependencyLayersTests.test_layers_wait_for_all_prerequisites)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 36, in test_layers_wait_for_all_prerequisites
+    self.assertEqual(dependency_layers(graph),
+AssertionError: Lists differ: [] != [['a', 'g'], ['b', 'c'], ['d', 'e'], ['f']]
+
+Second list contains 4 additional elements.
+First extra element 0:
+['a', 'g']
+
+- []
++ [['a', 'g'], ['b', 'c'], ['d', 'e'], ['f']]
+
+======================================================================
+FAIL: test_longer_cycle_is_rejected (work_agent_pilot.test_dependencies.DependencyLayersTests.test_longer_cycle_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 107, in test_longer_cycle_is_rejected
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_more_than_thousand_nodes_is_rejected (work_agent_pilot.test_dependencies.DependencyLayersTests.test_more_than_thousand_nodes_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 121, in test_more_than_thousand_nodes_is_rejected
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_prerequisite_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_prerequisite_order_does_not_change_layers) (order=('a', 'b', 'c'))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 51, in test_prerequisite_order_does_not_change_layers
+    self.assertEqual(dependency_layers(graph), [['a', 'b', 'c'], ['d']])
+AssertionError: Lists differ: [] != [['a', 'b', 'c'], ['d']]
+
+Second list contains 2 additional elements.
+First extra element 0:
+['a', 'b', 'c']
+
+- []
++ [['a', 'b', 'c'], ['d']]
+
+======================================================================
+FAIL: test_prerequisite_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_prerequisite_order_does_not_change_layers) (order=('a', 'c', 'b'))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 51, in test_prerequisite_order_does_not_change_layers
+    self.assertEqual(dependency_layers(graph), [['a', 'b', 'c'], ['d']])
+AssertionError: Lists differ: [] != [['a', 'b', 'c'], ['d']]
+
+Second list contains 2 additional elements.
+First extra element 0:
+['a', 'b', 'c']
+
+- []
++ [['a', 'b', 'c'], ['d']]
+
+======================================================================
+FAIL: test_prerequisite_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_prerequisite_order_does_not_change_layers) (order=('b', 'a', 'c'))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 51, in test_prerequisite_order_does_not_change_layers
+    self.assertEqual(dependency_layers(graph), [['a', 'b', 'c'], ['d']])
+AssertionError: Lists differ: [] != [['a', 'b', 'c'], ['d']]
+
+Second list contains 2 additional elements.
+First extra element 0:
+['a', 'b', 'c']
+
+- []
++ [['a', 'b', 'c'], ['d']]
+
+======================================================================
+FAIL: test_prerequisite_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_prerequisite_order_does_not_change_layers) (order=('b', 'c', 'a'))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 51, in test_prerequisite_order_does_not_change_layers
+    self.assertEqual(dependency_layers(graph), [['a', 'b', 'c'], ['d']])
+AssertionError: Lists differ: [] != [['a', 'b', 'c'], ['d']]
+
+Second list contains 2 additional elements.
+First extra element 0:
+['a', 'b', 'c']
+
+- []
++ [['a', 'b', 'c'], ['d']]
+
+======================================================================
+FAIL: test_prerequisite_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_prerequisite_order_does_not_change_layers) (order=('c', 'a', 'b'))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 51, in test_prerequisite_order_does_not_change_layers
+    self.assertEqual(dependency_layers(graph), [['a', 'b', 'c'], ['d']])
+AssertionError: Lists differ: [] != [['a', 'b', 'c'], ['d']]
+
+Second list contains 2 additional elements.
+First extra element 0:
+['a', 'b', 'c']
+
+- []
++ [['a', 'b', 'c'], ['d']]
+
+======================================================================
+FAIL: test_prerequisite_order_does_not_change_layers (work_agent_pilot.test_dependencies.DependencyLayersTests.test_prerequisite_order_does_not_change_layers) (order=('c', 'b', 'a'))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 51, in test_prerequisite_order_does_not_change_layers
+    self.assertEqual(dependency_layers(graph), [['a', 'b', 'c'], ['d']])
+AssertionError: Lists differ: [] != [['a', 'b', 'c'], ['d']]
+
+Second list contains 2 additional elements.
+First extra element 0:
+['a', 'b', 'c']
+
+- []
++ [['a', 'b', 'c'], ['d']]
+
+======================================================================
+FAIL: test_rejection_does_not_mutate_input (work_agent_pilot.test_dependencies.DependencyLayersTests.test_rejection_does_not_mutate_input)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 148, in test_rejection_does_not_mutate_input
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_repeats_count_toward_dependency_limit (work_agent_pilot.test_dependencies.DependencyLayersTests.test_repeats_count_toward_dependency_limit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 129, in test_repeats_count_toward_dependency_limit
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 81, in test_requires_plain_dictionary
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 81, in test_requires_plain_dictionary
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 81, in test_requires_plain_dictionary
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph=0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 81, in test_requires_plain_dictionary
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph='')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 81, in test_requires_plain_dictionary
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph='a')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 81, in test_requires_plain_dictionary
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph=[])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 81, in test_requires_plain_dictionary
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph=())
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 81, in test_requires_plain_dictionary
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph=set())
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 81, in test_requires_plain_dictionary
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph={'a': []})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 81, in test_requires_plain_dictionary
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_dictionary (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_dictionary) (graph={'a': []})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 81, in test_requires_plain_dictionary
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) (prerequisites=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 87, in test_requires_plain_prerequisite_lists
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) (prerequisites=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 87, in test_requires_plain_prerequisite_lists
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) (prerequisites=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 87, in test_requires_plain_prerequisite_lists
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) (prerequisites=0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 87, in test_requires_plain_prerequisite_lists
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) (prerequisites='')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 87, in test_requires_plain_prerequisite_lists
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) (prerequisites='a')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 87, in test_requires_plain_prerequisite_lists
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) (prerequisites=())
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 87, in test_requires_plain_prerequisite_lists
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) (prerequisites=set())
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 87, in test_requires_plain_prerequisite_lists
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) (prerequisites={})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 87, in test_requires_plain_prerequisite_lists
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_requires_plain_prerequisite_lists (work_agent_pilot.test_dependencies.DependencyLayersTests.test_requires_plain_prerequisite_lists) (prerequisites=[])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 87, in test_requires_plain_prerequisite_lists
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_self_dependency_is_rejected (work_agent_pilot.test_dependencies.DependencyLayersTests.test_self_dependency_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 99, in test_self_dependency_is_rejected
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_specification_example (work_agent_pilot.test_dependencies.DependencyLayersTests.test_specification_example)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 24, in test_specification_example
+    self.assertEqual(
+AssertionError: Lists differ: [] != [['a', 'c'], ['b']]
+
+Second list contains 2 additional elements.
+First extra element 0:
+['a', 'c']
+
+- []
++ [['a', 'c'], ['b']]
+
+======================================================================
+FAIL: test_success_does_not_mutate_input (work_agent_pilot.test_dependencies.DependencyLayersTests.test_success_does_not_mutate_input)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 140, in test_success_does_not_mutate_input
+    self.assertEqual(dependency_layers(graph), [['a'], ['b', 'c']])
+AssertionError: Lists differ: [] != [['a'], ['b', 'c']]
+
+Second list contains 2 additional elements.
+First extra element 0:
+['a']
+
+- []
++ [['a'], ['b', 'c']]
+
+======================================================================
+FAIL: test_ten_thousand_dependency_entries_are_accepted (work_agent_pilot.test_dependencies.DependencyLayersTests.test_ten_thousand_dependency_entries_are_accepted)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 125, in test_ten_thousand_dependency_entries_are_accepted
+    self.assertEqual(dependency_layers({'a': [], 'b': ['a'] * 10000}),
+AssertionError: Lists differ: [] != [['a'], ['b']]
+
+Second list contains 2 additional elements.
+First extra element 0:
+['a']
+
+- []
++ [['a'], ['b']]
+
+======================================================================
+FAIL: test_thousand_node_chain_is_accepted (work_agent_pilot.test_dependencies.DependencyLayersTests.test_thousand_node_chain_is_accepted)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 118, in test_thousand_node_chain_is_accepted
+    self.assertEqual(dependency_layers(graph), [[name] for name in names])
+AssertionError: Lists differ: [] != [['t0000'], ['t0001'], ['t0002'], ['t0003'[10953 chars]99']]
+
+Second list contains 1000 additional elements.
+First extra element 0:
+['t0000']
+
+Diff is 14005 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_two_node_cycle_is_rejected (work_agent_pilot.test_dependencies.DependencyLayersTests.test_two_node_cycle_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 103, in test_two_node_cycle_is_rejected
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_unknown_prerequisite_in_disconnected_component_is_rejected (work_agent_pilot.test_dependencies.DependencyLayersTests.test_unknown_prerequisite_in_disconnected_component_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 95, in test_unknown_prerequisite_in_disconnected_component_is_rejected
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_unknown_prerequisite_is_rejected (work_agent_pilot.test_dependencies.DependencyLayersTests.test_unknown_prerequisite_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 91, in test_unknown_prerequisite_is_rejected
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_valid_id_boundaries (work_agent_pilot.test_dependencies.DependencyLayersTests.test_valid_id_boundaries)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/work-agent-synthetic-310_w8u1/work_agent_pilot/test_dependencies.py", line 59, in test_valid_id_boundaries
+    self.assertEqual(dependency_layers({key: [] for key in ids}), [sorted(ids)])
+AssertionError: Lists differ: [] != [['a', 'a0000000000000000000000000000000', 'a_b-c9', 'z']]
+
+Second list contains 1 additional elements.
+First extra element 0:
+['a', 'a0000000000000000000000000000000', 'a_b-c9', 'z']
+
+- []
++ [['a', 'a0000000000000000000000000000000', 'a_b-c9', 'z']]
+
+----------------------------------------------------------------------
+Ran 26 tests in 0.063s
+
+FAILED (failures=195)
