@@ -27,7 +27,7 @@ jobs:
       MINI_SWE_SHA: 04d809ceab9df28f9adaed044884180159172930
       PANAM_SYNTHETIC_IMAGE: python:3.12-slim-bookworm
       MSWEA_SILENT_STARTUP: '1'
-      MSWEA_GLOBAL_CONFIG_DIR: ${{ runner.temp }}/mini-swe-config
+      MSWEA_GLOBAL_CONFIG_DIR: /tmp/panam-mini-swe-config
     steps:
       - name: Checkout public lab
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
