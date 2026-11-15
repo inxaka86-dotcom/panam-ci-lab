@@ -1,6 +1,12 @@
 name: Public mini-SWE-agent sandbox pilot
 
 on:
+  push:
+    branches:
+      - research/mini-swe-upstream-sandbox-20261116
+    paths:
+      - 'agent_runtime_pilot/**'
+      - '.github/workflows/mini-swe-agent-isolated.yml'
   pull_request:
     paths:
       - 'agent_runtime_pilot/**'
