@@ -1,0 +1,39 @@
+{
+  "author": "Work coding agent",
+  "command_argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "checks/publication_gate.py"
+  ],
+  "cwd": "repository root",
+  "data_class": "PUBLIC_SYNTHETIC",
+  "duration_seconds": 0.04854505999992398,
+  "exit_code": 0,
+  "git_head_before_run": "14553f6cf24db8892f3c143af1ad973d2cd63448",
+  "input_sha256": {
+    ".github/workflows/work-agent-pilot.yml": "4eca1f22a20ed64f14310b1a07e514e62937beda959c8381787cfd877daafb59",
+    "checks/public_smoke.py": "cbe67446f1e19a1228f99df029789ca3e573164e9a513893eda22b44676b3163",
+    "checks/publication_gate.py": "830b6335afbb9d78f724153b81d76112a4a253fae3a343d8575121de65c45c57",
+    "work_agent_pilot/README.md": "cc1fb2ec2ea48e3f67e3fd803019e59c981c6cda01193e66801759dfed941a14",
+    "work_agent_pilot/SPEC.md": "65276adc1187ae586e8fe7bc54965c0040ad284d4029d6219ba68091c735d8c3",
+    "work_agent_pilot/__init__.py": "0ed078cdf6c3a1f8f20a316748368f84c1470adadad62a4b0a339d3ce12dee4b",
+    "work_agent_pilot/dependencies.py": "e6d635a92ec15b3b590df6124350fa0a67874fc68db29370972955e6d22da1ba",
+    "work_agent_pilot/evidence/inert_stub.txt": "d5eef20adcc56f638aae26b6a2797d386ab69d9dfef32def4d69e888f38cc2b4",
+    "work_agent_pilot/evidence/record_run.py": "1ec639e9f558774c078126a1459ce43a06b3fb69cb728820ffd1b37c6e2ccf72",
+    "work_agent_pilot/test_dependencies.py": "f3021cb066866d719facf61b9fa335f5ef91644cf7da151fb205425f213af8b8"
+  },
+  "mode": "gate",
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "schema": "work-agent-pilot.execution.v1",
+  "started_at_utc": "2026-11-15T23:06:19.964898+00:00",
+  "stderr": {
+    "file": "gate.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "file": "gate.stdout.txt",
+    "sha256": "f19cc2c60a56d663acf60d66664a21a439a17b9bc11414707131277260f15779"
+  },
+  "subject_sha256": "e6d635a92ec15b3b590df6124350fa0a67874fc68db29370972955e6d22da1ba",
+  "synthetic_negative_control": false
+}
