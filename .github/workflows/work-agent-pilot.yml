@@ -1,0 +1,43 @@
+name: Work Coding Agent Dependency Pilot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'work_agent_pilot/**'
+      - '.github/workflows/work-agent-pilot.yml'
+      - 'checks/publication_gate.py'
+      - 'checks/public_smoke.py'
+  pull_request:
+    paths:
+      - 'work_agent_pilot/**'
+      - '.github/workflows/work-agent-pilot.yml'
+      - 'checks/publication_gate.py'
+      - 'checks/public_smoke.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: work-agent-pilot-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  public-synthetic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Enforce publication boundary
+        run: python3 -B checks/publication_gate.py
+
+      - name: Run standard-library behavioral tests
+        run: python3 -B -m unittest discover -v
+
+      - name: Run public synthetic smoke check
+        run: python3 -B checks/public_smoke.py
