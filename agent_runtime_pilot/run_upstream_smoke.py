@@ -99,9 +99,9 @@ def main() -> None:
             cost_per_call=0,
             outputs=[
                 make_output('Create deliberately faulty solution', [{'command': BAD}], cost=0),
-                make_output('Run RED tests', [{'command': 'python3 -m unittest -v test_solution.py'}], cost=0),
+                make_output('Run RED tests', [{'command': 'python3 -B -m unittest -v test_solution.py'}], cost=0),
                 make_output('Correct implementation', [{'command': GOOD}], cost=0),
-                make_output('Run GREEN tests', [{'command': 'python3 -m unittest -v test_solution.py'}], cost=0),
+                make_output('Run GREEN tests', [{'command': 'python3 -B -m unittest -v test_solution.py'}], cost=0),
                 make_output('Submit', [{'command': "printf 'COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT\\nSYNTHETIC_AGENT_TASK=PASS\\n'"}], cost=0),
             ],
         )
