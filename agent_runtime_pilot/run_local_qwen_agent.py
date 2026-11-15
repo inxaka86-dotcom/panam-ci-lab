@@ -93,11 +93,11 @@ class LocalQwenModel:
             "--tmpfs=/tmp:rw,nosuid,nodev,size=32m",
             "--mount", f"type=bind,source={self.binary_dir},target=/opt/llama,readonly",
             "--mount", f"type=bind,source={self.model_file},target=/model/model.gguf,readonly",
-            "--env", "LD_LIBRARY_PATH=/opt/llama/bin",
+            "--env", "LD_LIBRARY_PATH=/opt/llama",
             "panam-public-llama-runtime:research",
-            "/opt/llama/bin/llama-cli", "-m", "/model/model.gguf", "-p", prompt,
+            "/opt/llama/llama-cli", "-m", "/model/model.gguf", "-p", prompt,
             "-n", "180", "--temp", "0", "-c", "1024", "-t", "2",
-            "--no-display-prompt", "--simple-io",
+            "--no-display-prompt", "--simple-io", "-no-cnv", "-st",
         ]
         r = subprocess.run(cmd, capture_output=True, text=True, timeout=140, check=False)
         if r.returncode != 0:
