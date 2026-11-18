@@ -1,0 +1,43 @@
+name: PANAM Agent MVP (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: "What should the agent accomplish?"
+        required: true
+        type: string
+        default: "Research OpenAI Agents SDK documentation and produce a sourced Russian overview"
+      model:
+        description: "OpenAI API model ID"
+        required: true
+        default: "gpt-6-luna"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      AGENT_TASK: ${{ inputs.task }}
+      AGENT_MODEL: ${{ inputs.model }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install the agent runtime
+        run: python -m pip install --disable-pip-version-check "openai-agents>=0.1"
+      - name: Run autonomous research agent
+        run: python agent_mvp/main.py
+      - name: Save report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: panam-agent-result
+          path: reports/agent-report.md
+          if-no-files-found: warn
