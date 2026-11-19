@@ -2,7 +2,7 @@
 
 **Status:** working experimental Python workspace agent using **AI Dostup** and model `gpt-6.2-sol`. Two real end-to-end tests passed; not production-ready and not a general-purpose server operator.
 
-## Send one command
+## Run directly from ChatGPT using GitHub Issues\n\nAuthorized users can send a coding instruction to ChatGPT. It creates a new Issue in this public repository with title prefix \`[PANAM-AUTOCODER] \` and body beginning with \`PANAM_AUTOCODER_V1\` on its own line, followed by the task. GitHub Actions automatically runs the agent **only for the exact account \`inxaka86-dotcom\` (numeric GitHub user ID \`317440435\`)**. Unauthorized Issues do not run the paid AI job. The connector creates Issues as this account (confirmed using diagnostic Issue #59). Do not create Issues from another account or send confidential data to this public repository.\n\nSuccessful runs add a GitHub Issue comment with a verified branch and a comparison URL. GitHub Actions may not open a PR under existing repository policy, so ChatGPT opens a **draft PR** using the connected GitHub integration after verifying the run. Branches are not auto-merged. Only \`issues.opened\` triggers the workflow, not edits or comments.\n\n## Send one command manually through Actions
 
 1. Open **GitHub → inxaka86-dotcom/panam-ci-lab → Actions → PANAM AutoCoder - one task, one isolated branch**.
 2. Choose **Run workflow**, enter one coding task in the **task** field, keep default model and run.
@@ -30,3 +30,25 @@ No additional key setup is required if the GitHub Actions secret `AIDOSTUP_API_K
 ## Next expansion
 
 After human review of this experiment, add access to a separate **non-production** development repository/worktree and stronger task-specific acceptance tests. Do not bypass the existing PANAM Security Gate to obtain production access.
+
+## Security gate details
+
+- Workflow checks the server-provided author ID and login **before any tool calls or provider secret is loaded**.
+- Python validates the same ID, event type, repository, title marker, issue number, a 2,500-byte maximum task, and a body version marker; it rejects malformed requests and passes the task as base64 in the GitHub Actions environment.
+- Task text is NEVER interpolated into a shell script or executed as Python.
+- The model has only read/write source tools and network-disabled, resource-limited Docker unit tests.
+- User-provided issue text does not supply workflow names, commands, branches, provider endpoint or model.
+- This is a **public test project**. AI provider usage is billable; the time and turn bounds are not a hard money cap.
+
+### Example ChatGPT instruction
+
+"ПАНАМ, создай безопасную функцию нормализации меток в тестовом Python-проекте; используй Issue AutoCoder, проверь все тесты и открой черновик PR."
+
+ChatGPT creates an Issue formatted as:
+
+```text
+Title: [PANAM-AUTOCODER] Нормализация меток
+Body:
+PANAM_AUTOCODER_V1
+Создай src/labels.py и реализуй normalize_labels(labels) по требованиям tests/test_labels.py...
+```
