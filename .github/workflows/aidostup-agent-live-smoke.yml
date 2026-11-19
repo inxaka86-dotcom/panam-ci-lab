@@ -1,0 +1,34 @@
+name: PANAM Agent AiDostup live smoke (isolated)
+on:
+  push:
+    branches:
+      - experiment/aidostup-agent-live-smoke-20261119
+permissions:
+  contents: read
+jobs:
+  live-agent-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      AIDOSTUP_API_KEY: ${{ secrets.AIDOSTUP_API_KEY }}
+      AGENT_MODEL: gpt-6-luna
+      AGENT_TASK: "Для проверки автономного агента ОБЯЗАТЕЛЬНО вызови инструмент calculate с выражением (12345*6789)/3. Назови точный ответ и подтвердись выполнением инструмента. Не используй интернет."
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Dependencies
+        run: python -m pip install --disable-pip-version-check "openai-agents>=0.1" requests beautifulsoup4
+      - name: Python syntax
+        run: python -m py_compile agent_mvp/main.py
+      - name: Run live agent with real AiDostup key
+        run: python agent_mvp/main.py
+      - name: Collect agent report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aidostup-smoke-report
+          path: reports/agent-report.md
+          if-no-files-found: warn
