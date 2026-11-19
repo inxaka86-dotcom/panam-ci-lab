@@ -55,6 +55,7 @@ def _get(url: str) -> requests.Response:
 @function_tool
 def fetch_webpage(url: str) -> str:
     """Read a public HTTPS webpage by URL to gather verifiable facts. Read-only."""
+    print("PANAM_RESEARCH_FETCH_CALLED", flush=True)
     try:
         from bs4 import BeautifulSoup
         r = _get(url)
@@ -68,13 +69,16 @@ def fetch_webpage(url: str) -> str:
             content = soup.get_text(" ", strip=True)
         else:
             content = r.text
+        print("PANAM_RESEARCH_FETCH_OK content_chars=" + str(len(content)), flush=True)
         return json.dumps({"url": url, "content": content[:MAX_FETCH]}, ensure_ascii=False)
     except Exception as exc:
+        print("PANAM_RESEARCH_FETCH_FAILED " + type(exc).__name__, flush=True)
         return f"PAGE_FETCH_FAILED: {type(exc).__name__}: {exc}"
 
 @function_tool
 def search_web(query: str) -> str:
     """Search public web pages for the user's research task and return links."""
+    print("PANAM_RESEARCH_SEARCH_CALLED", flush=True)
     try:
         from xml.etree import ElementTree
         r = requests.get("https://www.bing.com/search", params={"q": query[:180], "format": "rss"},
@@ -87,8 +91,10 @@ def search_web(query: str) -> str:
             data.append({name: item.findtext(name, default="")[:500] for name in ("title", "link", "description")})
         if not data:
             return "WEB_SEARCH_UNAVAILABLE: search provider returned no parsed RSS results"
+        print("PANAM_RESEARCH_SEARCH_OK results=" + str(len(data)), flush=True)
         return json.dumps(data, ensure_ascii=False)
     except Exception as exc:
+        print("PANAM_RESEARCH_SEARCH_FAILED " + type(exc).__name__, flush=True)
         return f"WEB_SEARCH_UNAVAILABLE: {type(exc).__name__}: {exc}"
 
 @function_tool
