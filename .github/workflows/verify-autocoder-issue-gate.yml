@@ -1,0 +1,54 @@
+name: Verify PANAM Issue gateway (branch-only)
+on:
+  push:
+    branches:
+      - feature/issues-autocoder-secure-dispatch-20261119
+    paths:
+      - .github/workflows/verify-autocoder-issue-gate.yml
+permissions:
+  contents: read
+jobs:
+  validate-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax check
+        run: |
+          python -m py_compile agent_mvp/issue_task.py agent_mvp/autocoder.py
+          echo GATE_SYNTAX_OK
+      - name: 13 negative and positive authorization tests
+        run: |
+          python -B -m unittest discover -s agent_mvp/tests -p 'test_issue_task.py' -v
+          echo GATE_UNIT_TESTS_OK
+      - name: Simulate an authentic Issue payload and check task transmission
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os, tempfile, subprocess, pathlib, base64
+          mock = {
+              "action": "opened", "issue": {
+                  "number": 101, "state": "open",
+                  "title": "[PANAM-AUTOCODER] Trusted test",
+                  "body": "PANAM_AUTOCODER_V1\nСоздай новый Python-модуль.",
+                  "user": {"login": "inxaka86-dotcom", "id": 317440435}
+              }
+          }
+          with tempfile.TemporaryDirectory() as folder:
+              event = pathlib.Path(folder) / "event.json"
+              envfile = pathlib.Path(folder) / "jobenv"
+              event.write_text(json.dumps(mock), encoding="utf-8")
+              env = {**os.environ, "GITHUB_EVENT_PATH": str(event),
+                     "GITHUB_ENV": str(envfile),
+                     "GITHUB_REPOSITORY": "inxaka86-dotcom/panam-ci-lab"}
+              check = subprocess.run(["python", "agent_mvp/issue_task.py"],
+                                     env=env, capture_output=True, text=True, check=True)
+              values = dict(line.split("=", 1) for line in envfile.read_text().splitlines())
+              recovered = base64.b64decode(values["AGENT_TASK_B64"], validate=True).decode()
+              assert recovered == "Создай новый Python-модуль."
+              assert values["AGENT_ISSUE_NUMBER"] == "101"
+              print("GATE_ISSUE_TRANSMISSION_OK")
+          PY
