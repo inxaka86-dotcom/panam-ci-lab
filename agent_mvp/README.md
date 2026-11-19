@@ -9,7 +9,7 @@ Open repository **Settings → Secrets and variables → Actions → New reposit
 - Name: `AIDOSTUP_API_KEY`
 - Value: the secret key from your AiDostup account (never paste it into the repository or GitHub Actions input).
 
-The **only LLM provider** is AiDostup: `https://aidostup.site/v1`, using the official OpenAI Python client in compatibility mode. Model `gpt-6-luna` is an example ID documented by the provider. This is a paid external service; verify your balance before running.
+The **only LLM provider** is AiDostup: `https://aidostup.site/v1`, using the official OpenAI Python client in compatibility mode. Model `gpt-6.2-sol` is an example ID documented by the provider. This is a paid external service; verify your balance before running.
 
 ## One-command task
 
