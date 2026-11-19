@@ -1,0 +1,43 @@
+name: PANAM Agent AiDostup research end-to-end
+on:
+  push:
+    branches:
+      - experiment/aidostup-agent-research-20261119
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      AIDOSTUP_API_KEY: ${{ secrets.AIDOSTUP_API_KEY }}
+      AGENT_MODEL: gpt-6-luna
+      AGENT_TASK: >-
+        Проведи реальное исследование, не придумывая источников.
+        ОБЯЗАТЕЛЬНО вызови инструмент search_web с запросом
+        "OpenAI Agents SDK Python quickstart official documentation",
+        затем ОБЯЗАТЕЛЬНО вызови fetch_webpage с URL
+        https://openai.github.io/openai-agents-python/ .
+        На основе фактически прочитанной документации объясни по-русски
+        1) что такое Runner 2) как работают инструменты агента
+        3) как ограничить число шагов. Приведи две проверяемые ссылки.
+        Если поиск или чтение не сработают, явно отметь сбой и не выдумывай.
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Dependencies
+        run: python -m pip install --disable-pip-version-check "openai-agents>=0.1" requests beautifulsoup4
+      - name: Check Python syntax
+        run: python -m py_compile agent_mvp/main.py
+      - name: Run multi-step research through AiDostup
+        run: python agent_mvp/main.py
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aidostup-research-report
+          path: reports/agent-report.md
+          if-no-files-found: warn
