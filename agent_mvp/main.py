@@ -107,6 +107,7 @@ def github_public_repositories(query: str) -> str:
 @function_tool
 def calculate(expression: str) -> str:
     """Calculate simple numerical expressions with +, -, *, /, ** and parentheses."""
+    print("PANAM_TEST_TOOL_CALCULATE_INVOKED", flush=True)
     ops = {
         ast.Add: lambda a, b: a + b, ast.Sub: lambda a, b: a - b,
         ast.Mult: lambda a, b: a * b, ast.Div: lambda a, b: a / b,
