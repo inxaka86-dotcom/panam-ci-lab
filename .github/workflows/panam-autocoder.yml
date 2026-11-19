@@ -11,7 +11,7 @@ on:
         description: "Модель AI Dostup"
         required: true
         type: string
-        default: "gpt-6-luna"
+        default: "gpt-6.2-sol"
 
 permissions:
   contents: write
@@ -22,7 +22,7 @@ jobs:
     timeout-minutes: 12
     env:
       AGENT_TASK: ${{ inputs.task }}
-      AGENT_MODEL: ${{ inputs.model || 'gpt-6-luna' }}
+      AGENT_MODEL: ${{ inputs.model || 'gpt-6.2-sol' }}
       PYTHONUNBUFFERED: '1'
     steps:
       - uses: actions/checkout@v4
