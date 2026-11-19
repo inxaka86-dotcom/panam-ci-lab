@@ -1,6 +1,6 @@
 # PANAM AutoCoder — simple autonomous coding agent
 
-**Status:** working experimental Python workspace agent using **AI Dostup** and model `gpt-6-luna`. Two real end-to-end tests passed; not production-ready and not a general-purpose server operator.
+**Status:** working experimental Python workspace agent using **AI Dostup** and model `gpt-6.2-sol`. Two real end-to-end tests passed; not production-ready and not a general-purpose server operator.
 
 ## Send one command
 

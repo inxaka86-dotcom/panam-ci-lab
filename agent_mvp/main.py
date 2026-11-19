@@ -17,7 +17,7 @@ from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
 from openai import AsyncOpenAI
 
 BASE_URL = "https://aidostup.site/v1"
-DEFAULT_MODEL = "gpt-6-luna"
+DEFAULT_MODEL = "gpt-6.2-sol"
 MAX_FETCH = 35000
 TIMEOUT = 12
 
