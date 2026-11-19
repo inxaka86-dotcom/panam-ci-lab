@@ -7,7 +7,7 @@ on:
         description: "Задача агенту (одна команда)"
         required: true
         type: string
-        default: "Исправь проблемы в функциях slugify и clamp, прочитай тесты и добейся прохождения всех проверок."
+        default: "Создай новый модуль src/fractions.py с функцией safe_divide(a, b), возвращающей a/b, а при делении на ноль None. Найди тесты, используй инструменты и добейся прохождения всех проверок, не меняя тесты."
       model:
         description: "Модель AI Dostup"
         required: true
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
-      AGENT_TASK: ${{ inputs.task || 'Исправь проблемы в функциях slugify и clamp, прочитай тесты и добейся прохождения всех проверок.' }}
+      AGENT_TASK: ${{ inputs.task || 'Создай новый модуль src/fractions.py с функцией safe_divide(a, b), возвращающей a/b, а при делении на ноль None. Найди тесты, используй инструменты и добейся прохождения всех проверок, не меняя тесты.' }}
       AGENT_MODEL: ${{ inputs.model || 'gpt-6-luna' }}
       PYTHONUNBUFFERED: '1'
     steps:
