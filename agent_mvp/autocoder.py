@@ -6,6 +6,7 @@ tool is available to the model, and it cannot read outside the coding workspace.
 from __future__ import annotations
 
 import ast
+import base64
 import os
 import re
 import subprocess
@@ -124,7 +125,15 @@ def run_unit_tests() -> str:
 
 
 def main() -> int:
-    task = os.getenv("AGENT_TASK", "").strip()
+    # Validated GitHub Issues arrive as base64 in GITHUB_ENV; do not eval text in a shell.
+    encoded_task = os.getenv("AGENT_TASK_B64", "").strip()
+    try:
+        task = (base64.b64decode(encoded_task, validate=True).decode("utf-8")
+                if encoded_task else os.getenv("AGENT_TASK", ""))
+        task = task.strip()
+    except (ValueError, UnicodeError) as exc:
+        print(f"FAILED: malformed encoded issue task: {type(exc).__name__}", flush=True)
+        return 1
     key = os.getenv("AIDOSTUP_API_KEY", "").strip()
     if not task or len(task) > 6000:
         print("FAILED: AGENT_TASK is absent or too long", flush=True)
