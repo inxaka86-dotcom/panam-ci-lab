@@ -1,0 +1,97 @@
+name: Check AiDostup GPT-6.2 Sol compatibility
+on:
+  push:
+    branches:
+      - experiment/probe-gpt-6-2-sol-aidostup-20261119
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    env:
+      AIDOSTUP_API_KEY: ${{ secrets.AIDOSTUP_API_KEY }}
+    steps:
+      - name: Probe model with minimal tool call (never print secret)
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from urllib.request import Request, urlopen
+          from urllib.error import HTTPError, URLError
+
+          key = os.environ.get("AIDOSTUP_API_KEY", "")
+          if not key:
+              print("SOL62_RESULT=NO_SECRET")
+              raise SystemExit(1)
+
+          base = "https://aidostup.site/v1"
+          headers = {"Authorization": "Bearer " + key, "Content-Type": "application/json"}
+
+          def request(url, data=None):
+              req = Request(url, data=(json.dumps(data).encode() if data is not None else None),
+                            headers=headers, method="POST" if data is not None else "GET")
+              try:
+                  with urlopen(req, timeout=50) as response:
+                      return json.loads(response.read(300000).decode("utf-8"))
+              except HTTPError as exc:
+                  code = str(exc.code)
+                  err_code = ""
+                  try:
+                      obj = json.loads(exc.read(4000).decode())
+                      errobj = obj.get("error", {})
+                      if isinstance(errobj, dict):
+                          err_code = str(errobj.get("code") or errobj.get("type") or "")[:80]
+                  except Exception:
+                      pass
+                  print("SOL62_HTTP_ERROR=" + code + " code=" + err_code)
+                  raise
+              except URLError as exc:
+                  print("SOL62_NETWORK_ERROR=" + type(exc).__name__)
+                  raise
+
+          try:
+              catalog = request(base + "/models")
+              ids = [x.get("id") for x in catalog.get("data", []) if isinstance(x, dict)]
+              print("SOL62_MODEL_LISTED=" + str("gpt-6.2-sol" in ids))
+              print("SOL62_MODEL_CATALOG_ENTRIES=" + str(len(ids)))
+          except Exception:
+              print("SOL62_MODEL_LIST_QUERY_UNAVAILABLE")
+
+          payload = {
+              "model": "gpt-6.2-sol",
+              "messages": [
+                  {"role": "system", "content": "Call the provided calculate tool for the user's computation."},
+                  {"role": "user", "content": "Use the calculate tool to compute 7*8."}
+              ],
+              "tools": [{
+                  "type": "function",
+                  "function": {
+                      "name": "calculate",
+                      "description": "Perform an arithmetic operation",
+                      "parameters": {"type": "object", "properties": {
+                          "expression": {"type": "string"}
+                      }, "required": ["expression"], "additionalProperties": False}
+                  }
+              }],
+              "tool_choice": "required",
+              "max_completion_tokens": 900
+          }
+          try:
+              data = request(base + "/chat/completions", payload)
+          except Exception:
+              print("SOL62_RESULT=API_REQUEST_FAILED")
+              raise SystemExit(1)
+
+          choices = data.get("choices") or []
+          message = choices[0].get("message", {}) if choices else {}
+          calls = message.get("tool_calls") or []
+          named = [c.get("function", {}).get("name") for c in calls if isinstance(c, dict)]
+          print("SOL62_CHAT_COMPLETION_OK=" + str(bool(choices)))
+          print("SOL62_TOOL_CALL_OK=" + str("calculate" in named))
+          if "calculate" not in named:
+              print("SOL62_RESULT=TOOL_CALL_NOT_VERIFIED")
+              raise SystemExit(1)
+          print("SOL62_RESULT=SUCCESS")
+          PY
