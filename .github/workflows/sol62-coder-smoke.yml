@@ -1,0 +1,51 @@
+name: GPT-6.2 Sol AutoCoder live test
+on:
+  push:
+    branches:
+      - experiment/aidostup-sol62-coder-smoke-20261119
+    paths:
+      - .github/workflows/sol62-coder-smoke.yml
+permissions:
+  contents: read
+jobs:
+  coding:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      AGENT_MODEL: gpt-6.2-sol
+      AGENT_TASK: "Исправь src/discounts.py. Функция discounted_total(price, percent) должна вычислять цену после скидки в процентах, а для отрицательной цены или процента вне 0..100 выдавать ValueError. Прочитай тесты, исправь код и прогони тесты."
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check "openai-agents>=0.1"
+      - name: Prepare isolated Docker tests
+        run: |
+          python -m py_compile agent_mvp/autocoder.py
+          docker pull python:3.12-slim
+      - name: Ensure broken baseline
+        shell: bash
+        run: |
+          if docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --pids-limit 96 --memory 384m --cpus 1 -e PYTHONDONTWRITEBYTECODE=1 -v "$PWD/agent_mvp/agent_workspace:/work:ro" -w /work python:3.12-slim python -B -m unittest discover -s tests -p 'test_*.py' -v; then
+            echo "Unexpected green baseline"
+            exit 1
+          fi
+          echo SOL62_BASELINE_FAILED_AS_EXPECTED
+      - name: Run GPT-6.2 Sol autonomous coder
+        env:
+          AIDOSTUP_API_KEY: ${{ secrets.AIDOSTUP_API_KEY }}
+        run: python -B agent_mvp/autocoder.py
+      - name: Independently validate repaired code
+        run: |
+          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --pids-limit 96 --memory 384m --cpus 1 -e PYTHONDONTWRITEBYTECODE=1 -v "$PWD/agent_mvp/agent_workspace:/work:ro" -w /work python:3.12-slim python -B -m unittest discover -s tests -p 'test_*.py' -v
+          git diff --exit-code -- agent_mvp/agent_workspace/tests/
+          if git diff --quiet -- agent_mvp/agent_workspace/src/discounts.py; then
+            echo "No source change made by model"
+            exit 1
+          fi
+          echo SOL62_AUTOCODER_VERIFIED
