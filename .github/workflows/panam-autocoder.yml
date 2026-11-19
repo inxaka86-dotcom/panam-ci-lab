@@ -7,17 +7,11 @@ on:
         description: "Задача агенту (одна команда)"
         required: true
         type: string
-        default: "Создай новый модуль src/fractions.py с функцией safe_divide(a, b), возвращающей a/b, а при делении на ноль None. Найди тесты, используй инструменты и добейся прохождения всех проверок, не меняя тесты."
       model:
         description: "Модель AI Dostup"
         required: true
         type: string
         default: "gpt-6-luna"
-  push:
-    branches:
-      - experiment/panam-autocoder-e2e-20261119
-    paths:
-      - .github/workflows/panam-autocoder.yml
 
 permissions:
   contents: write
@@ -27,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
-      AGENT_TASK: ${{ inputs.task || 'Создай новый модуль src/fractions.py с функцией safe_divide(a, b), возвращающей a/b, а при делении на ноль None. Найди тесты, используй инструменты и добейся прохождения всех проверок, не меняя тесты.' }}
+      AGENT_TASK: ${{ inputs.task }}
       AGENT_MODEL: ${{ inputs.model || 'gpt-6-luna' }}
       PYTHONUNBUFFERED: '1'
     steps:
@@ -44,23 +38,11 @@ jobs:
           python -m py_compile agent_mvp/autocoder.py
           docker version --format '{{.Server.Version}}'
           docker pull python:3.12-slim
-      - name: Prove fixture begins with failing tests (smoke only)
-        if: github.event_name == 'push'
-        run: |
-          if docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --pids-limit 96 --memory 384m --cpus 1 -e PYTHONDONTWRITEBYTECODE=1 -v "$PWD/agent_mvp/agent_workspace:/work:ro" -w /work python:3.12-slim python -B -m unittest discover -s tests -p 'test_*.py' -v; then
-            echo "::error::Expected deliberately failing fixture tests"
-            exit 1
-          fi
-          echo "AUTOCODER_BASELINE_RED"
       - name: Create separate branch for each manual command
         shell: bash
         run: |
-          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
-            agent_branch="agent/task-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-            git switch -c "$agent_branch"
-          else
-            agent_branch="$GITHUB_REF_NAME"
-          fi
+          agent_branch="agent/task-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git switch -c "$agent_branch"
           echo "AGENT_BRANCH=$agent_branch" >> "$GITHUB_ENV"
           echo "AUTOCODER_BRANCH=$agent_branch"
       - name: Autonomous AI coding and iterative unit tests
