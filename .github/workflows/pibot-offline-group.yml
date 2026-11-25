@@ -1,0 +1,81 @@
+name: PiBot offline group qualification
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/pibot-offline-group.yml'
+      - 'checks/publication_gate.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pibot-offline-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline-group:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Public-only boundary
+        run: python3 checks/publication_gate.py
+      - name: Obtain pinned public source and build disposable image
+        shell: bash
+        run: |
+          set -euo pipefail
+          work=$(mktemp -d)
+          trap 'rm -rf "$work"' EXIT
+          upstream=64c949848e274b84dfc5f20d56a6d9610363aae3
+          git init -q "$work/repo"
+          GIT_TERMINAL_PROMPT=0 git -C "$work/repo" -c credential.helper= fetch --depth=1 https://github.com/w01fb0ss/PiBot.git "$upstream"
+          test "$(git -C "$work/repo" rev-parse FETCH_HEAD)" = "$upstream"
+          mkdir -p "$work/context/source"
+          git -C "$work/repo" archive FETCH_HEAD | tar -x -C "$work/context/source"
+          test "$(cat "$work/context/source/.nvmrc")" = 26.11.1
+          docker pull node:26.11.1-bookworm
+          base=$(docker image inspect node:26.11.1-bookworm --format '{{index .RepoDigests 0}}')
+          test -n "$base"
+          printf 'PIBOT_SOURCE=%s\nBASE_IMAGE=%s\n' "$upstream" "$base"
+          cat > "$work/context/Dockerfile" <<'DOCKERFILE'
+          ARG BASE_IMAGE
+          FROM ${BASE_IMAGE}
+          RUN npm install --global --ignore-scripts pnpm@12.14.0
+          WORKDIR /opt/pibot
+          COPY --chown=node:node source/ ./
+          USER node
+          RUN test "$(node --version)" = v26.11.1 && test "$(pnpm --version)" = 12.14.0
+          RUN pnpm install --frozen-lockfile
+          DOCKERFILE
+          docker build --pull=false --build-arg BASE_IMAGE="$base" -t pibot-offline-canary:local "$work/context"
+          docker image inspect pibot-offline-canary:local --format 'TEST_IMAGE_ID={{.Id}}'
+      - name: Run upstream group workflow with fake model under resource limits
+        shell: bash
+        run: |
+          set -euo pipefail
+          cid=$(docker create --network none --memory 2g --memory-swap 2g --cpus 2 --pids-limit 512 --cgroupns private --cap-drop ALL --security-opt no-new-privileges --user node pibot-offline-canary:local bash -c '
+            set -eu
+            test "$(cat /sys/fs/cgroup/memory.max)" = 2147483648
+            printf "CPU_MAX="; cat /sys/fs/cgroup/cpu.max
+            set +e
+            timeout --kill-after=20s 18m node tests/e2e/group-workflow/index.ts
+            rc=$?
+            set -e
+            printf "CGROUP_MEMORY_PEAK_BYTES="; cat /sys/fs/cgroup/memory.peak
+            printf "CGROUP_MEMORY_EVENTS\n"; cat /sys/fs/cgroup/memory.events
+            printf "GROUP_WORKFLOW_EXIT=%s\n" "$rc"
+            exit "$rc"
+          ')
+          trap 'docker rm -f "$cid" >/dev/null 2>&1 || true' EXIT
+          docker inspect "$cid" --format 'NETWORK={{.HostConfig.NetworkMode}} MEMORY={{.HostConfig.Memory}} NANO_CPUS={{.HostConfig.NanoCpus}} PRIVILEGED={{.HostConfig.Privileged}}'
+          set +e
+          docker start -a "$cid"
+          attach_rc=$?
+          set -e
+          docker inspect "$cid" --format 'EXIT={{.State.ExitCode}} OOM_KILLED={{.State.OOMKilled}}'
+          test "$attach_rc" -eq 0
+          test "$(docker inspect "$cid" --format '{{.State.ExitCode}} {{.State.OOMKilled}}')" = '0 false'
