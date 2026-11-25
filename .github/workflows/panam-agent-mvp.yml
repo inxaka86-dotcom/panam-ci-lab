@@ -1,52 +1,22 @@
-name: PANAM Agent MVP (AiDostup)
+name: PANAM Agent MVP - offline validation
 
 on:
   workflow_dispatch:
-    inputs:
-      task:
-        description: "Поручение агенту (по-русски)"
-        required: true
-        type: string
-        default: "Изучи документацию OpenAI Agents SDK и кратко объясни запуск автономного агента со ссылками."
-      model:
-        description: "ID модели AiDostup"
-        required: true
-        type: string
-        default: "gpt-6.2-sol"
+  pull_request:
+    paths:
+      - 'agent_mvp/**'
+      - '.github/workflows/panam-agent-mvp.yml'
 
 permissions:
   contents: read
 
 jobs:
-  agent:
+  offline:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    env:
-      AIDOSTUP_API_KEY: ${{ secrets.AIDOSTUP_API_KEY }}
-      AGENT_TASK: ${{ inputs.task }}
-      AGENT_MODEL: ${{ inputs.model }}
-      PYTHONUNBUFFERED: '1'
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
-          python-version: '3.12'
-      - name: Install dependencies
-        run: python -m pip install --disable-pip-version-check "openai-agents>=0.1" requests beautifulsoup4
-      - name: Check Python syntax
-        run: python -m py_compile agent_mvp/main.py
-      - name: Verify AiDostup secret is configured
-        run: |
-          if [ -z "$AIDOSTUP_API_KEY" ]; then
-            echo "::error::Set GitHub Actions secret AIDOSTUP_API_KEY before starting."
-            exit 1
-          fi
-      - name: Run agent through AiDostup
-        run: python agent_mvp/main.py
-      - name: Save report (including failure)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: panam-agent-result
-          path: reports/agent-report.md
-          if-no-files-found: warn
+          persist-credentials: false
+      - name: Validate source syntax without external API
+        run: python3 -m py_compile agent_mvp/main.py
