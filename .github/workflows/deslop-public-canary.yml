@@ -72,6 +72,18 @@ jobs:
           run_case allowed 0 --allow "$out/synthetic.allow"
           run_case invalid_argument 2 --not-a-real-option
           # Never generate or modify allowlists for a real project in this canary.
+      - name: Verify every architecture rule using pinned upstream fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/deslop-source"
+          out="$RUNNER_TEMP/deslop-evidence"
+          /usr/bin/time -v -o "$out/upstream-tests.time" cargo test --release --locked -- --test-threads=2 2>&1 | tee "$out/upstream-tests.log"
+          grep -E '^test result: ok\.' "$out/upstream-tests.log"
+          for rule in field_leak module_cycle tangle shallow long_file; do
+            grep -E "^test .*${rule}.* \.\.\. ok$" "$out/upstream-tests.log"
+          done
+          echo 'DESLOP_UPSTREAM_RULE_SUITE=PASS'
       - name: Upload synthetic evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
