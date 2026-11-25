@@ -1,0 +1,41 @@
+name: Bounded public RSS qualification
+
+on:
+  pull_request:
+    types: [opened]
+    branches: [main]
+    paths:
+      - 'public-rss-qualification/**'
+      - '.github/workflows/public-rss-qualification.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  one-shot:
+    if: >-
+      github.run_attempt == 1 &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'research/public-rss-qualification-v1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Enforce existing publication gate
+        run: python3 checks/publication_gate.py
+      - name: Verify reviewed source and run offline tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object public-rss-qualification/canary.py)" = 'f1012dc66531bea73b131db6fe7c8751fbef815e'
+          python3 -m py_compile public-rss-qualification/canary.py
+          python3 public-rss-qualification/canary.py --self-test
+      - name: Execute one bounded approved RSS qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 public-rss-qualification/canary.py --live --policy-reviewed
