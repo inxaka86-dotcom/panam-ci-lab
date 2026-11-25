@@ -1,137 +1,24 @@
-name: PANAM AutoCoder - one task, one isolated branch
+name: PANAM AutoCoder - offline validation
 
 on:
-  issues:
-    types: [opened]
   workflow_dispatch:
-    inputs:
-      task:
-        description: "Задача агенту (одна команда)"
-        required: true
-        type: string
-      model:
-        description: "Модель AI Dostup"
-        required: true
-        type: string
-        default: "gpt-6.2-sol"
+  pull_request:
+    paths:
+      - 'agent_mvp/**'
+      - '.github/workflows/panam-autocoder.yml'
 
 permissions:
-  contents: write
-  issues: write
+  contents: read
 
 jobs:
-  autonomous-coding:
-    # Fail closed: only the exact GitHub account ID may trigger paid AI via Issues.
-    # Manual dispatch retains GitHub's built-in repository write-permission requirement.
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'issues' &&
-       github.event.action == 'opened' &&
-       github.event.issue.user.login == 'inxaka86-dotcom' &&
-       github.event.issue.user.id == 317440435 &&
-       startsWith(github.event.issue.title, '[PANAM-AUTOCODER] ') &&
-       !github.event.issue.pull_request)
+  offline:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
-    env:
-      AGENT_TASK: ${{ inputs.task }}
-      AGENT_MODEL: ${{ inputs.model || 'gpt-6.2-sol' }}
-      PYTHONUNBUFFERED: '1'
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Check issue authorization parser against malicious inputs
-        run: python -B -m unittest discover -s agent_mvp/tests -p 'test_issue_task.py' -v
-      - name: Verify the actual Issue and encode its task
-        if: github.event_name == 'issues'
-        run: python -B agent_mvp/issue_task.py
-      - name: Install agent runtime
-        run: python -m pip install --disable-pip-version-check "openai-agents>=0.1"
-      - name: Verify source syntax and isolated test runtime
-        run: |
-          python -m py_compile agent_mvp/autocoder.py
-          docker version --format '{{.Server.Version}}'
-          docker pull python:3.12-slim
-      - name: Create separate branch for each manual command
-        shell: bash
-        run: |
-          if [ "$GITHUB_EVENT_NAME" = "issues" ]; then
-            agent_branch="agent/issue-${AGENT_ISSUE_NUMBER}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          else
-            agent_branch="agent/task-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          fi
-          git switch -c "$agent_branch"
-          echo "AGENT_BRANCH=$agent_branch" >> "$GITHUB_ENV"
-          echo "AUTOCODER_BRANCH=$agent_branch"
-      - name: Autonomous AI coding and iterative unit tests
-        env:
-          AIDOSTUP_API_KEY: ${{ secrets.AIDOSTUP_API_KEY }}
-        run: python -B agent_mvp/autocoder.py
-      - name: Independent test suite, without any API secret
-        run: |
-          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --pids-limit 96 --memory 384m --cpus 1 -e PYTHONDONTWRITEBYTECODE=1 -v "$PWD/agent_mvp/agent_workspace:/work:ro" -w /work python:3.12-slim python -B -m unittest discover -s tests -p 'test_*.py' -v
-          echo "AUTOCODER_INDEPENDENT_TEST_PASS"
-      - name: Validate strict patch scope
-        shell: bash
-        run: |
-          git add -- agent_mvp/agent_workspace/src/
-          mapfile -t changed < <(git diff --cached --name-only)
-          if [ "${#changed[@]}" -eq 0 ]; then
-            echo "::error::Agent produced no code changes"
-            exit 1
-          fi
-          for path in "${changed[@]}"; do
-            if [[ ! "$path" =~ ^agent_mvp/agent_workspace/src/[a-zA-Z0-9_/]+\.py$ ]]; then
-              echo "::error::Change outside allowed source path"
-              exit 1
-            fi
-          done
-          git diff --cached --check
-          echo "AUTOCODER_PATCH_SCOPE_OK changed_files=${#changed[@]}"
-      - name: Commit tested patch and publish isolated branch
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          git config user.name "panam-agent[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "agent: implement requested task with verified tests [skip ci]"
-          auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
-          git -c http.extraheader="AUTHORIZATION: basic $auth" push origin "HEAD:$AGENT_BRANCH"
-          echo "AUTOCODER_COMMIT_PUSH_OK"
-      - name: Produce safe PR handoff link
-        shell: bash
-        run: |
-          compare="https://github.com/$GITHUB_REPOSITORY/compare/main...$AGENT_BRANCH?expand=1"
-          echo "## PANAM AutoCoder: validated change" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Source: $GITHUB_EVENT_NAME" >> "$GITHUB_STEP_SUMMARY"
-          if [ "$GITHUB_EVENT_NAME" = "issues" ]; then
-            echo "- Issue: https://github.com/$GITHUB_REPOSITORY/issues/$AGENT_ISSUE_NUMBER" >> "$GITHUB_STEP_SUMMARY"
-            echo "- Verified task hash: $AGENT_TASK_HASH" >> "$GITHUB_STEP_SUMMARY"
-          fi
-          echo "- Branch: \`$AGENT_BRANCH\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Commit: \`$(git rev-parse HEAD)\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- All unit tests passed in a separate no-network Docker container" >> "$GITHUB_STEP_SUMMARY"
-          echo "- [Open GitHub PR comparison]($compare)" >> "$GITHUB_STEP_SUMMARY"
-          echo "AUTOCODER_HANDOFF_READY $compare"
-          printf 'branch=%s\ncompare=%s\n' "$AGENT_BRANCH" "$compare" > agent-pr-handoff.txt
-      - name: Notify the original trusted Issue
-        if: github.event_name == 'issues'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          compare="https://github.com/$GITHUB_REPOSITORY/compare/main...$AGENT_BRANCH?expand=1"
-          message="PANAM AutoCoder completed its work. Independent isolated unit tests passed; code is in branch \`$AGENT_BRANCH\`. [Review changes and create PR]($compare). No production changes or automatic merge."
-          gh issue comment "$AGENT_ISSUE_NUMBER" --body "$message"
-          echo "PANAM_ISSUE_NOTIFIED number=$AGENT_ISSUE_NUMBER"
-      - name: Upload handoff record
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: panam-autocoder-handoff
-          path: agent-pr-handoff.txt
+      - name: Validate source syntax
+        run: python3 -m py_compile agent_mvp/autocoder.py agent_mvp/issue_task.py
+      - name: Test synthetic issue authorization parser
+        run: python3 -B -m unittest discover -s agent_mvp/tests -p 'test_issue_task.py' -v
