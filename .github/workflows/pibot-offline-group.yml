@@ -45,6 +45,7 @@ jobs:
           ARG BASE_IMAGE
           FROM ${BASE_IMAGE}
           RUN npm install --global --ignore-scripts pnpm@12.14.0
+          RUN mkdir -p /opt/pibot && chown node:node /opt/pibot
           WORKDIR /opt/pibot
           COPY --chown=node:node source/ ./
           USER node
@@ -68,6 +69,7 @@ jobs:
             printf "CGROUP_MEMORY_PEAK_BYTES="; cat /sys/fs/cgroup/memory.peak
             printf "CGROUP_MEMORY_EVENTS\n"; cat /sys/fs/cgroup/memory.events
             printf "GROUP_WORKFLOW_EXIT=%s\n" "$rc"
+            test "$(grep "^oom_kill " /sys/fs/cgroup/memory.events)" = "oom_kill 0"
             exit "$rc"
           ')
           trap 'docker rm -f "$cid" >/dev/null 2>&1 || true' EXIT
