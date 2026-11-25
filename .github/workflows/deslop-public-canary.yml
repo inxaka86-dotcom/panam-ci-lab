@@ -1,0 +1,94 @@
+name: Deslop public synthetic canary
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/deslop-public-canary.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deslop-canary-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      RUST_VERSION: '1.99.0'
+      DESLOP_REV: f678d10d6e6860e70900ceae919e2d769b0a11ae
+      CARGO_TERM_COLOR: never
+      CARGO_BUILD_JOBS: '2'
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+      - name: Public-only boundary
+        run: python3 checks/publication_gate.py
+      - name: Build pinned public linter
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install "$RUST_VERSION" --profile minimal --component rust-src,rust-analyzer
+          rustup default "$RUST_VERSION"
+          rustc --version
+          rust-analyzer --version
+          git init -q "$RUNNER_TEMP/deslop-source"
+          git -C "$RUNNER_TEMP/deslop-source" fetch --depth=1 https://github.com/deterministic-machines/deslop-please.git "$DESLOP_REV"
+          git -C "$RUNNER_TEMP/deslop-source" checkout --detach FETCH_HEAD
+          test "$(git -C "$RUNNER_TEMP/deslop-source" rev-parse HEAD)" = "$DESLOP_REV"
+          cargo install --path "$RUNNER_TEMP/deslop-source" --locked --root "$RUNNER_TEMP/deslop-bin"
+      - name: Verify clean, dirty, allowlist and operational failure
+        shell: bash
+        run: |
+          set -euo pipefail
+          tool="$RUNNER_TEMP/deslop-bin/bin/deslop-please"
+          export PATH="$RUNNER_TEMP/deslop-bin/bin:$PATH"
+          out="$RUNNER_TEMP/deslop-evidence"
+          mkdir -p "$out"
+          cd "$RUNNER_TEMP"
+          cargo new --bin --vcs none synthetic-example
+          cd synthetic-example
+          run_case() {
+            local label="$1" expected="$2" status
+            shift 2
+            set +e
+            /usr/bin/time -v -o "$out/$label.time" "$tool" "$@" > "$out/$label.log" 2>&1
+            status=$?
+            set -e
+            cat "$out/$label.log"
+            echo "$label exit=$status expected=$expected"
+            printf '%s\n' "$status" > "$out/$label.exit"
+            test "$status" -eq "$expected"
+          }
+          run_case clean 0
+          python3 -c 'from pathlib import Path; p=Path("src/main.rs"); p.write_text(p.read_text()+"// synthetic padding\n"*2001)'
+          run_case dirty 1
+          grep -F 'error[long-file]' "$out/dirty.log"
+          run_case baseline 0 --update-allow "$out/synthetic.allow"
+          run_case allowed 0 --allow "$out/synthetic.allow"
+          run_case invalid_argument 2 --not-a-real-option
+          # Never generate or modify allowlists for a real project in this canary.
+      - name: Verify every architecture rule using pinned upstream fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/deslop-source"
+          out="$RUNNER_TEMP/deslop-evidence"
+          /usr/bin/time -v -o "$out/upstream-tests.time" cargo test --release --locked -- --test-threads=2 2>&1 | tee "$out/upstream-tests.log"
+          grep -E '^test result: ok\.' "$out/upstream-tests.log"
+          for rule in field_leak module_cycle tangle shallow long_file; do
+            grep -E "^test .*${rule}.* \.\.\. ok$" "$out/upstream-tests.log"
+          done
+          echo 'DESLOP_UPSTREAM_RULE_SUITE=PASS'
+      - name: Upload synthetic evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: deslop-synthetic-evidence
+          path: ${{ runner.temp }}/deslop-evidence/
+          if-no-files-found: warn
+          retention-days: 7
